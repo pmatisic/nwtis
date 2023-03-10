@@ -1,6 +1,0 @@
-#NWTiS matnovak 2023.
-#Wed Mar 08 17:38:53 CET 2023
-ivica=ivic
-korime=pero
-lozinka=1231232135
-pero=peric

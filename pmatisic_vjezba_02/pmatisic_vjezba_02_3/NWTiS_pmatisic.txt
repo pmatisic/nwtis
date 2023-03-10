@@ -1,0 +1,6 @@
+#NWTiS matnovak 2023.
+#Fri Mar 10 02:25:05 CET 2023
+korime=pero
+lozinka=123
+nickname=pijetao
+pero=peric
