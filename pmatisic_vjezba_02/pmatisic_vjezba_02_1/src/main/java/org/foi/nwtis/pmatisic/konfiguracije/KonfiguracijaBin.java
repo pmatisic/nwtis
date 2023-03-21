@@ -38,6 +38,7 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
       throw new NeispravnaKonfiguracija(
           "Datoteka '" + datoteka + "' nije moguće upisivati." + e.getMessage());
     }
+
   }
 
   @Override
@@ -60,5 +61,7 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
       throw new NeispravnaKonfiguracija(
           "Datoteka '" + datoteka + "' nije moguće čitati. " + e.getMessage());
     }
+
   }
+
 }

@@ -1,6 +1,4 @@
 #NWTiS pmatisic 2023.
 #Tue Mar 21 02:44:12 CET 2023
 ime=petar
-korime=pero
-lozinka=necutireci
 prezime=matisic

@@ -24,6 +24,7 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
   @Override
   public void spremiKonfiguraciju(String datoteka) throws NeispravnaKonfiguracija {
     var putanja = Path.of(datoteka);
+
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
     if (tip == null || tip.compareTo(TIP) != 0) {
       throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije tip " + TIP);
@@ -44,6 +45,7 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
       throw new NeispravnaKonfiguracija(
           "Datoteka '" + datoteka + "' nije moguće upisivati." + e.getMessage());
     }
+
   }
 
   @Override
@@ -51,6 +53,7 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
     var datoteka = this.nazivDatoteke;
     var putanja = Path.of(datoteka);
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
+
     if (tip == null || tip.compareTo(TIP) != 0) {
       throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije tip " + TIP);
     } else if (Files.exists(putanja)
@@ -70,5 +73,7 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
       throw new NeispravnaKonfiguracija(
           "Datoteka '" + datoteka + "' nije moguće čitati. " + e.getMessage());
     }
+
   }
+
 }
