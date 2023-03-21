@@ -7,12 +7,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Properties;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
 public class KonfiguracijaBin extends KonfiguracijaApstraktna {
+
   public static final String TIP = "bin";
 
   public KonfiguracijaBin(String nazivDatoteke) {
@@ -32,16 +32,12 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
           "Datoteka '" + datoteka + "' je direktorij ili nije moguće pisati.");
     }
 
-    try {
-      FileOutputStream fis = new FileOutputStream(datoteka);
-      ObjectOutputStream ois = new ObjectOutputStream(fis);
-      ois.writeObject(this.postavke);
-      ois.close();
+    try (var outputStream = new ObjectOutputStream(new FileOutputStream(datoteka))) {
+      outputStream.writeObject(this.postavke);
     } catch (IOException e) {
       throw new NeispravnaKonfiguracija(
           "Datoteka '" + datoteka + "' nije moguće upisivati." + e.getMessage());
     }
-
   }
 
   @Override
@@ -58,18 +54,11 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
           "Datoteka '" + datoteka + "' je direktorij ili nije moguće čitat.");
     }
 
-    try {
-      FileInputStream fis = new FileInputStream(datoteka);
-      ObjectInputStream ois = new ObjectInputStream(fis);
-      this.postavke = (Properties) ois.readObject();
-      ois.close();
-    } catch (IOException e) {
+    try (var inputStream = new ObjectInputStream(new FileInputStream(datoteka))) {
+      this.postavke = (java.util.Properties) inputStream.readObject();
+    } catch (IOException | ClassNotFoundException e) {
       throw new NeispravnaKonfiguracija(
           "Datoteka '" + datoteka + "' nije moguće čitati. " + e.getMessage());
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
     }
-
   }
-
 }

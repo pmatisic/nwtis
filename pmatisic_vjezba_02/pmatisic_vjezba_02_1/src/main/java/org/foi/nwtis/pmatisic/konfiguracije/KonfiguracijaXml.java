@@ -8,6 +8,7 @@ import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
 public class KonfiguracijaXml extends KonfiguracijaApstraktna {
+
   public static final String TIP = "xml";
 
   public KonfiguracijaXml(String nazivDatoteke) {

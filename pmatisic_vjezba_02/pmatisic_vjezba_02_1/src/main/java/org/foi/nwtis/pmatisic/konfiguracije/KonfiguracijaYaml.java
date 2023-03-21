@@ -33,13 +33,11 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
           "Datoteka '" + datoteka + "' je direktorij ili nije moguće pisati.");
     }
 
-
     try {
       Yaml yaml = new Yaml();
       FileWriter fw = new FileWriter(datoteka);
       BufferedWriter bw = new BufferedWriter(fw);
-      String yamlTip = yaml.dump(this.postavke);
-      bw.write(yamlTip);
+      yaml.dump(this.postavke, bw);
       bw.close();
       fw.close();
     } catch (IOException e) {
@@ -53,7 +51,6 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
     var datoteka = this.nazivDatoteke;
     var putanja = Path.of(datoteka);
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
-
     if (tip == null || tip.compareTo(TIP) != 0) {
       throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije tip " + TIP);
     } else if (Files.exists(putanja)
@@ -66,7 +63,7 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
       Yaml yaml = new Yaml();
       FileReader fr = new FileReader(datoteka);
       BufferedReader br = new BufferedReader(fr);
-      this.postavke = yaml.loadAs(br, Properties.class);
+      this.postavke = (Properties) yaml.load(br);
       br.close();
       fr.close();
     } catch (IOException e) {
