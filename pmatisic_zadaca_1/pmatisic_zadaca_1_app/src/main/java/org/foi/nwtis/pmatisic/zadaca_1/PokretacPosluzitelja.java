@@ -6,6 +6,13 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
+/**
+ * Klasa pokretač poslužitelja zadužena za
+ * 
+ * @author Petar M.
+ *
+ */
+
 public class PokretacPosluzitelja {
 
   public static void main(String[] args) {
