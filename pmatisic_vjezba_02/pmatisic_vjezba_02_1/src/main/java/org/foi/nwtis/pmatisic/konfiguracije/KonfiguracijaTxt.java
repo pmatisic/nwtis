@@ -7,56 +7,36 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class KonfiguracijaTxt.
- */
 public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
 
-  /** The Constant TIP. */
   public static final String TIP = "txt";
 
-  /**
-   * Instantiates a new konfiguracija txt.
-   *
-   * @param nazivDatoteke the naziv datoteke
-   */
   public KonfiguracijaTxt(String nazivDatoteke) {
     super(nazivDatoteke);
   }
 
-  /**
-   * Spremi konfiguraciju.
-   *
-   * @param datoteka the datoteka
-   * @throws NeispravnaKonfiguracija the neispravna konfiguracija
-   */
   @Override
   public void spremiKonfiguraciju(String datoteka) throws NeispravnaKonfiguracija {
     var putanja = Path.of(datoteka);
-    var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
 
+    var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
     if (tip == null || tip.compareTo(TIP) != 0) {
-      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: ");
+      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije tip " + TIP);
     } else if (Files.exists(putanja)
-        && (!Files.isWritable(putanja) || Files.isDirectory(putanja))) {
+        && (Files.isDirectory(putanja) || !Files.isWritable(putanja))) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' je direktorij ili nije moguće spremati!");
+          "Datoteka '" + datoteka + "' je direktorij ili nije moguće pisati.");
     }
 
     try {
-      this.postavke.store(Files.newOutputStream(putanja), "NWTiS matnovak 2023.");
+      this.postavke.store(Files.newOutputStream(putanja), "NWTiS pmatisic 2023.");
     } catch (IOException e) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' nije moguće pisati." + e.getMessage());
+          "Datoteka '" + datoteka + "' nije moguće upisivati." + e.getMessage());
     }
+
   }
 
-  /**
-   * Ucitaj konfiguraciju.
-   *
-   * @throws NeispravnaKonfiguracija the neispravna konfiguracija
-   */
   @Override
   public void ucitajKonfiguraciju() throws NeispravnaKonfiguracija {
     var datoteka = this.nazivDatoteke;
@@ -64,19 +44,20 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
 
     if (tip == null || tip.compareTo(TIP) != 0) {
-      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: ");
+      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije tip " + TIP);
     } else if (Files.exists(putanja)
-        && (!Files.isReadable(putanja) || Files.isDirectory(putanja))) {
+        && (Files.isDirectory(putanja) || !Files.isReadable(putanja))) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' je direktorij ili nije moguće čitati!");
+          "Datoteka '" + datoteka + "' je direktorij ili nije moguće čitat.");
     }
 
     try {
       this.postavke.load(Files.newInputStream(putanja));
     } catch (IOException e) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' nije moguće čitati." + e.getMessage());
+          "Datoteka '" + datoteka + "' nije moguće čitati. " + e.getMessage());
     }
+
   }
 
 }

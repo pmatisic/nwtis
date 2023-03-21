@@ -1,15 +1,13 @@
 package org.foi.nwtis;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class NeispravnaKonfiguracija.
- */
-/*
- * Iznimka za slučaj kada je neispravna konfiguracija s postavmaka
+ * Iznimka za slučaj kada je neispravna konfiguracija s postavkama
  */
 public class NeispravnaKonfiguracija extends Exception {
 
-  /** Serijski id verzije. */
+  /**
+   * Serijski id verzije
+   */
   private static final long serialVersionUID = 8075964301691709607L;
 
   /**
@@ -20,7 +18,7 @@ public class NeispravnaKonfiguracija extends Exception {
   /**
    * Kreira instancu <code>NeispravnaKonfiguracija</code> s pridruženim tekstom poruke.
    *
-   * @param msg the msg
+   * @param msg razloga nastanka iznimke
    */
   public NeispravnaKonfiguracija(String msg) {
     super(msg);

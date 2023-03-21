@@ -1,6 +1,6 @@
-#NWTiS matnovak 2023.
-#Fri Mar 10 02:25:05 CET 2023
+#NWTiS pmatisic 2023.
+#Tue Mar 21 02:44:12 CET 2023
+ime=petar
 korime=pero
-lozinka=123
-nickname=pijetao
-pero=peric
+lozinka=necutireci
+prezime=matisic

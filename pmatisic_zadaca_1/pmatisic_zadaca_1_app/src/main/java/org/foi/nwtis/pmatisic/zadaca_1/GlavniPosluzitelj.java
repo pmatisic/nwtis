@@ -11,47 +11,47 @@ import org.foi.nwtis.pmatisic.zadaca_1.podaci.Uredaj;
 import org.foi.nwtis.pmatisic.zadaca_1.pomocnici.CitanjeKorisnika;
 
 /**
- * Klasa GlavniPoslužitelj koja je zadužena za otvarane veze na određeim mrežnim
- * vratima/portu.
+ * Klasa zadužena za otvaranje veze na određenim mrežnim vratima/portu.
  * 
- * @author Petar M
+ * @author Petar Matišić
+ *
  */
 public class GlavniPosluzitelj {
 
-	protected Konfiguracija konf;
-	protected int brojRadnika;
-	protected int maksVrijemeNeaktivnosti;
-	protected Map<String, Korisnik> korisnici;
-	protected Map<String, Lokacija> lokacije;
-	protected Map<String, Uredaj> uredaji;
-	private int ispis = 0;
+  protected Konfiguracija konf;
+  protected int brojRadnika;
+  protected int maksVrijemeNeaktivnosti;
+  protected Map<String, Korisnik> korisnici;
+  protected Map<String, Lokacija> lokacije;
+  protected Map<String, Uredaj> uredaji;
+  private int ispis = 0;
 
-	public GlavniPosluzitelj(Konfiguracija konf) {
-		this.konf = konf;
-		// this.brojRadnika = Integer.parseInt(konf.dajPostavku("brojRadnika"));
-		// this.maksVrijemeNeaktivnosti =
-		// Integer.parseInt(konf.dajPostavku("maksVrijemeNeaktivnosti"));
-		this.ispis = Integer.parseInt(konf.dajPostavku("ispis"));
-	}
+  public GlavniPosluzitelj(Konfiguracija konf) {
+    this.konf = konf;
+    // this.brojRadnika = Integer.parseInt(konf.dajPostavku("brojRadnika"));
+    // this.maksVrijemeNeaktivnosti =
+    // Integer.parseInt(konf.dajPostavku("maksVrijemeNeaktivnosti"));
+    this.ispis = Integer.parseInt(konf.dajPostavku("ispis"));
+  }
 
-	public void pokreniPosluzitelja() {
-		try {
-			this.ucitajKorisnike();
-		} catch (IOException e) {
-			Logger.getGlobal().log(Level.SEVERE, e.getMessage());
-		}
-		// TODO učitaj ostale podatke (lokacija, uredaji)
-	}
+  public void pokreniPosluzitelja() {
+    try {
+      this.ucitajKorisnike();
+    } catch (IOException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+    // TODO učitaj i sve ostalo
+  }
 
-	private void ucitajKorisnike() throws IOException {
-		var nazivDatoteke = this.konf.dajPostavku("datotekaKorisnika");
-		var citac = new CitanjeKorisnika();
-		this.korisnici = citac.ucitajDatoteku(nazivDatoteke);
-		if (this.ispis == 1) {
-			for (String korime : this.korisnici.keySet()) {
-				var k = this.korisnici.get(korime);
-				Logger.getGlobal().log(Level.INFO, "Korisnik: " + k.prezime() + " " + k.ime());
-			}
-		}
-	}
+  private void ucitajKorisnike() throws IOException {
+    var nazivDatoteke = this.konf.dajPostavku("datotekaKorisnika");
+    var citac = new CitanjeKorisnika();
+    this.korisnici = citac.ucitajDatoteku(nazivDatoteke);
+    if (this.ispis == 1) {
+      for (String korime : this.korisnici.keySet()) {
+        var k = this.korisnici.get(korime);
+        Logger.getGlobal().log(Level.INFO, "Korisnik" + k.prezime() + " " + k.ime());
+      }
+    }
+  }
 }

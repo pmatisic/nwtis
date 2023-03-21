@@ -5,9 +5,7 @@ import org.foi.nwtis.NeispravnaKonfiguracija;
 
 public class Vjezba_02_2 {
 
-  public Vjezba_02_2() {
-    // TODO Auto-generated constructor stub
-  }
+  public Vjezba_02_2() {}
 
   public static void main(String[] args) {
     if (args.length != 0) {
