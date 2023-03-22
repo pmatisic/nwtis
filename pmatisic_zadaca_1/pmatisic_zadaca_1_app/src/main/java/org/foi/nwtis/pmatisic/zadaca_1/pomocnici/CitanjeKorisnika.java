@@ -11,38 +11,38 @@ import java.util.logging.Logger;
 import org.foi.nwtis.pmatisic.zadaca_1.podaci.Korisnik;
 
 public class CitanjeKorisnika {
+	public Map<String, Korisnik> ucitajDatoteku(String nazivDatoteke) throws IOException {
+		var putanja = Path.of(nazivDatoteke);
+		if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
+			throw new IOException("Datoteka '" + nazivDatoteke + "' nije datoteka ili nije moguće otvoriti!");
+		}
 
-  public Map<String, Korisnik> ucitajDatoteku(String nazivDatoteke) throws IOException {
-    var putanja = Path.of(nazivDatoteke);
-    if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
-      throw new IOException("Datoteka '" + nazivDatoteke + "' ne postoji ili nije datoteka.");
-    }
+		var korisnici = new HashMap<String, Korisnik>();
+		var citac = Files.newBufferedReader(putanja, Charset.forName("UTF-8"));
 
-    var korisnici = new HashMap<String, Korisnik>();
-    var citac = Files.newBufferedReader(putanja, Charset.forName("UTF-8"));
+		while (true) {
+			var red = citac.readLine();
+			if (red == null)
+				break;
 
-    while (true) {
-      var red = citac.readLine();
-      if (red == null)
-        break;
+			var atributi = red.split(";");
+			if (!redImaPetAtributa(atributi)) {
+				Logger.getGlobal().log(Level.WARNING, red);
+			} else {
+				boolean administrator = isAdministrator(atributi[4]);
+				var korisnik = new Korisnik(atributi[0], atributi[1], atributi[2], atributi[3], administrator);
+				korisnici.put(atributi[2], korisnik);
+			}
+		}
 
-      var kolone = red.split(";");
-      if (!redImaPetStupaca(kolone)) {
-        Logger.getGlobal().log(Level.WARNING, red);
-      } else {
-        var admin = isAdministrator(kolone[4]);
-        var korisnik = new Korisnik(kolone[0], kolone[1], kolone[2], kolone[3], admin);
-        korisnici.put(kolone[2], korisnik);
-      }
-    }
-    return korisnici;
-  }
+		return korisnici;
+	}
 
-  private boolean isAdministrator(String kolona) {
-    return kolona.compareTo("1") == 0 ? true : false;
-  }
+	private boolean isAdministrator(String atribut) {
+		return atribut.compareTo("1") == 0 ? true : false;
+	}
 
-  private boolean redImaPetStupaca(String[] kolone) {
-    return kolone.length == 5;
-  }
+	private boolean redImaPetAtributa(String[] atribut) {
+		return atribut.length == 5;
+	}
 }
