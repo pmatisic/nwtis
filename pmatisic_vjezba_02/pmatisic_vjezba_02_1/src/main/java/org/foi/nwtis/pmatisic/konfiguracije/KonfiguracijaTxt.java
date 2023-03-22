@@ -48,7 +48,7 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
     } else if (Files.exists(putanja)
         && (Files.isDirectory(putanja) || !Files.isReadable(putanja))) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' je direktorij ili nije moguće čitat.");
+          "Datoteka '" + datoteka + "' je direktorij ili nije moguće čitati.");
     }
 
     try {
