@@ -38,7 +38,8 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
       Yaml yaml = new Yaml();
       FileWriter fw = new FileWriter(datoteka);
       BufferedWriter bw = new BufferedWriter(fw);
-      yaml.dump(this.postavke, bw);
+      String yamlTip = yaml.dumpAsMap(this.postavke);
+      bw.write(yamlTip);
       bw.close();
       fw.close();
     } catch (IOException e) {
@@ -66,7 +67,7 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
       Yaml yaml = new Yaml();
       FileReader fr = new FileReader(datoteka);
       BufferedReader br = new BufferedReader(fr);
-      this.postavke = (Properties) yaml.load(br);
+      this.postavke = yaml.loadAs(br, Properties.class);
       br.close();
       fr.close();
     } catch (IOException e) {
