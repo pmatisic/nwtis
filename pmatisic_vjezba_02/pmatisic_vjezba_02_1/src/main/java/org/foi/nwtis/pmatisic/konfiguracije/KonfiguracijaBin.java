@@ -12,13 +12,26 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
+/**
+ * Podklasa KonfiguracijaApstraktna i koristi serijalizaciju za spremanje i čitanje podataka iz
+ * datoteke
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ *
+ */
 public class KonfiguracijaBin extends KonfiguracijaApstraktna {
+
   public static final String TIP = "bin";
 
   public KonfiguracijaBin(String nazivDatoteke) {
     super(nazivDatoteke);
   }
 
+  /**
+   * Metoda za spremanje konfiguracije. Ako je neispravan naziv datoteke izbacuje se iznimka
+   * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
+   * NeispravnaKonfiguracija.
+   */
   @Override
   public void spremiKonfiguraciju(String datoteka) throws NeispravnaKonfiguracija {
     var putanja = Path.of(datoteka);
@@ -33,6 +46,10 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
     }
 
     try {
+      /**
+       * Referenca:
+       * https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectOutputStream.html
+       */
       FileOutputStream fis = new FileOutputStream(datoteka);
       ObjectOutputStream ois = new ObjectOutputStream(fis);
       ois.writeObject(this.postavke);
@@ -44,6 +61,11 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
 
   }
 
+  /**
+   * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
+   * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
+   * iznimka NeispravnaKonfiguracija.
+   */
   @Override
   public void ucitajKonfiguraciju() throws NeispravnaKonfiguracija {
     var datoteka = this.nazivDatoteke;
@@ -59,6 +81,10 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
     }
 
     try {
+      /**
+       * Referenca:
+       * https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectInputStream.html
+       */
       FileInputStream fis = new FileInputStream(datoteka);
       ObjectInputStream ois = new ObjectInputStream(fis);
       this.postavke = (Properties) ois.readObject();
