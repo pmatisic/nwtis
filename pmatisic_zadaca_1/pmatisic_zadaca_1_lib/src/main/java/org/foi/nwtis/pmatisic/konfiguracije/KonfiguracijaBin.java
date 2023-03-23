@@ -3,7 +3,6 @@ package org.foi.nwtis.pmatisic.konfiguracije;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class KonfiguracijaBin.
  */
@@ -30,7 +29,6 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
    */
   @Override
   public void spremiKonfiguraciju(String datoteka) throws NeispravnaKonfiguracija {
-    // TODO Auto-generated method stub
 
   }
 
@@ -41,7 +39,6 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
    */
   @Override
   public void ucitajKonfiguraciju() throws NeispravnaKonfiguracija {
-    // TODO Auto-generated method stub
 
   }
 

@@ -13,61 +13,60 @@ import org.foi.nwtis.Konfiguracija;
 
 public class MrezniRadnik extends Thread {
 
-	protected Socket mreznaUticnica;
-	protected Konfiguracija konfig;
-	private int ispis = 0;
+  protected Socket mreznaUticnica;
+  protected Konfiguracija konfig;
+  private int ispis = 0;
 
-	public MrezniRadnik(Socket mreznaUticnica, Konfiguracija konfig) {
-		super();
-		this.mreznaUticnica = mreznaUticnica;
-		this.konfig = konfig;
-		this.ispis = Integer.parseInt(konfig.dajPostavku("ispis"));
-	}
+  public MrezniRadnik(Socket mreznaUticnica, Konfiguracija konfig) {
+    super();
+    this.mreznaUticnica = mreznaUticnica;
+    this.konfig = konfig;
+    this.ispis = Integer.parseInt(konfig.dajPostavku("ispis"));
+  }
 
-	@Override
-	public synchronized void start() {
-		// TU PRIJE IDE VAŠE
-		super.start();
-	}
+  @Override
+  public synchronized void start() {
+    // TU PRIJE IDE VAŠE
+    super.start();
+  }
 
-	@Override
-	public void run() {
-		try {
-			var citac = new BufferedReader(
-					new InputStreamReader(this.mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
-			var pisac = new BufferedWriter(
-					new OutputStreamWriter(this.mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
+  @Override
+  public void run() {
+    try {
+      var citac = new BufferedReader(
+          new InputStreamReader(this.mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
+      var pisac = new BufferedWriter(
+          new OutputStreamWriter(this.mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
 
-			var poruka = new StringBuilder();
-			while (true) {
-				var red = citac.readLine();
-				if (red == null)
-					break;
-				if (this.ispis == 1)
-					Logger.getGlobal().log(Level.INFO, red);
-				poruka.append(red);
-			}
-			this.mreznaUticnica.shutdownInput();
-			String odgovor = this.obradiZahtjev(poruka.toString());
-			Logger.getGlobal().log(Level.INFO, "Odgovor: " + odgovor);
-			pisac.write(odgovor);
-			pisac.flush();
-			this.mreznaUticnica.shutdownOutput();
-			this.mreznaUticnica.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+      var poruka = new StringBuilder();
+      while (true) {
+        var red = citac.readLine();
+        if (red == null)
+          break;
+        if (this.ispis == 1)
+          Logger.getGlobal().log(Level.INFO, red);
+        poruka.append(red);
+      }
+      this.mreznaUticnica.shutdownInput();
+      String odgovor = this.obradiZahtjev(poruka.toString());
+      Logger.getGlobal().log(Level.INFO, "Odgovor: " + odgovor);
+      pisac.write(odgovor);
+      pisac.flush();
+      this.mreznaUticnica.shutdownOutput();
+      this.mreznaUticnica.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
-	private String obradiZahtjev(String string) {
-		return "OK";
-	}
+  private String obradiZahtjev(String string) {
+    return "OK";
+  }
 
-	@Override
-	public void interrupt() {
-		// TU PRIJE IDE VAŠE
-		super.interrupt();
-	}
+  @Override
+  public void interrupt() {
+    // TU PRIJE IDE VAŠE
+    super.interrupt();
+  }
 
 }

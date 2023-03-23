@@ -2,7 +2,6 @@ package org.foi.nwtis;
 
 import java.util.Properties;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface Konfiguracija.
  */

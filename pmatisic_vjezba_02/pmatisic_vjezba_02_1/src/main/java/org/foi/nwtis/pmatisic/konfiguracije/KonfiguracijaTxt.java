@@ -29,21 +29,21 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
   @Override
   public void spremiKonfiguraciju(String datoteka) throws NeispravnaKonfiguracija {
     var putanja = Path.of(datoteka);
-
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
+
     if (tip == null || tip.compareTo(TIP) != 0) {
-      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije tip " + TIP);
+      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: " + TIP);
     } else if (Files.exists(putanja)
         && (Files.isDirectory(putanja) || !Files.isWritable(putanja))) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' je direktorij ili nije moguće pisati.");
+          "Datoteka '" + datoteka + "' je direktorij ili nije moguće spremati.");
     }
 
     try {
       this.postavke.store(Files.newOutputStream(putanja), "NWTiS pmatisic 2023.");
     } catch (IOException e) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' nije moguće upisivati." + e.getMessage());
+          "Datoteka '" + datoteka + "' nije moguće pisati. " + e.getMessage());
     }
 
   }
@@ -60,7 +60,7 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
 
     if (tip == null || tip.compareTo(TIP) != 0) {
-      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije tip " + TIP);
+      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: " + TIP);
     } else if (Files.exists(putanja)
         && (Files.isDirectory(putanja) || !Files.isReadable(putanja))) {
       throw new NeispravnaKonfiguracija(

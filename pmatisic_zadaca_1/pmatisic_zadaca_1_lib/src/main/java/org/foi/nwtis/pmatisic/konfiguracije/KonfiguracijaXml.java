@@ -3,12 +3,10 @@ package org.foi.nwtis.pmatisic.konfiguracije;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class KonfiguracijaXml.
  */

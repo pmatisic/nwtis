@@ -1,6 +1,5 @@
 package org.foi.nwtis;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class NeispravnaKonfiguracija.
  */

@@ -7,7 +7,6 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class KonfiguracijaTxt.
  */

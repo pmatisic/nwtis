@@ -7,7 +7,6 @@ import org.foi.nwtis.pmatisic.konfiguracije.KonfiguracijaTxt;
 import org.foi.nwtis.pmatisic.konfiguracije.KonfiguracijaXml;
 import org.foi.nwtis.pmatisic.konfiguracije.KonfiguracijaYaml;
 
-// TODO: Auto-generated Javadoc
 /**
  * Apstraktna klasa za rad s postavkama iz konfiguracijske datoteke Implementira dio mentoda iz
  * sučelja Konfiguracija.

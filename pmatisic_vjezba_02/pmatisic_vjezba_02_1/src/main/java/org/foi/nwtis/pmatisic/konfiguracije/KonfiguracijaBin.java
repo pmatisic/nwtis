@@ -31,32 +31,32 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
    * Metoda za spremanje konfiguracije. Ako je neispravan naziv datoteke izbacuje se iznimka
    * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
    * NeispravnaKonfiguracija.
+   * 
+   * Referenca:
+   * 
+   * @see https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectOutputStream.html
    */
   @Override
   public void spremiKonfiguraciju(String datoteka) throws NeispravnaKonfiguracija {
     var putanja = Path.of(datoteka);
-
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
+
     if (tip == null || tip.compareTo(TIP) != 0) {
-      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije tip " + TIP);
+      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: " + TIP);
     } else if (Files.exists(putanja)
         && (Files.isDirectory(putanja) || !Files.isWritable(putanja))) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' je direktorij ili nije moguće pisati.");
+          "Datoteka '" + datoteka + "' je direktorij ili nije moguće spremati.");
     }
 
     try {
-      /**
-       * Referenca:
-       * https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectOutputStream.html
-       */
       FileOutputStream fis = new FileOutputStream(datoteka);
       ObjectOutputStream ois = new ObjectOutputStream(fis);
       ois.writeObject(this.postavke);
       ois.close();
     } catch (IOException e) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' nije moguće upisivati." + e.getMessage());
+          "Datoteka '" + datoteka + "' nije moguće pisati. " + e.getMessage());
     }
 
   }
@@ -65,6 +65,10 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
    * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
    * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
    * iznimka NeispravnaKonfiguracija.
+   * 
+   * Referenca:
+   * 
+   * @see https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectInputStream.html
    */
   @Override
   public void ucitajKonfiguraciju() throws NeispravnaKonfiguracija {
@@ -73,7 +77,7 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
 
     if (tip == null || tip.compareTo(TIP) != 0) {
-      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije tip " + TIP);
+      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: " + TIP);
     } else if (Files.exists(putanja)
         && (Files.isDirectory(putanja) || !Files.isReadable(putanja))) {
       throw new NeispravnaKonfiguracija(
@@ -81,10 +85,6 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
     }
 
     try {
-      /**
-       * Referenca:
-       * https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectInputStream.html
-       */
       FileInputStream fis = new FileInputStream(datoteka);
       ObjectInputStream ois = new ObjectInputStream(fis);
       this.postavke = (Properties) ois.readObject();
