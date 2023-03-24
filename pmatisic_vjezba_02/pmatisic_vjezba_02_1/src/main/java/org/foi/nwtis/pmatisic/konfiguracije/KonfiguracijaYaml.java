@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
@@ -40,7 +39,7 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
    * 
    * @see https://www.geeksforgeeks.org/linkedhashmap-class-in-java/
    * @see https://stackoverflow.com/questions/12310914/how-to-iterate-through-linkedhashmap-with-lists-as-values
-   * @see https://javadoc.io/doc/org.snakeyaml/snakeyaml-engine/latest/index.html
+   * @see https://javadoc.io/static/com.hazelcast.jet/hazelcast-jet/3.2/com/hazelcast/org/snakeyaml/engine/v1/api/DumpSettingsBuilder.html
    */
   @Override
   public void spremiKonfiguraciju(String datoteka) throws NeispravnaKonfiguracija {
@@ -56,7 +55,7 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
     }
 
     try {
-      Map<String, String> podaci = new LinkedHashMap<>();
+      LinkedHashMap<String, String> podaci = new LinkedHashMap<>();
 
       for (String key : this.postavke.stringPropertyNames()) {
         String value = this.postavke.getProperty(key);
@@ -90,8 +89,7 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
    * Reference:
    * 
    * @see https://www.geeksforgeeks.org/linkedhashmap-class-in-java/
-   * @see https://stackoverflow.com/questions/12310914/how-to-iterate-through-linkedhashmap-with-lists-as-values
-   * @see https://javadoc.io/doc/org.snakeyaml/snakeyaml-engine/latest/index.html
+   * @see https://www.tabnine.com/code/java/methods/java.nio.file.Files/newInputStream
    */
   @Override
   public void ucitajKonfiguraciju() throws NeispravnaKonfiguracija {
@@ -111,8 +109,9 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
       LoadSettings settings = LoadSettings.builder().build();
       Load load = new Load(settings);
 
-      Map<String, String> podaci =
-          (Map<String, String>) load.loadFromInputStream(Files.newInputStream(putanja));
+      @SuppressWarnings("unchecked")
+      LinkedHashMap<String, String> podaci =
+          (LinkedHashMap<String, String>) load.loadFromInputStream(Files.newInputStream(putanja));
 
       this.postavke.putAll(podaci);
 
