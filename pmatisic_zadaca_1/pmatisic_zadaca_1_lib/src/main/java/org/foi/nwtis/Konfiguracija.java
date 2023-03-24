@@ -3,15 +3,12 @@ package org.foi.nwtis;
 import java.util.Properties;
 
 /**
- * The Interface Konfiguracija.
- */
-/*
- * Sučelje za rad s postavkama iz konfiguracijske datoteke
+ * Sučelje za rad s postavkama iz konfiguracijske datoteke.
  */
 public interface Konfiguracija {
 
   /**
-   * Učitava konfiguraciju pod nazivom koji .
+   * Učitava konfiguraciju.
    *
    * @throws NeispravnaKonfiguracija ako se javi problem kod spremanja datoteke konfiguracije
    */

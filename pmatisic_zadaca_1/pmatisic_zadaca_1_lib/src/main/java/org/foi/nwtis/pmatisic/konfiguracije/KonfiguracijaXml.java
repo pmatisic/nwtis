@@ -8,27 +8,23 @@ import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
 /**
- * The Class KonfiguracijaXml.
+ * Podklasa KonfiguracijaApstraktna i koristi XML format
+ * 
+ * @author NWTiS_4
+ *
  */
 public class KonfiguracijaXml extends KonfiguracijaApstraktna {
 
-  /** The Constant TIP. */
   public static final String TIP = "xml";
 
-  /**
-   * Instantiates a new konfiguracija xml.
-   *
-   * @param nazivDatoteke the naziv datoteke
-   */
   public KonfiguracijaXml(String nazivDatoteke) {
     super(nazivDatoteke);
   }
 
   /**
-   * Spremi konfiguraciju.
-   *
-   * @param datoteka the datoteka
-   * @throws NeispravnaKonfiguracija the neispravna konfiguracija
+   * Metoda za spremanje konfiguracije. Ako je neispravan naziv datoteke izbacuje se iznimka
+   * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
+   * NeispravnaKonfiguracija.
    */
   @Override
   public void spremiKonfiguraciju(String datoteka) throws NeispravnaKonfiguracija {
@@ -36,25 +32,26 @@ public class KonfiguracijaXml extends KonfiguracijaApstraktna {
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
 
     if (tip == null || tip.compareTo(TIP) != 0) {
-      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: ");
+      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: " + TIP);
     } else if (Files.exists(putanja)
-        && (!Files.isWritable(putanja) || Files.isDirectory(putanja))) {
+        && (Files.isDirectory(putanja) || !Files.isWritable(putanja))) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' je direktorij ili nije moguće spremati!");
+          "Datoteka '" + datoteka + "' je direktorij ili nije moguće spremati.");
     }
 
     try {
-      this.postavke.storeToXML(Files.newOutputStream(putanja), "NWTiS matnovak 2023.");
+      this.postavke.storeToXML(Files.newOutputStream(putanja), "NWTiS pmatisic 2023.");
     } catch (IOException e) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' nije moguće pisati." + e.getMessage());
+          "Datoteka '" + datoteka + "' nije moguće pisati. " + e.getMessage());
     }
+
   }
 
   /**
-   * Ucitaj konfiguraciju.
-   *
-   * @throws NeispravnaKonfiguracija the neispravna konfiguracija
+   * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
+   * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
+   * iznimka NeispravnaKonfiguracija.
    */
   @Override
   public void ucitajKonfiguraciju() throws NeispravnaKonfiguracija {
@@ -63,19 +60,20 @@ public class KonfiguracijaXml extends KonfiguracijaApstraktna {
     var tip = Konfiguracija.dajTipKonfiguracije(datoteka);
 
     if (tip == null || tip.compareTo(TIP) != 0) {
-      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: ");
+      throw new NeispravnaKonfiguracija("Datoteka '" + datoteka + "' nije ispravnog tipa: " + TIP);
     } else if (Files.exists(putanja)
-        && (!Files.isReadable(putanja) || Files.isDirectory(putanja))) {
+        && (Files.isDirectory(putanja) || !Files.isReadable(putanja))) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' je direktorij ili nije moguće čitati!");
+          "Datoteka '" + datoteka + "' je direktorij ili nije moguće čitati.");
     }
 
     try {
       this.postavke.loadFromXML(Files.newInputStream(putanja));
     } catch (IOException e) {
       throw new NeispravnaKonfiguracija(
-          "Datoteka '" + datoteka + "' nije moguće čitati." + e.getMessage());
+          "Datoteka '" + datoteka + "' nije moguće čitati. " + e.getMessage());
     }
+
   }
 
 }
