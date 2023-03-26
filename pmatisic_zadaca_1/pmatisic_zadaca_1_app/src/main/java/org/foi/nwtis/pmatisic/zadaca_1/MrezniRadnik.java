@@ -21,12 +21,12 @@ public class MrezniRadnik extends Thread {
     super();
     this.mreznaUticnica = mreznaUticnica;
     this.konfig = konfig;
-    this.ispis = Integer.parseInt(konfig.dajPostavku("ispis"));
+    this.ispis = Integer.parseInt(this.konfig.dajPostavku("ispis"));
   }
 
   @Override
   public synchronized void start() {
-    // TU PRIJE IDE VAŠE
+    // OVDJE RADI SVOJE
     super.start();
   }
 
@@ -43,18 +43,21 @@ public class MrezniRadnik extends Thread {
         var red = citac.readLine();
         if (red == null)
           break;
-        if (this.ispis == 1)
+
+        if (this.ispis == 1) {
           Logger.getGlobal().log(Level.INFO, red);
+        }
+
         poruka.append(red);
       }
       this.mreznaUticnica.shutdownInput();
       String odgovor = this.obradiZahtjev(poruka.toString());
-      Logger.getGlobal().log(Level.INFO, "Odgovor: " + odgovor);
       pisac.write(odgovor);
       pisac.flush();
       this.mreznaUticnica.shutdownOutput();
       this.mreznaUticnica.close();
     } catch (IOException e) {
+      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -65,8 +68,9 @@ public class MrezniRadnik extends Thread {
 
   @Override
   public void interrupt() {
-    // TU PRIJE IDE VAŠE
+    // OVDJE RADI SVOJE
     super.interrupt();
   }
+
 
 }

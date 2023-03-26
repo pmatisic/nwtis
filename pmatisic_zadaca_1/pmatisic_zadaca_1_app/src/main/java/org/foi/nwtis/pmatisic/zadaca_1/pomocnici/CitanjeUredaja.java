@@ -8,19 +8,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.foi.nwtis.pmatisic.zadaca_1.podaci.Korisnik;
+import org.foi.nwtis.pmatisic.zadaca_1.podaci.Uredaj;
+import org.foi.nwtis.pmatisic.zadaca_1.podaci.UredajVrsta;
 
 // TODO napravit dokumentaciju
 
-public class CitanjeKorisnika {
+public class CitanjeUredaja {
 
-  public Map<String, Korisnik> ucitajDatoteku(String nazivDatoteke) throws IOException {
+  public Map<String, Uredaj> ucitajDatoteku(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
     if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
       throw new IOException("Datoteka '" + nazivDatoteke + "' ne postoji ili nije datoteka!");
     }
 
-    var korisnici = new HashMap<String, Korisnik>();
+    var uredaji = new HashMap<String, Uredaj>();
     var citac = Files.newBufferedReader(putanja, Charset.forName("UTF-8"));
 
     while (true) {
@@ -29,24 +30,20 @@ public class CitanjeKorisnika {
         break;
 
       var kolone = red.split(";");
-      if (!redImaPetKolona(kolone)) {
+      if (!redImaCetiriKolone(kolone)) {
         Logger.getGlobal().log(Level.WARNING, red);
       } else {
-        var admin = jestAdministrator(kolone[4]);
-        var k = new Korisnik(kolone[0], kolone[1], kolone[2], kolone[3], admin);
-        korisnici.put(kolone[2], k);
+        var vrsta = UredajVrsta.odBroja(Integer.parseInt(kolone[3]));
+        var u = new Uredaj(kolone[0], kolone[1], kolone[2], vrsta);
+        uredaji.put(kolone[1], u);
       }
     }
 
-    return korisnici;
+    return uredaji;
   }
 
-  private boolean jestAdministrator(String kolona) {
-    return kolona.compareTo("1") == 0 ? true : false;
-  }
-
-  private boolean redImaPetKolona(String[] kolone) {
-    return kolone.length == 5;
+  private boolean redImaCetiriKolone(String[] kolone) {
+    return kolone.length == 4;
   }
 
 }

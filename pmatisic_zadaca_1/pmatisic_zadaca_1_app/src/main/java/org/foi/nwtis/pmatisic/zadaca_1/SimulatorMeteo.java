@@ -15,8 +15,8 @@ public class SimulatorMeteo {
 
   public static void main(String[] args) {
     var sm = new SimulatorMeteo();
-    if (!SimulatorMeteo.provjeriArgumente(args)) {
-      Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
+    if (!sm.provjeriArgumente(args)) {
+      Logger.getLogger(SimulatorMeteo.class.getName()).log(Level.SEVERE,
           "Nije upisan naziv datoteke!");
       return;
     }
@@ -25,86 +25,89 @@ public class SimulatorMeteo {
       var konf = sm.ucitajPostavke(args[0]);
       sm.pokreniSimulator(konf);
     } catch (NeispravnaKonfiguracija e) {
-      Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE, e.getMessage());
+      Logger.getLogger(SimulatorMeteo.class.getName()).log(Level.SEVERE,
+          "Pogreška kod učitavanja postavki iz datoteke!" + e.getMessage());
     } catch (IOException e) {
-      Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
-          "Greška učitavanja meteo podatka" + e.getMessage());
+      Logger.getLogger(SimulatorMeteo.class.getName()).log(Level.SEVERE,
+          "Pogreška kod učitavanja meteo podatka iz datoteke!" + e.getMessage());
     }
   }
 
-  private static boolean provjeriArgumente(String[] args) {
+  private boolean provjeriArgumente(String[] args) {
     return args.length == 1 ? true : false;
+  }
+
+  Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
+    return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
   }
 
   private void pokreniSimulator(Konfiguracija konf) throws IOException {
     var nazivDatoteke = konf.dajPostavku("datotekaMeteo");
     var putanja = Path.of(nazivDatoteke);
     if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
-      throw new IOException(
-          "Datoteka '" + nazivDatoteke + "' nije datoteka ili nije moguće otvoriti!");
+      throw new IOException("Datoteka '" + nazivDatoteke + "' ne postoji ili nije datoteka!");
     }
     var citac = Files.newBufferedReader(putanja, Charset.forName("UTF-8"));
 
+    int brojac = 0;
     MeteoSimulacija prethodniMeteo = null;
-    int rbroj = 0;
     while (true) {
       var red = citac.readLine();
       if (red == null)
         break;
 
-      rbroj++;
-      if (isZaglavlje(rbroj))
+      brojac++;
+      if (jestZaglavlje(brojac))
         continue;
 
       var kolone = red.split(";");
-      if (!redImaPetAtributa(kolone)) {
+      if (!redImaPetKolona(kolone)) {
         Logger.getGlobal().log(Level.WARNING, red);
       } else {
         var vazeciMeteo = new MeteoSimulacija(kolone[0], kolone[1], Float.parseFloat(kolone[2]),
             Float.parseFloat(kolone[3]), Float.parseFloat(kolone[4]));
-        if (!isPrviPodatak(rbroj)) {
-          this.izracunajSpavanje(prethodniMeteo, vazeciMeteo);
-        }
 
         this.posaljiMeteoPodatak(vazeciMeteo);
+        if (!jestPrviMeteoPodatak(brojac)) {
+          this.izracunajObradiSpavanje(prethodniMeteo, vazeciMeteo);
+        }
         prethodniMeteo = vazeciMeteo;
       }
     }
   }
 
-  // dobra metoda za testiranje
-  private void izracunajSpavanje(MeteoSimulacija prethodniMeteo, MeteoSimulacija vazeciMeteo) {
-    // String prvi = prethodniMeteo.vrijeme();
-    // String drugi = vazeciMeteo.vrijeme();
-    int kraj = 10;// drugi u milisekundama
-    int pocetak = 5;// prvi u milisekdunama
-    int spavanje = kraj - pocetak;
-    try {
-      Thread.sleep(spavanje);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+  private boolean jestPrviMeteoPodatak(int brojac) {
+    return brojac == 2;
   }
 
-  private Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
-    return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
-  }
-
-  private boolean isPrviPodatak(int rbroj) {
-    return rbroj == 2;
-  }
-
-  private boolean redImaPetAtributa(String[] atributi) {
-    return atributi.length == 5;
-  }
-
-  private boolean isZaglavlje(int rbroj) {
-    return rbroj == 1;
+  private boolean redImaPetKolona(String[] kolone) {
+    return kolone.length == 5;
   }
 
   private void posaljiMeteoPodatak(MeteoSimulacija vazeciMeteo) {
-    // ovdje napraviti isto kao što smo radili u GlavnomKlijentu slali podatke na
-    // GlavniPosluzitelj
+    // TODO ovdje isto kao i kod glavnogKlijenta šalješ podatke na
+    // GlavniPoslužitelj
+  }
+
+  private boolean jestZaglavlje(int brojac) {
+    return brojac == 1;
+  }
+
+  private void izracunajObradiSpavanje(MeteoSimulacija prethodniMeteo,
+      MeteoSimulacija vazeciMeteo) {
+    String prvi = prethodniMeteo.vrijeme();
+    String drugi = vazeciMeteo.vrijeme();
+    // TODO pretvori string u milisekunde
+    int pocetak = 10;
+    int kraj = 20;
+    int spavaj = kraj - pocetak;
+    // TODO korigiraj spavanje temeljem podatka trajanjeSekunde
+    try {
+      Thread.sleep(spavaj);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
 }

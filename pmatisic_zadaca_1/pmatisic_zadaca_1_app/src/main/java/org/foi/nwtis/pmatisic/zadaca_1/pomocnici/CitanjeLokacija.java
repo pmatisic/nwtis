@@ -8,19 +8,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.foi.nwtis.pmatisic.zadaca_1.podaci.Korisnik;
+import org.foi.nwtis.pmatisic.zadaca_1.podaci.Lokacija;
 
 // TODO napravit dokumentaciju
 
-public class CitanjeKorisnika {
+public class CitanjeLokacija {
 
-  public Map<String, Korisnik> ucitajDatoteku(String nazivDatoteke) throws IOException {
+  public Map<String, Lokacija> ucitajDatoteku(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
     if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
       throw new IOException("Datoteka '" + nazivDatoteke + "' ne postoji ili nije datoteka!");
     }
 
-    var korisnici = new HashMap<String, Korisnik>();
+    var lokacije = new HashMap<String, Lokacija>();
     var citac = Files.newBufferedReader(putanja, Charset.forName("UTF-8"));
 
     while (true) {
@@ -29,24 +29,19 @@ public class CitanjeKorisnika {
         break;
 
       var kolone = red.split(";");
-      if (!redImaPetKolona(kolone)) {
+      if (!redImaCetiriKolone(kolone)) {
         Logger.getGlobal().log(Level.WARNING, red);
       } else {
-        var admin = jestAdministrator(kolone[4]);
-        var k = new Korisnik(kolone[0], kolone[1], kolone[2], kolone[3], admin);
-        korisnici.put(kolone[2], k);
+        var l = new Lokacija(kolone[0], kolone[1], kolone[2], kolone[3]);
+        lokacije.put(kolone[1], l);
       }
     }
 
-    return korisnici;
+    return lokacije;
   }
 
-  private boolean jestAdministrator(String kolona) {
-    return kolona.compareTo("1") == 0 ? true : false;
-  }
-
-  private boolean redImaPetKolona(String[] kolone) {
-    return kolone.length == 5;
+  private boolean redImaCetiriKolone(String[] kolone) {
+    return kolone.length == 4;
   }
 
 }

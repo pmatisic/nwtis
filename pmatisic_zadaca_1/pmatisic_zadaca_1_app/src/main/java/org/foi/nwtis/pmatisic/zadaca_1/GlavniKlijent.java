@@ -15,13 +15,11 @@ public class GlavniKlijent {
   public static void main(String[] args) {
     var gk = new GlavniKlijent();
     if (!gk.provjeriArgumente(args)) {
-      Logger.getGlobal().log(Level.SEVERE, "Nisu ispravni ulazni argumenti!");
+      Logger.getGlobal().log(Level.SEVERE, "Argumenti nisu ispravni!");
       return;
     }
 
-    String posluizelj = args[0];
-    int mreznaVrata = Integer.parseInt(args[1]);
-    gk.spojiSeNaPosluzitelj(posluizelj, mreznaVrata);
+    gk.spojiSeNaPosluzitelj(args[0], Integer.parseInt(args[1]));
   }
 
   private boolean provjeriArgumente(String[] args) {
@@ -30,7 +28,7 @@ public class GlavniKlijent {
 
   private void spojiSeNaPosluzitelj(String adresa, int mreznaVrata) {
     try {
-      var mreznaUticnica = new Socket(adresa, mreznaVrata);
+      Socket mreznaUticnica = new Socket(adresa, mreznaVrata);
       var citac = new BufferedReader(
           new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
       var pisac = new BufferedWriter(
@@ -48,15 +46,15 @@ public class GlavniKlijent {
           break;
 
         Logger.getGlobal().log(Level.INFO, red);
-        poruka.append("RED:" + red);
+        poruka.append(red);
       }
-      Logger.getGlobal().log(Level.INFO, "Odgovor: " + poruka);
+      Logger.getGlobal().log(Level.INFO, poruka.toString());
       mreznaUticnica.shutdownInput();
       mreznaUticnica.close();
     } catch (IOException e) {
+      // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
   }
 
 }
