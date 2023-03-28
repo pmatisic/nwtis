@@ -53,17 +53,22 @@ public class GlavniKlijent {
     }
   }
 
-  private String obradiKomandu(String group) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  private static String obradiKomandu(Matcher m) {
+    String kljucevi[] = new String[] {"METEO", "ALARM", "UDALJENOST", "SPREMI", "MAKSTEMP",
+        "MAKSVLAGA", "MAKSTLAK", "KRAJ"};
 
-  private static String napraviKomandu(Matcher podudarac) {
-    String kljucevi[] = new String[] {"METEO", "ALARM", "UDALJENOST", "UDALJENOSTSPREMI", "MAKSTEMP", "MAKSVLAGA", "MAKSTLAK", "KRAJ"};
-    
     StringBuilder sb = new StringBuilder();
-    sb.append("KORISNIK ").append(matcher)
-    
+    sb.append("KORISNIK ").append(m.group("KORISNIK")).append(" LOZINKA").append(m.group("LOZINKA"))
+        .append(" ");
+
+    for (var kljuc : kljucevi) {
+      if (m.group(kljuc) != null) {
+        if (kljuc == "SPREMI") {
+          sb.append(kljuc.substring(0, 10) + " " + kljuc.substring(10));
+        }
+      }
+    }
+
   }
 
   private void spojiSeNaPosluzitelj(String adresa, int mreznaVrata, String komanda) {
@@ -86,6 +91,7 @@ public class GlavniKlijent {
           break;
 
         // Logger.getGlobal().log(Level.INFO, red);
+
         poruka.append(red);
       }
       Logger.getGlobal().log(Level.INFO, poruka.toString());
