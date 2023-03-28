@@ -14,12 +14,6 @@ import org.foi.nwtis.pmatisic.zadaca_1.pomocnici.CitanjeKorisnika;
 import org.foi.nwtis.pmatisic.zadaca_1.pomocnici.CitanjeLokacija;
 import org.foi.nwtis.pmatisic.zadaca_1.pomocnici.CitanjeUredaja;
 
-/**
- * Klasa zadužena za otvaranje veze na određenim mrežnim vratima/portu.
- * 
- * @author Matija Novak
- *
- */
 public class GlavniPosluzitelj {
 
   protected Konfiguracija konf;
@@ -35,9 +29,8 @@ public class GlavniPosluzitelj {
 
   public GlavniPosluzitelj(Konfiguracija konf) {
     this.konf = konf;
-    // this.brojRadnika = Integer.parseInt(konf.dajPostavku("brojRadnika"));
-    // this.maksVrijemeNeaktivnosti =
-    // Integer.parseInt(konf.dajPostavku("maksVrijemeNeaktivnosti"));
+    this.brojRadnika = Integer.parseInt(konf.dajPostavku("brojRadnika"));
+    this.maksVrijemeNeaktivnosti = Integer.parseInt(konf.dajPostavku("maksVrijemeNeaktivnosti"));
     this.ispis = Integer.parseInt(konf.dajPostavku("ispis"));
     this.mreznaVrata = Integer.parseInt(konf.dajPostavku("mreznaVrata"));
     this.brojCekaca = Integer.parseInt(konf.dajPostavku("brojCekaca"));
@@ -52,7 +45,6 @@ public class GlavniPosluzitelj {
     } catch (IOException e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
-    // TODO učitaj i sve ostalo
   }
 
   public void ucitajKorisnike() throws IOException {
@@ -92,7 +84,6 @@ public class GlavniPosluzitelj {
   }
 
   public void pripremiPosluzitelja() {
-
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       while (!this.kraj) {
         Socket veza = ss.accept();
@@ -100,9 +91,8 @@ public class GlavniPosluzitelj {
         mr.start();
       }
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
   }
+
 }

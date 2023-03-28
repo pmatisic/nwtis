@@ -105,7 +105,6 @@ public class SimulatorMeteo {
     try {
       Thread.sleep(spavaj);
     } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }

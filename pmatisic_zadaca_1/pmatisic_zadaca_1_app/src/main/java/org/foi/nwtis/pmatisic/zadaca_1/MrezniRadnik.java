@@ -57,7 +57,6 @@ public class MrezniRadnik extends Thread {
       this.mreznaUticnica.shutdownOutput();
       this.mreznaUticnica.close();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -71,6 +70,5 @@ public class MrezniRadnik extends Thread {
     // OVDJE RADI SVOJE
     super.interrupt();
   }
-
 
 }
