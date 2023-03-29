@@ -13,8 +13,8 @@ public class PokretacPosluzitelja {
   public static void main(String[] args) {
     var pokretac = new PokretacPosluzitelja();
     if (!pokretac.provjeriArgumente(args)) {
-      Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
-          "Nije upisan naziv datoteke!");
+      // Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
+      // "Nije upisan naziv datoteke!");
       return;
     }
 
