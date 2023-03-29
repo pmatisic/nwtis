@@ -50,6 +50,7 @@ public class MrezniRadnik extends Thread {
 
         poruka.append(red);
       }
+      System.out.println(poruka);
       this.mreznaUticnica.shutdownInput();
       String odgovor = this.obradiZahtjev(poruka.toString());
       pisac.write(odgovor);

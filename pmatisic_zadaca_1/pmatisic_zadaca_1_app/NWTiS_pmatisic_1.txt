@@ -1,7 +1,10 @@
 ispis=1
-datotekaKorisnika=korisnici.csv
-datotekaLokacija=lokacije.csv
-datotekaUredaja=uredaji.csv
-mreznaVrata=8001
-brojCekaca=5
-brojRadnika=10
+maksCekanje=500
+trajanjeSekunde=1
+brojPokusaja=5
+korisnickoIme=pkos
+korisnickaLozinka=123456
+datotekaMeteo=meteoSimulacija.csv
+datotekaProblema=meteoSimulacijaProblem.csv
+posluziteljGlavniAdresa=localhost
+posluziteljGlavniVrata=8000

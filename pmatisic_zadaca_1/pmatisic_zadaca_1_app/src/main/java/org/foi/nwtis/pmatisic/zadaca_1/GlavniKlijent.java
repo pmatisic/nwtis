@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -14,95 +16,135 @@ import java.util.regex.Pattern;
 
 public class GlavniKlijent {
 
-	public static void main(String[] args) {
+  public static void main(String[] args) {
+    StringBuilder sb = new StringBuilder();
 
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].contains(" ")) {
-				String trenutni = args[i];
-				args[i] = "'" + trenutni + "'";
-			}
-			sb.append(args[i]).append(" ");
-		}
-		String s = sb.toString().trim();
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].contains(" ")) {
+        String trenutni = args[i];
+        args[i] = "'" + trenutni + "'";
+      }
+      sb.append(args[i]).append(" ");
+    }
 
-		// String[] adresaPortKomanda = regexProvjera(s);
+    String s = sb.toString().trim();
 
-		var gk = new GlavniKlijent();
-		Matcher unos = gk.provjeriArgumente(s);
+    System.out.println(s);
 
-		String komanda;
-		if (unos == null) {
-			Logger.getGlobal().log(Level.SEVERE, "Nisu unešeni argumenti!");
-			return;
-		} else {
-			komanda = obradiKomandu(unos);
-		}
-		gk.spojiSeNaPosluzitelj(unos.group("ADRESA"), Integer.parseInt(unos.group("MREZNAVRATA")), komanda);
-	}
+    var gk = new GlavniKlijent();
+    Matcher unos = gk.provjeriArgumente(s);
 
-	private Matcher provjeriArgumente(String s) {
-		// (-k) ([0-9a-zA-Z_-]{3,10}) (-l) ([0-9a-zA-Z!#_-]{3,10}) (-a) ([0-9a-z.]+)
-		// (-v) ([0-9]{4}) (-t) ([0-9]+) ()
-		String sintaksa = "nesto";
-		Pattern p = Pattern.compile(sintaksa);
-		Matcher m = p.matcher(sintaksa);
-		if (!m.matches()) {
-			return null;
-		} else {
-			return m;
-		}
-	}
+    String komanda;
+    if (unos == null) {
+      Logger.getGlobal().log(Level.SEVERE, "Pogreška s argumentima!");
+      return;
+    } else {
+      komanda = obradiKomandu(unos);
+    }
+    gk.spojiSeNaPosluzitelj(unos.group("adresa"), Integer.parseInt(unos.group("port")), komanda);
+  }
 
-	private static String obradiKomandu(Matcher m) {
-		String kljucevi[] = new String[] { "METEO", "ALARM", "UDALJENOST", "SPREMI", "MAKSTEMP", "MAKSVLAGA",
-				"MAKSTLAK", "KRAJ" };
+  private Matcher provjeriArgumente(String s) {
+    String sintaksa =
+        "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-Z-]+))|((--makstemp) (?<makstemp>[0-9a-zA-Z-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-Z-]+))|((--makstlak) (?<makstlak>[0-9a-zA-Z-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
+    Pattern p = Pattern.compile(sintaksa);
+    Matcher m = p.matcher(s);
+    if (!m.matches()) {
+      return null;
+    } else {
+      return m;
+    }
+  }
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("KORISNIK ").append(m.group("KORISNIK")).append(" LOZINKA").append(m.group("LOZINKA")).append(" ");
+  private static String obradiKomandu(Matcher m) {
+    Map<String, String> grupe = new HashMap<>();
+    grupe.put("korisnik", "-k");
+    grupe.put("lozinka", "-l");
+    grupe.put("adresa", "-a");
+    grupe.put("port", "-v");
+    grupe.put("vrijeme", "-t ");
+    grupe.put("meteo", "--meteo");
+    grupe.put("makstemp", "--makstemp");
+    grupe.put("maksvlaga", "--maksvlaga");
+    grupe.put("makstlak", "--makstlak");
+    grupe.put("alarm", "--alarm");
+    grupe.put("udaljenostnavodnici", "--udaljenost");
+    grupe.put("udaljenostspremi", "--udaljenost");
+    grupe.put("kraj", "--kraj");
 
-		for (var kljuc : kljucevi) {
-			if (m.group(kljuc) != null) {
-				if (kljuc == "SPREMI") {
-					sb.append(kljuc.substring(0, 10) + " " + kljuc.substring(10));
-				} else {
-					sb.append(kljuc.substring(0, 4) + " " + kljuc.substring(4) + " ").append(m.group(kljuc));
-				}
-				break;
-			}
-		}
-		return sb.toString();
-	}
+    Map<String, String> pomocnaGrupa = new HashMap<>();
+    for (String key : grupe.keySet()) {
+      if (m.group(key) != null) {
+        if (key == "udaljenostnavodnici" || key == "udaljenostspremi") {
+          pomocnaGrupa.put("UDALJENOST", m.group(key));
+        } else {
+          pomocnaGrupa.put(key.toUpperCase(), m.group(key));
+        }
+      }
+    }
 
-	private void spojiSeNaPosluzitelj(String adresa, int mreznaVrata, String komanda) {
-		try {
-			Socket mreznaUticnica = new Socket(adresa, mreznaVrata);
-			var citac = new BufferedReader(
-					new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
-			var pisac = new BufferedWriter(
-					new OutputStreamWriter(mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
+    System.out.println(pomocnaGrupa.toString());
 
-			pisac.write(komanda);
-			pisac.flush();
-			mreznaUticnica.shutdownOutput();
+    String komanda = pretvoriUKomandu(pomocnaGrupa);
 
-			var poruka = new StringBuilder();
+    return komanda;
+  }
 
-			while (true) {
-				var red = citac.readLine();
-				if (red == null)
-					break;
+  private static String pretvoriUKomandu(Map<String, String> mapa) {
 
-				// Logger.getGlobal().log(Level.INFO, red);
+    String naredba = "KORISNIK " + mapa.get("KORISNIK") + " LOZINKA " + mapa.get("LOZINKA");
 
-				poruka.append(red);
-			}
-			Logger.getGlobal().log(Level.INFO, poruka.toString());
-			mreznaUticnica.shutdownInput();
-			mreznaUticnica.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    if (mapa.containsKey("UDALJENOST")) {
+      naredba += " UDALJENOST " + mapa.get("UDALJENOST");
+    } else if (mapa.containsKey("METEO")) {
+      naredba += " METEO " + mapa.get("METEO");
+    } else if (mapa.containsKey("MAKSTEMP")) {
+      naredba += " MAKSTEMP " + mapa.get("MAKSTEMP");
+    } else if (mapa.containsKey("MAKSVLAGA")) {
+      naredba += " MAKSVLAGA " + mapa.get("MAKSVLAGA");
+    } else if (mapa.containsKey("MAKSTLAK")) {
+      naredba += " MAKSTLAK " + mapa.get("MAKSTLAK");
+    } else if (mapa.containsKey("ALARM")) {
+      naredba += " ALARM " + mapa.get("ALARM");
+    } else if (mapa.containsKey("UDALJENOST")) {
+      naredba += " UDALJENOST " + mapa.get("UDALJENOST");
+    } else if (mapa.containsKey("KRAJ")) {
+      naredba += " KRAJ " + mapa.get("KRAJ");
+    }
+
+
+    System.out.println(naredba);
+
+    return naredba;
+  }
+
+  private void spojiSeNaPosluzitelj(String adresa, int mreznaVrata, String komanda) {
+    try {
+      Socket mreznaUticnica = new Socket(adresa, mreznaVrata);
+      var citac = new BufferedReader(
+          new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
+      var pisac = new BufferedWriter(
+          new OutputStreamWriter(mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
+
+      pisac.write(komanda);
+      pisac.flush();
+      mreznaUticnica.shutdownOutput();
+
+      var poruka = new StringBuilder();
+
+      while (true) {
+        var red = citac.readLine();
+        if (red == null)
+          break;
+
+        poruka.append(red);
+      }
+      Logger.getGlobal().log(Level.INFO, poruka.toString());
+      mreznaUticnica.shutdownInput();
+      mreznaUticnica.close();
+    } catch (IOException e) {
+      Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na poslužitelj!");
+    }
+  }
 
 }

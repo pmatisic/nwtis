@@ -1,7 +1,5 @@
 ispis=1
-datotekaKorisnika=korisnici.csv
-datotekaLokacija=lokacije.csv
-datotekaUredaja=uredaji.csv
-mreznaVrata=8001
+mreznaVrata=8080
 brojCekaca=5
-brojRadnika=10
+brojZadnjihSpremljenih=5
+datotekaSerijalizacija=serijalizacijaDat.bin

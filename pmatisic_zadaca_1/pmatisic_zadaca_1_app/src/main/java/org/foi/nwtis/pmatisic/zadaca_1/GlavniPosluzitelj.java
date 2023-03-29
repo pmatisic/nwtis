@@ -30,7 +30,7 @@ public class GlavniPosluzitelj {
   public GlavniPosluzitelj(Konfiguracija konf) {
     this.konf = konf;
     this.brojRadnika = Integer.parseInt(konf.dajPostavku("brojRadnika"));
-    this.maksVrijemeNeaktivnosti = Integer.parseInt(konf.dajPostavku("maksVrijemeNeaktivnosti"));
+    // this.maksVrijemeNeaktivnosti = Integer.parseInt(konf.dajPostavku("maksVrijemeNeaktivnosti"));
     this.ispis = Integer.parseInt(konf.dajPostavku("ispis"));
     this.mreznaVrata = Integer.parseInt(konf.dajPostavku("mreznaVrata"));
     this.brojCekaca = Integer.parseInt(konf.dajPostavku("brojCekaca"));
@@ -83,6 +83,7 @@ public class GlavniPosluzitelj {
     }
   }
 
+  // TODO doraditi za dretve
   public void pripremiPosluzitelja() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       while (!this.kraj) {
