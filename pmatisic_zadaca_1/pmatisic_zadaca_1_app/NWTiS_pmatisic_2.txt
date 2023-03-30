@@ -2,4 +2,4 @@ ispis=1
 mreznaVrata=8080
 brojCekaca=5
 brojZadnjihSpremljenih=5
-datotekaSerijalizacija=serijalizacijaDat.bin
+datotekaSerijalizacija=datotekaSerijalizacija.bin

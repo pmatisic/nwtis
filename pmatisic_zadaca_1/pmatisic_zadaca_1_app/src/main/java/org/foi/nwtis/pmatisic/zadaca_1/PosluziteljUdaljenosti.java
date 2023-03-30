@@ -11,4 +11,27 @@ public class PosluziteljUdaljenosti {
 
   }
 
+  // public void pripremiPosluzitelja() {
+  // try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
+  // while (!this.kraj) {
+  // Socket veza = ss.accept();
+  //
+  //
+  // }
+  // } catch (IOException e) {
+  // e.printStackTrace();
+  // }
+  // }
+  //
+  // public void pokreniPosluzitelja() {
+  // try {
+  // this.ucitajKorisnike();
+  // this.ucitajLokacije();
+  // this.ucitajUredaje();
+  // this.pripremiPosluzitelja();
+  // } catch (IOException e) {
+  // Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+  // }
+  // }
+
 }

@@ -13,8 +13,6 @@ public class PokretacPosluzitelja {
   public static void main(String[] args) {
     var pokretac = new PokretacPosluzitelja();
     if (!pokretac.provjeriArgumente(args)) {
-      // Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
-      // "Nije upisan naziv datoteke!");
       return;
     }
 
@@ -28,6 +26,7 @@ public class PokretacPosluzitelja {
     }
   }
 
+  // provjera argumenata za GP
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
       var argument = args[0];
@@ -47,6 +46,7 @@ public class PokretacPosluzitelja {
     }
   }
 
+  // ucitavanje postavki iz datoteke konfiguracije
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
   }

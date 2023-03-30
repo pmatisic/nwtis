@@ -32,6 +32,15 @@ public class TestOpcija {
     String sintaksa3 =
         "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-Z-]+))|((--makstemp) (?<makstemp>[0-9a-zA-Z-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-Z-]+))|((--makstlak) (?<makstlak>[0-9a-zA-Z-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
 
+    String sintaksa4 =
+        "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-Z-]+))|((--makstemp) (?<makstemp>[0-9a-zA-Z-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-Z-]+))|((--makstlak) (?<makstlak>[0-9a-zA-Z-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
+
+    String sintaksa5 =
+        "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-Z-]+))|((--makstemp) (?<makstemp>[0-9a-zA-Z-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-Z-]+))|((--makstlak) (?<makstlak>[0-9a-zA-Z-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
+
+    String sintaksa6 =
+        "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-Z-]+))|((--makstemp) (?<makstemp>[0-9a-zA-Z-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-Z-]+))|((--makstlak) (?<makstlak>[0-9a-zA-Z-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
+
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < args.length; i++) {
       sb.append(args[i]).append(" ");
@@ -55,8 +64,8 @@ public class TestOpcija {
     Matcher m2 = pattern2.matcher(s);
     boolean status2 = m2.matches();
     if (status2) {
-      System.out.println("Korisnik: " + m2.group("korisnik"));
-      System.out.println("Lozinka: " + m2.group("lozinka"));
+      System.out.println("korisnik: " + m2.group("korisnik"));
+      System.out.println("lozinka: " + m2.group("lozinka"));
       System.out.println("adresa: " + m2.group("adresa"));
       System.out.println("port: " + m2.group("port"));
       System.out.println("vrijeme: " + m2.group("vrijeme"));
@@ -67,7 +76,7 @@ public class TestOpcija {
       System.out.println("alarm: " + m2.group("alarm"));
       System.out.println("udaljenostnavodnici: " + m2.group("udaljenostnavodnici"));
       System.out.println("udaljenostspremi: " + m2.group("udaljenostspremi"));
-      System.out.println("Kraj: " + m2.group("kraj"));
+      System.out.println("kraj: " + m2.group("kraj"));
     } else {
       System.out.println("Ne odgovara 2!");
     }

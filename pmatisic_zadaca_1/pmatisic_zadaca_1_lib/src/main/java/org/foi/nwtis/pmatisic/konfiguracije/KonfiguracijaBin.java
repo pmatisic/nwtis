@@ -32,8 +32,6 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
    * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
    * NeispravnaKonfiguracija.
    * 
-   * Referenca:
-   * 
    * @see https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectOutputStream.html
    */
   @Override
@@ -65,8 +63,6 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
    * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
    * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
    * iznimka NeispravnaKonfiguracija.
-   * 
-   * Referenca:
    * 
    * @see https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectInputStream.html
    */

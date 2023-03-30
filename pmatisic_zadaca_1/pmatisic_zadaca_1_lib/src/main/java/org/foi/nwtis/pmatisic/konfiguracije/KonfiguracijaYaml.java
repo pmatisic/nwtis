@@ -35,8 +35,6 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
    * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
    * NeispravnaKonfiguracija.
    * 
-   * Reference:
-   * 
    * @see https://www.geeksforgeeks.org/linkedhashmap-class-in-java/
    * @see https://stackoverflow.com/questions/12310914/how-to-iterate-through-linkedhashmap-with-lists-as-values
    * @see https://javadoc.io/static/com.hazelcast.jet/hazelcast-jet/3.2/com/hazelcast/org/snakeyaml/engine/v1/api/DumpSettingsBuilder.html
@@ -85,8 +83,6 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
    * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
    * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
    * iznimka NeispravnaKonfiguracija.
-   * 
-   * Reference:
    * 
    * @see https://www.geeksforgeeks.org/linkedhashmap-class-in-java/
    * @see https://www.tabnine.com/code/java/methods/java.nio.file.Files/newInputStream

@@ -29,17 +29,11 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     this.postavke = new Properties();
   }
 
-  /**
-   * Vraća sve postavke u Properties objektu.
-   */
   @Override
   public Properties dajSvePostavke() {
     return this.postavke;
   }
 
-  /**
-   * Briše sve postavke iz memorije.
-   */
   @Override
   public boolean obrisiSvePostavke() {
     if (this.postavke.isEmpty())
@@ -49,24 +43,11 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     return true;
   }
 
-  /**
-   * Vraća postavku temeljem ključa.
-   * 
-   * @param kljuc - naziv postavke
-   */
   @Override
   public String dajPostavku(String kljuc) {
     return this.postavke.getProperty(kljuc);
   }
 
-  /**
-   * Sprema postavku ako ne postoji u memoriji.
-   * 
-   * @param kljuc - naziv postavke
-   * @param vrijednost - vrijednost postavke
-   * @return vraća true ako je postavka dodana ili false ako postoji.
-   * @see KonfiguracijaApstraktna - azurijaPostavku
-   */
   @Override
   public boolean spremiPostavku(String kljuc, String vrijednost) {
     if (this.postojiPostavka(kljuc))
@@ -76,14 +57,6 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     return true;
   }
 
-  /**
-   * Ažurira postojeću postavku ako postoji u memoriji.
-   * 
-   * @param kljuc - naziv postavke
-   * @param vrijednost - vrijednost postavke
-   * @return vraća true ako je postavka ažurirana ili false ako nema takve postavke.
-   * @see KonfiguracijaApstraktna - spremiPostavku
-   */
   @Override
   public boolean azurirajPostavku(String kljuc, String vrijednost) {
     if (!this.postojiPostavka(kljuc))
@@ -93,17 +66,11 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     return true;
   }
 
-  /**
-   * Provjerava ima li takve postavke u memoriji.
-   */
   @Override
   public boolean postojiPostavka(String kljuc) {
     return this.postavke.contains(kljuc);
   }
 
-  /**
-   * Briše određenu postavku.
-   */
   @Override
   public boolean obrisiPostavku(String kljuc) {
     if (!this.postojiPostavka(kljuc))

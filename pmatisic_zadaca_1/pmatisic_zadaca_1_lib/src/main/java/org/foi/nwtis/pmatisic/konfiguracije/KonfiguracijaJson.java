@@ -33,8 +33,6 @@ public class KonfiguracijaJson extends KonfiguracijaApstraktna {
    * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
    * NeispravnaKonfiguracija.
    * 
-   * Referenca:
-   * 
    * @see https://www.javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/com/google/gson/Gson.html
    */
   @Override
@@ -69,8 +67,6 @@ public class KonfiguracijaJson extends KonfiguracijaApstraktna {
    * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
    * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
    * iznimka NeispravnaKonfiguracija.
-   * 
-   * Referenca:
    * 
    * @see https://www.javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/com/google/gson/Gson.html
    */

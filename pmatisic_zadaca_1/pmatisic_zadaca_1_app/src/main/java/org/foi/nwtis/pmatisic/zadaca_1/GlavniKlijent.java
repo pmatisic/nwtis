@@ -36,7 +36,7 @@ public class GlavniKlijent {
 
     String komanda;
     if (unos == null) {
-      Logger.getGlobal().log(Level.SEVERE, "Pogreška s argumentima!");
+      Logger.getGlobal().log(Level.SEVERE, "Greška u argumentima, provjerite unos!");
       return;
     } else {
       komanda = obradiKomandu(unos);
@@ -44,6 +44,7 @@ public class GlavniKlijent {
     gk.spojiSeNaPosluzitelj(unos.group("adresa"), Integer.parseInt(unos.group("port")), komanda);
   }
 
+  // provjera kor. unosa za argument
   private Matcher provjeriArgumente(String s) {
     String sintaksa =
         "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-Z-]+))|((--makstemp) (?<makstemp>[0-9a-zA-Z-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-Z-]+))|((--makstlak) (?<makstlak>[0-9a-zA-Z-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
@@ -56,6 +57,7 @@ public class GlavniKlijent {
     }
   }
 
+  // obrada dobivene komande u razumljiv oblik
   private static String obradiKomandu(Matcher m) {
     Map<String, String> grupe = new HashMap<>();
     grupe.put("korisnik", "-k");
@@ -90,6 +92,7 @@ public class GlavniKlijent {
     return komanda;
   }
 
+  // prosirenje prethodne metode na nacin da se dobije cjelovita naredba
   private static String pretvoriUKomandu(Map<String, String> mapa) {
 
     String naredba = "KORISNIK " + mapa.get("KORISNIK") + " LOZINKA " + mapa.get("LOZINKA");
@@ -109,15 +112,15 @@ public class GlavniKlijent {
     } else if (mapa.containsKey("UDALJENOST")) {
       naredba += " UDALJENOST " + mapa.get("UDALJENOST");
     } else if (mapa.containsKey("KRAJ")) {
-      naredba += " KRAJ " + mapa.get("KRAJ");
+      naredba += " KRAJ";
     }
-
 
     System.out.println(naredba);
 
     return naredba;
   }
 
+  // metoda za spajanje na posluzitelj
   private void spojiSeNaPosluzitelj(String adresa, int mreznaVrata, String komanda) {
     try {
       Socket mreznaUticnica = new Socket(adresa, mreznaVrata);
