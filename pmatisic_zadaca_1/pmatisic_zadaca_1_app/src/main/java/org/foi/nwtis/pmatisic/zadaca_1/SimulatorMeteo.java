@@ -20,6 +20,9 @@ import org.foi.nwtis.pmatisic.zadaca_1.podaci.MeteoSimulacija;
 
 public class SimulatorMeteo {
 
+  private int brojPokusaja;
+  private String problemFile;
+
   public static void main(String[] args) {
     var sm = new SimulatorMeteo();
     if (!sm.provjeriArgumente(args)) {
