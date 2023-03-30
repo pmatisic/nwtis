@@ -91,7 +91,7 @@ public class MrezniRadnik extends Thread {
       this.mreznaUticnica.shutdownOutput();
       this.mreznaUticnica.close();
     } catch (IOException e) {
-      Logger.getGlobal().log(Level.SEVERE, "Greška u radu dretve!");
+      Logger.getGlobal().log(Level.SEVERE, "Greška u radu dretve! " + e.getMessage());
     }
   }
 

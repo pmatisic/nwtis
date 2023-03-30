@@ -18,7 +18,6 @@ public class GlavniKlijent {
 
   public static void main(String[] args) {
     StringBuilder sb = new StringBuilder();
-
     for (int i = 0; i < args.length; i++) {
       if (args[i].contains(" ")) {
         String trenutni = args[i];
@@ -26,10 +25,7 @@ public class GlavniKlijent {
       }
       sb.append(args[i]).append(" ");
     }
-
     String s = sb.toString().trim();
-
-    System.out.println(s);
 
     var gk = new GlavniKlijent();
     Matcher unos = gk.provjeriArgumente(s);
@@ -47,7 +43,7 @@ public class GlavniKlijent {
   // provjera kor. unosa za argument
   private Matcher provjeriArgumente(String s) {
     String sintaksa =
-        "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-Z-]+))|((--makstemp) (?<makstemp>[0-9a-zA-Z-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-Z-]+))|((--makstlak) (?<makstlak>[0-9a-zA-Z-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
+        "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--makstemp) (?<makstemp>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--makstlak) (?<makstlak>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
     Pattern p = Pattern.compile(sintaksa);
     Matcher m = p.matcher(s);
     if (!m.matches()) {
@@ -85,8 +81,6 @@ public class GlavniKlijent {
       }
     }
 
-    System.out.println(pomocnaGrupa.toString());
-
     String komanda = pretvoriUKomandu(pomocnaGrupa);
 
     return komanda;
@@ -114,8 +108,6 @@ public class GlavniKlijent {
     } else if (mapa.containsKey("KRAJ")) {
       naredba += " KRAJ";
     }
-
-    System.out.println(naredba);
 
     return naredba;
   }
@@ -146,7 +138,7 @@ public class GlavniKlijent {
       mreznaUticnica.shutdownInput();
       mreznaUticnica.close();
     } catch (IOException e) {
-      Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na poslužitelj!");
+      Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na poslužitelj! " + e.getMessage());
     }
   }
 

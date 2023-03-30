@@ -47,7 +47,7 @@ public class GlavniPosluzitelj {
         this.pripremiPosluzitelja();
       }
     } catch (IOException e) {
-      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      Logger.getGlobal().log(Level.SEVERE, "Greška u pokretanju poslužitelja! " + e.getMessage());
     }
   }
 
@@ -56,12 +56,12 @@ public class GlavniPosluzitelj {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata)) {
       return true;
     } catch (Exception e) {
-      Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na mrežna vrata!");
+      Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na mrežna vrata! " + e.getMessage());
       return false;
     }
   }
 
-  // TODO doraditi za dretve
+  // stvaranje komunikacije
   public void pripremiPosluzitelja() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       while (!this.kraj) {
@@ -72,7 +72,7 @@ public class GlavniPosluzitelj {
         mr.start();
       }
     } catch (IOException e) {
-      Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na mrežna vrata!");
+      Logger.getGlobal().log(Level.SEVERE, "Greška u stvaranju veze! " + e.getMessage());
     }
   }
 

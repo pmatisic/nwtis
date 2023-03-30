@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
@@ -31,15 +33,31 @@ public class SimulatorMeteo {
       sm.pokreniSimulator(konf);
     } catch (NeispravnaKonfiguracija e) {
       Logger.getLogger(SimulatorMeteo.class.getName()).log(Level.SEVERE,
-          "Pogreška kod učitavanja postavki iz datoteke!" + e.getMessage());
+          "Greška kod učitavanja postavki iz datoteke! " + e.getMessage());
     } catch (IOException e) {
       Logger.getLogger(SimulatorMeteo.class.getName()).log(Level.SEVERE,
-          "Pogreška kod učitavanja meteo podatka iz datoteke!" + e.getMessage());
+          "Greška kod učitavanja meteo podatka iz datoteke! " + e.getMessage());
     }
   }
 
+  // provjerava argumente dobivene
   private boolean provjeriArgumente(String[] args) {
-    return args.length == 1 ? true : false;
+    if (args.length == 1) {
+      var argument = args[0];
+      String provjeraUnosa = "NWTiS_[a-zA-Z0-9.]{1,255}_1.(txt|xml|bin|json|yaml)";
+      Pattern uzorak = Pattern.compile(provjeraUnosa);
+      Matcher m = uzorak.matcher(argument);
+      boolean status = m.matches();
+      if (status == false) {
+        Logger.getLogger(SimulatorMeteo.class.getName()).log(Level.SEVERE,
+            "Greška pri unosu argumenta!");
+      }
+      return status;
+    } else {
+      Logger.getLogger(SimulatorMeteo.class.getName()).log(Level.SEVERE,
+          "Greška, nije unešen argument!");
+      return false;
+    }
   }
 
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
@@ -74,7 +92,7 @@ public class SimulatorMeteo {
 
         this.posaljiMeteoPodatak(vazeciMeteo, konf);
         if (!jestPrviMeteoPodatak(brojac)) {
-          this.izracunajObradiSpavanje(prethodniMeteo, vazeciMeteo);
+          this.obradiSpavanje(prethodniMeteo, vazeciMeteo);
         }
         prethodniMeteo = vazeciMeteo;
       }
@@ -113,11 +131,11 @@ public class SimulatorMeteo {
 
         poruka.append(red);
       }
-      Logger.getGlobal().log(Level.INFO, poruka.toString());
+      String primitak = poruka.toString();
       mreznaUticnica.shutdownInput();
       mreznaUticnica.close();
     } catch (IOException e) {
-      Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na poslužitelj!");
+      Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na poslužitelj! " + e.getMessage());
     }
   }
 
@@ -134,8 +152,7 @@ public class SimulatorMeteo {
     return brojac == 1;
   }
 
-  private void izracunajObradiSpavanje(MeteoSimulacija prethodniMeteo,
-      MeteoSimulacija vazeciMeteo) {
+  private void obradiSpavanje(MeteoSimulacija prethodniMeteo, MeteoSimulacija vazeciMeteo) {
     String prvi = prethodniMeteo.vrijeme();
     String drugi = vazeciMeteo.vrijeme();
     // TODO pretvori string u milisekunde
@@ -146,7 +163,7 @@ public class SimulatorMeteo {
     try {
       Thread.sleep(spavaj);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.SEVERE, "Greška u obradi! " + e.getMessage());
     }
   }
 

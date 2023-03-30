@@ -22,7 +22,7 @@ public class PokretacPosluzitelja {
       glavniPosluzitelj.pokreniPosluzitelja();
     } catch (NeispravnaKonfiguracija e) {
       Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
-          "Pogreška kod učitavanja postavki iz datoteke!" + e.getMessage());
+          "Greška kod učitavanja postavki iz datoteke! " + e.getMessage());
     }
   }
 
@@ -36,7 +36,7 @@ public class PokretacPosluzitelja {
       boolean status = m.matches();
       if (status == false) {
         Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
-            "Pogrešan unos argumenta!");
+            "Greška pri unosu argumenta!");
       }
       return status;
     } else {
