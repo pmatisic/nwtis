@@ -25,6 +25,14 @@ public class MrezniRadnik extends Thread {
   private Matcher m2;
 
   // konstruktor mreznog radnika
+  public MrezniRadnik(Socket mreznaUticnica, Konfiguracija konfig) {
+    super();
+    this.mreznaUticnica = mreznaUticnica;
+    this.konfig = konfig;
+    this.ispis = Integer.parseInt(this.konfig.dajPostavku("ispis"));
+  }
+
+  // overloadani konstruktor mreznog radnika
   public MrezniRadnik(Socket mreznaUticnica, Konfiguracija konfig, GlavniPosluzitelj gp) {
     super();
     this.mreznaUticnica = mreznaUticnica;
@@ -60,19 +68,22 @@ public class MrezniRadnik extends Thread {
 
         poruka.append(red);
       }
+
       Map<String, String> obradenaPoruka = new HashMap<String, String>();
       String neobradenaPoruka = poruka.toString();
       m1 = provjeraZaGlavniKlijent(neobradenaPoruka);
-      // m2 = provjeraZaSimulatorMeteo(neobradenaPoruka);
+      m2 = provjeraZaSimulatorMeteo(neobradenaPoruka);
       if (m1 != null) {
         obradenaPoruka = obradiKomanduZaGlavniKlijent(m1);
       } else if (m2 != null) {
-        // obradenaPoruka = obradiKomanduZaSimulatorMeteo(m2);
+        obradenaPoruka = obradiKomanduZaSimulatorMeteo(m2);
       } else {
+        Logger.getGlobal().log(Level.SEVERE, "Greška u komandi!");
         return;
       }
 
-      System.out.println(obradenaPoruka.toString());
+      System.out.println(obradenaPoruka);
+
       this.mreznaUticnica.shutdownInput();
       String odgovor = this.obradiZahtjev(obradenaPoruka);
       pisac.write(odgovor);
@@ -80,14 +91,14 @@ public class MrezniRadnik extends Thread {
       this.mreznaUticnica.shutdownOutput();
       this.mreznaUticnica.close();
     } catch (IOException e) {
-      Logger.getGlobal().log(Level.SEVERE, "Pogreška u radu dretve!");
+      Logger.getGlobal().log(Level.SEVERE, "Greška u radu dretve!");
     }
   }
 
   // provjera kor. unosa za komande
   private Matcher provjeraZaGlavniKlijent(String s) {
     String sintaksa =
-        "(KORISNIK) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (LOZINKA) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) ((((METEO) (?<meteo>[0-9a-zA-Z-]+))|((MAKS TEMP) (?<makstemp>[0-9a-zA-Z-]+))|((MAKS VLAGA) (?<maksvlaga>[0-9a-zA-Z-]+))|((MAKS TLAK) (?<makstlak>[0-9a-zA-Z-]+))|((ALARM) (?<alarm>[0-9a-zA-Z' ]+))|((UDALJENOST) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((UDALJENOST) (?<udaljenostspremi>SPREMI))|(?<kraj>KRAJ)))";
+        "(KORISNIK) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (LOZINKA) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) ((((METEO) (?<meteo>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((MAKS TEMP) (?<makstemp>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((MAKS VLAGA) (?<maksvlaga>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((MAKS TLAK) (?<makstlak>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((ALARM) (?<alarm>[0-9a-zA-Z' ]+))|((UDALJENOST) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((UDALJENOST) (?<udaljenostspremi>SPREMI))|(?<kraj>KRAJ)))";
     Pattern p = Pattern.compile(sintaksa);
     Matcher m = p.matcher(s);
     if (!m.matches()) {
@@ -98,9 +109,9 @@ public class MrezniRadnik extends Thread {
   }
 
   // provjera kor. unosa za komande
-  // (?<vrijeme>(([01]?\d|2[0-3]):[0-5]?\d:[0-5]?\d)|([1-9]:[0-5]?\d:[0-5]?\d)|(0:[1-9]|[1-5]?\d:[0-5]?\d))
   private Matcher provjeraZaSimulatorMeteo(String s) {
-    String sintaksa = "";
+    String sintaksa =
+        "((KORISNIK) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (LOZINKA) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (SENZOR) (?<senzor>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+) (?<vrijeme>(?:[1-9]|1\\d|2[0-3]):(?:[1-9]|[1-5]\\d):(?:[1-9]|[1-5]\\d)|[1-9]:[1-5]?\\d:[1-5]?\\d|0:[1-5]?\\d:[1-5]?\\d) (?<temp>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?))( (?<vlaga>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?)( (?<tlak>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?))?)?";
     Pattern p = Pattern.compile(sintaksa);
     Matcher m = p.matcher(s);
     if (!m.matches()) {
@@ -138,28 +149,22 @@ public class MrezniRadnik extends Thread {
     return pomocnaGrupa;
   }
 
+  // TODO treba testirati kad dobijem simulator meteo
   // obrada dobivene komande da bi se dobili podaci iz njih
   private static Map<String, String> obradiKomanduZaSimulatorMeteo(Matcher m) {
     Map<String, String> grupe = new HashMap<>();
     grupe.put("KORISNIK", m.group("korisnik"));
     grupe.put("LOZINKA", m.group("lozinka"));
-    grupe.put("METEO", m.group("meteo"));
-    grupe.put("MAKS TEMP", m.group("makstemp"));
-    grupe.put("MAKS VLAGA", m.group("maksvlaga"));
-    grupe.put("MAKS TLAK", m.group("makstlak"));
-    grupe.put("ALARM", m.group("alarm"));
-    grupe.put("UDALJENOST", m.group("udaljenostnavodnici"));
-    grupe.put("UDALJENOST SPREMI", m.group("udaljenostspremi"));
-    grupe.put("KRAJ", m.group("kraj"));
+    grupe.put("SENZOR", m.group("senzor"));
+    grupe.put("vrijeme", m.group("vrijeme"));
+    grupe.put("temp", m.group("temp"));
+    grupe.put("vlaga", m.group("vlaga"));
+    grupe.put("tlak", m.group("tlak"));
 
     Map<String, String> pomocnaGrupa = new HashMap<>();
     for (String key : grupe.keySet()) {
       if (grupe.get(key) != null) {
-        if (key == "UDALJENOST" || key == "UDALJENOST SPREMI") {
-          pomocnaGrupa.put("UDALJENOST", grupe.get(key));
-        } else {
-          pomocnaGrupa.put(key, grupe.get(key));
-        }
+        pomocnaGrupa.put(key, grupe.get(key));
       }
     }
 

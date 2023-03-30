@@ -1,6 +1,11 @@
 package org.foi.nwtis.pmatisic.zadaca_1;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,7 +72,7 @@ public class SimulatorMeteo {
         var vazeciMeteo = new MeteoSimulacija(kolone[0], kolone[1], Float.parseFloat(kolone[2]),
             Float.parseFloat(kolone[3]), Float.parseFloat(kolone[4]));
 
-        this.posaljiMeteoPodatak(vazeciMeteo);
+        this.posaljiMeteoPodatak(vazeciMeteo, konf);
         if (!jestPrviMeteoPodatak(brojac)) {
           this.izracunajObradiSpavanje(prethodniMeteo, vazeciMeteo);
         }
@@ -84,9 +89,45 @@ public class SimulatorMeteo {
     return kolone.length == 5;
   }
 
-  private void posaljiMeteoPodatak(MeteoSimulacija vazeciMeteo) {
-    // TODO ovdje isto kao i kod glavnogKlijenta šalješ podatke na
-    // GlavniPoslužitelj
+  private void posaljiMeteoPodatak(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
+    try {
+      String adresa = konf.dajPostavku("posluziteljGlavniAdresa");
+      short mreznaVrata = Short.parseShort(konf.dajPostavku("posluziteljGlavniVrata"));
+      Socket mreznaUticnica = new Socket(adresa, mreznaVrata);
+      var citac = new BufferedReader(
+          new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
+      var pisac = new BufferedWriter(
+          new OutputStreamWriter(mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
+
+      String komanda = obradiZahtjev(vazeciMeteo, konf);
+      pisac.write(komanda);
+      pisac.flush();
+      mreznaUticnica.shutdownOutput();
+
+      var poruka = new StringBuilder();
+
+      while (true) {
+        var red = citac.readLine();
+        if (red == null)
+          break;
+
+        poruka.append(red);
+      }
+      Logger.getGlobal().log(Level.INFO, poruka.toString());
+      mreznaUticnica.shutdownInput();
+      mreznaUticnica.close();
+    } catch (IOException e) {
+      Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na poslužitelj!");
+    }
+  }
+
+  // ovdje obradivam komandu
+  private String obradiZahtjev(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
+
+    if (vazeciMeteo.temperatura() != -999) {
+
+    }
+    return null;
   }
 
   private boolean jestZaglavlje(int brojac) {

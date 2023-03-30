@@ -25,10 +25,11 @@ public class TestOpcija {
     String sintaksa1 = "-k ([0-9a-zA-Z_]+) -l ([0-9a-zA-Z_-]+) "
         + "-a ([0-9a-zA-Z_-[.]]+) -v ([0-9]+) -t ([0-9]+) ((--meteo ([0-9a-zA-Z_-[.]]+))|(--kraj))$";
 
-    // koristi imenovane grupe (?<ime>...) poklpanja
-    String sintaksa2 = "-k (?<korisnik>[0-9a-zA-Z_]+) -l (?<lozinka>[0-9a-zA-Z_-]+) "
-        + "-a (?<adresa>[0-9a-zA-Z_-[.]]+) -v (?<mreznaVrata>[0-9]+) -t (?<cekanje>[0-9]+) ((--meteo (?<meteo>[0-9a-zA-Z_-[.]]+))|(?<kraj>--kraj))$";
+    // mr komanda gk
+    String sintaksa2 =
+        "(KORISNIK) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (LOZINKA) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) ((((METEO) (?<meteo>[0-9a-zA-Z-]+))|((MAKS TEMP) (?<makstemp>[0-9a-zA-Z-]+))|((MAKS VLAGA) (?<maksvlaga>[0-9a-zA-Z-]+))|((MAKS TLAK) (?<makstlak>[0-9a-zA-Z-]+))|((ALARM) (?<alarm>[0-9a-zA-Z' ]+))|((UDALJENOST) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((UDALJENOST) (?<udaljenostspremi>SPREMI))|(?<kraj>KRAJ)))";
 
+    // gk komanda argumenti
     String sintaksa3 =
         "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-Z-]+))|((--makstemp) (?<makstemp>[0-9a-zA-Z-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-Z-]+))|((--makstlak) (?<makstlak>[0-9a-zA-Z-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
 
