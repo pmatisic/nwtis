@@ -82,8 +82,6 @@ public class MrezniRadnik extends Thread {
         return;
       }
 
-      System.out.println(obradenaPoruka);
-
       this.mreznaUticnica.shutdownInput();
       String odgovor = this.obradiZahtjev(obradenaPoruka);
       pisac.write(odgovor);
@@ -111,7 +109,7 @@ public class MrezniRadnik extends Thread {
   // provjera kor. unosa za komande
   private Matcher provjeraZaSimulatorMeteo(String s) {
     String sintaksa =
-        "((KORISNIK) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (LOZINKA) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (SENZOR) (?<senzor>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+) (?<vrijeme>(?:[1-9]|1\\d|2[0-3]):(?:[1-9]|[1-5]\\d):(?:[1-9]|[1-5]\\d)|[1-9]:[1-5]?\\d:[1-5]?\\d|0:[1-5]?\\d:[1-5]?\\d) (?<temp>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?))( (?<vlaga>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?)( (?<tlak>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?))?)?";
+        "((KORISNIK) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (LOZINKA) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (SENZOR) (?<senzor>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+) (?<vrijeme>(?:[1-9]|1\\d|2[0-3]):(?:[1-5]?\\d|0):(?:[1-5]?\\d|0)|0:(?:[1-5]?\\d):(?:[1-5]?\\d)) (?<temp>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?))( (?<vlaga>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?)( (?<tlak>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?))?)?";
     Pattern p = Pattern.compile(sintaksa);
     Matcher m = p.matcher(s);
     if (!m.matches()) {

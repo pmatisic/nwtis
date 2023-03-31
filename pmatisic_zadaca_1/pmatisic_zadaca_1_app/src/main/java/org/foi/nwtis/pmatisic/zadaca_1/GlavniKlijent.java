@@ -30,7 +30,7 @@ public class GlavniKlijent {
     var gk = new GlavniKlijent();
     Matcher unos = gk.provjeriArgumente(s);
 
-    String komanda;
+    String komanda = "";
     if (unos == null) {
       Logger.getGlobal().log(Level.SEVERE, "Greška u argumentima, provjerite unos!");
       return;

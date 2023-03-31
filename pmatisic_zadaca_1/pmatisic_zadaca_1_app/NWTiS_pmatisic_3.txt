@@ -1,5 +1,5 @@
-ispis=0
-maksCekanje=500
+ispis=1
+maksCekanje=5000
 mreznaVrata=8000
 brojCekaca=5
 brojRadnika=5

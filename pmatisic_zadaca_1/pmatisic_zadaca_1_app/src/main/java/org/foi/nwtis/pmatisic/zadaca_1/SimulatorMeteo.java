@@ -2,6 +2,7 @@ package org.foi.nwtis.pmatisic.zadaca_1;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -24,8 +25,10 @@ import org.foi.nwtis.pmatisic.zadaca_1.podaci.MeteoSimulacija;
 
 public class SimulatorMeteo {
 
+  // main
   public static void main(String[] args) {
     var sm = new SimulatorMeteo();
+
     if (!sm.provjeriArgumente(args)) {
       Logger.getLogger(SimulatorMeteo.class.getName()).log(Level.SEVERE,
           "Nije upisan naziv datoteke!");
@@ -44,7 +47,7 @@ public class SimulatorMeteo {
     }
   }
 
-  // provjerava argumente dobivene
+  // provjerava dobivene argumente
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
       var argument = args[0];
@@ -63,6 +66,7 @@ public class SimulatorMeteo {
     }
   }
 
+  // ucitaj postavke
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
   }
@@ -94,26 +98,71 @@ public class SimulatorMeteo {
         var vazeciMeteo = new MeteoSimulacija(kolone[0], kolone[1], Float.parseFloat(kolone[2]),
             Float.parseFloat(kolone[3]), Float.parseFloat(kolone[4]));
 
-        this.posaljiMeteoPodatak(vazeciMeteo, konf);
+        String foo = this.posaljiMeteoPodatak(vazeciMeteo, konf); // primljeni odgovor od mr
+        System.out.println(foo);
+
+        if (foo.contains("ERROR")) {
+          provjeriPostupak(vazeciMeteo, konf);
+        }
+        if (foo.contains("OK ")) {
+          provjeriPostupak(vazeciMeteo, konf);
+        }
+        if (foo.equals("OK")) {
+          provjeriPostupak(vazeciMeteo, konf);
+        }
         if (!jestPrviMeteoPodatak(brojac)) {
           this.obradiSpavanje(prethodniMeteo, vazeciMeteo,
               Integer.parseInt(konf.dajPostavku("trajanjeSekunde")));
         }
+
         prethodniMeteo = vazeciMeteo;
       }
     }
   }
 
-  private boolean jestPrviMeteoPodatak(int brojac) {
-    return brojac == 2;
+  // provjerava je li zaglavlje
+  private boolean jestZaglavlje(int brojac) {
+    return brojac == 1;
   }
 
+  // provjerava je li red u datoteci ima 5 kolona
   private boolean redImaPetKolona(String[] kolone) {
     return kolone.length == 5;
   }
 
+  // provjerava je li meteo podatak drugi red u datoteci
+  private boolean jestPrviMeteoPodatak(int brojac) {
+    return brojac == 2;
+  }
+
+  // obradiva spavanje i pretvaranje vremena
+  private void obradiSpavanje(MeteoSimulacija prethodniMeteo, MeteoSimulacija vazeciMeteo,
+      int trajanjeSekunde) {
+    String prvi = prethodniMeteo.vrijeme();
+    String drugi = vazeciMeteo.vrijeme();
+    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+
+    try {
+      Date vrijeme1 = format.parse(prvi);
+      Date vrijeme2 = format.parse(drugi);
+      long razlika = vrijeme2.getTime() - vrijeme1.getTime(); // u ms
+      razlika = razlika / 1000; // u sekundama
+      razlika = razlika - trajanjeSekunde; // korigiranje razlike
+      if (razlika > 0) {
+        long spavaj = razlika * 1000; // pretvaranje u ms
+        Thread.sleep(spavaj);
+      }
+    } catch (ParseException e) {
+      Logger.getGlobal().log(Level.SEVERE, "Greška u pretvorbi vremena! " + e.getMessage());
+    } catch (InterruptedException e) {
+      Logger.getGlobal().log(Level.SEVERE, "Greška u obradi! " + e.getMessage());
+    }
+  }
+
   // primanje odgovora i slanje podataka na mr
-  private void posaljiMeteoPodatak(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
+  private String posaljiMeteoPodatak(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
+    String primitak = "";
+
     try {
       String adresa = konf.dajPostavku("posluziteljGlavniAdresa");
       short mreznaVrata = Short.parseShort(konf.dajPostavku("posluziteljGlavniVrata"));
@@ -129,7 +178,6 @@ public class SimulatorMeteo {
       mreznaUticnica.shutdownOutput();
 
       var poruka = new StringBuilder();
-
       while (true) {
         var red = citac.readLine();
         if (red == null)
@@ -137,47 +185,38 @@ public class SimulatorMeteo {
 
         poruka.append(red);
       }
-      String primitak = poruka.toString();
+
+      primitak = poruka.toString(); // primljeni odgovor od mr
       mreznaUticnica.shutdownInput();
       mreznaUticnica.close();
     } catch (IOException e) {
       Logger.getGlobal().log(Level.SEVERE, "Greška u spajanju na poslužitelj! " + e.getMessage());
     }
+
+    return primitak;
   }
 
-  /*
-   * KORISNIK pero LOZINKA 123456 SENZOR FOISK-SHTC3 0:0:18 19 16 za napraviti tu komandu
-   * "KORISNIK " konf.dohvatiPostavku("korisnickoIme") + " LOZINKA " +
-   * konf.dohvatiPostavku("korisnickaLozinka") + " SENZOR " + vazeciMeteo.id() + " " +
-   * vazeciMeteo.vrijeme() + " " + vazeciMeteo.temperatura()...
-   */
   // ovdje obradivam komandu
   private String obradiZahtjev(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
     HashMap<String, String> komanda = new HashMap<>();
 
-    // postavljanje korisničkog imena i lozinke
     komanda.put("korisnik", konf.dajPostavku("korisnickoIme"));
     komanda.put("lozinka", konf.dajPostavku("korisnickaLozinka"));
-
-    // postavljanje podataka o senzoru
     komanda.put("senzor", vazeciMeteo.id());
     komanda.put("vrijeme", vazeciMeteo.vrijeme());
 
     if (vazeciMeteo.temperatura() != -999) {
       komanda.put("temperatura", String.valueOf(vazeciMeteo.temperatura()));
     }
-
     if (vazeciMeteo.vlaga() != -999) {
       komanda.put("vlaga", String.valueOf(vazeciMeteo.vlaga()));
     }
-
     if (vazeciMeteo.tlak() != -999) {
       komanda.put("tlak", String.valueOf(vazeciMeteo.tlak()));
     }
 
-
-    // spajanje dijelova komande u konačni oblik
     StringBuilder sb = new StringBuilder();
+
     sb.append("KORISNIK ").append(komanda.get("korisnik")).append(" ");
     sb.append("LOZINKA ").append(komanda.get("lozinka")).append(" ");
     sb.append("SENZOR ").append(komanda.get("senzor")).append(" ");
@@ -193,45 +232,37 @@ public class SimulatorMeteo {
     if (komanda.get("tlak") != null) {
       sb.append(" ").append(komanda.get("tlak"));
     }
-    // sb.append(komanda.get("vrijeme")).append(" ");
-    // sb.append(komanda.get("temperatura")).append(" ");
-    // sb.append(komanda.get("vlaga")).append(" ");
-    // sb.append(komanda.get("tlak"));
 
     String komandaString = sb.toString();
-
-    System.out.println(komandaString);
-
-    // int brojPokusaja = Integer.parseInt(konf.dajPostavku("brojPokusaja"));
-    // String datotekaProblema = konf.dajPostavku("datotekaProblema");
-
     return komandaString;
   }
 
-  private boolean jestZaglavlje(int brojac) {
-    return brojac == 1;
-  }
+  // provjeravam postupak slanja preko uvjeta iz pdfa
+  public void provjeriPostupak(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
+    int brojPokusaja = Integer.parseInt(konf.dajPostavku("brojPokusaja"));
+    String datotekaProblema = konf.dajPostavku("datotekaProblema");
+    boolean uspjesno = false;
+    int brojPokusajaOstalo = brojPokusaja;
 
-  // obradiva spavanje i parsanje
-  private void obradiSpavanje(MeteoSimulacija prethodniMeteo, MeteoSimulacija vazeciMeteo,
-      int trajanjeSekunde) {
-    String prvi = prethodniMeteo.vrijeme();
-    String drugi = vazeciMeteo.vrijeme();
-    SimpleDateFormat format = new SimpleDateFormat("H:mm:ss"); // TODO morat cemo sredit ovaj format
-    try {
-      Date datum1 = format.parse(prvi);
-      Date datum2 = format.parse(drugi);
-      long razlika = datum2.getTime() - datum1.getTime(); // u ms
-      razlika = razlika / 1000; // u sekundama
-      razlika = razlika - trajanjeSekunde; // korigiranje razlike
-      if (razlika > 0) {
-        long spavaj = razlika * 1000; // pretvaranje u ms
-        Thread.sleep(spavaj);
+    while (!uspjesno && brojPokusajaOstalo > 0) {
+      String odgovor = posaljiMeteoPodatak(vazeciMeteo, konf);
+      if (odgovor.contains("ERROR")) {
+        brojPokusajaOstalo--;
+      } else {
+        uspjesno = true;
       }
-    } catch (ParseException e) {
-      Logger.getGlobal().log(Level.SEVERE, "Greška u pretvorbi vremena! " + e.getMessage());
-    } catch (InterruptedException e) {
-      Logger.getGlobal().log(Level.SEVERE, "Greška u obradi! " + e.getMessage());
+    }
+
+    if (!uspjesno) {
+      try {
+        FileWriter writer = new FileWriter(datotekaProblema, true);
+        writer.write(vazeciMeteo.id() + ";" + vazeciMeteo.vrijeme() + ";"
+            + vazeciMeteo.temperatura() + ";" + vazeciMeteo.vlaga() + ";" + vazeciMeteo.tlak() + ";"
+            + "Greška u slanju podataka" + "\n");
+        writer.close();
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      }
     }
   }
 

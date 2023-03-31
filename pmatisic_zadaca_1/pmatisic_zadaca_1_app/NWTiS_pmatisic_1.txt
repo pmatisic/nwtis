@@ -5,6 +5,6 @@ brojPokusaja=5
 korisnickoIme=pkos
 korisnickaLozinka=123456
 datotekaMeteo=meteoSimulacija.csv
-datotekaProblema=meteoSimulacijaProblem.csv
+datotekaProblema=datotekaProblema.csv
 posluziteljGlavniAdresa=localhost
 posluziteljGlavniVrata=8000
