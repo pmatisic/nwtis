@@ -30,23 +30,20 @@ public class PosluziteljUdaljenosti {
   protected Konfiguracija konf;
   protected int brojRadnika;
   protected int maksVrijemeNeaktivnosti;
-  private int dretva = 0;
-  private int ispis = 0;
+  private int ispis = 0; // TODO napravit ispis prema tablici
   private int mreznaVrata = 8000;
   private int brojCekaca = 10;
   private boolean kraj = false;
-  LinkedHashMap<String, String> zadnjiZahtjevi = new LinkedHashMap<String, String>();
+  LinkedHashMap<String, String> zadnjiZahtjevi = new LinkedHashMap<String, String>() {
+    protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
+      return size() > Integer.parseInt(konf.dajPostavku("brojZadnjihSpremljenih"));
+    }
+  };
 
-  public PosluziteljUdaljenosti() {
-    zadnjiZahtjevi = new LinkedHashMap<String, String>() {
-      protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
-        return size() > Integer.parseInt(konf.dajPostavku("brojZadnjihSpremljenih"));
-      }
-    };
-  }
-
+  // main
   public static void main(String[] args) {
     var pu = new PosluziteljUdaljenosti();
+
     if (!pu.provjeriArgumente(args)) {
       Logger.getLogger(PosluziteljUdaljenosti.class.getName()).log(Level.SEVERE,
           "Nije upisan naziv datoteke!");
@@ -65,7 +62,7 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  // provjerava argumente dobivene
+  // provjerava dobivene argumente
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
       var argument = args[0];
@@ -85,6 +82,7 @@ public class PosluziteljUdaljenosti {
     }
   }
 
+  // ucitaj postavke
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
   }
@@ -92,10 +90,10 @@ public class PosluziteljUdaljenosti {
   // pokretanje posluzitelja
   public void pokreniPosluzitelja(Konfiguracija konf) throws IOException {
     this.konf = konf;
-    this.brojRadnika = Integer.parseInt(konf.dajPostavku("brojRadnika"));
     this.ispis = Integer.parseInt(konf.dajPostavku("ispis"));
     this.mreznaVrata = Integer.parseInt(konf.dajPostavku("mreznaVrata"));
     this.brojCekaca = Integer.parseInt(konf.dajPostavku("brojCekaca"));
+
     try {
       if (jestSlobodan()) {
         this.pripremiPosluzitelja();
@@ -103,8 +101,10 @@ public class PosluziteljUdaljenosti {
     } catch (Exception e) {
       Logger.getGlobal().log(Level.SEVERE, "Greška u pokretanju poslužitelja! " + e.getMessage());
     }
+
     var nazivDatoteke = konf.dajPostavku("datotekaSerijalizacija");
     var putanja = Path.of(nazivDatoteke);
+
     if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
       throw new IOException("Datoteka '" + nazivDatoteke + "' ne postoji ili nije datoteka!");
     } else {
@@ -112,25 +112,29 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  private Properties serijalizirajPodatke() {
-    var nazivDatoteke = konf.dajPostavku("datotekaSerijalizacija");
-    Properties objekt = new Properties();
+  // serijaliacija podataka za komandu
+  private boolean serijalizirajPodatke() {
+    String nazivDatoteke = konf.dajPostavku("datotekaSerijalizacija");
     File datoteka = new File(nazivDatoteke);
+
     try {
-      FileOutputStream fis = new FileOutputStream(datoteka);
-      ObjectOutputStream ois = new ObjectOutputStream(fis);
-      ois.writeObject(objekt);
-      ois.close();
+      FileOutputStream fos = new FileOutputStream(datoteka);
+      ObjectOutputStream oos = new ObjectOutputStream(fos);
+      oos.writeObject(zadnjiZahtjevi);
+      oos.close();
+      return true;
     } catch (IOException e) {
       e.printStackTrace();
+      return false;
     }
-    return objekt;
   }
 
+  // deserijaliacija podataka na pokretanju posluzitelja
   private Properties deserijalizirajPodatke(String s) {
     var nazivDatoteke = konf.dajPostavku("datotekaSerijalizacija");
     Properties objekt = new Properties();
     File datoteka = new File(nazivDatoteke);
+
     try {
       FileInputStream fis = new FileInputStream(datoteka);
       ObjectInputStream ois = new ObjectInputStream(fis);
@@ -141,6 +145,7 @@ public class PosluziteljUdaljenosti {
     } catch (IOException e) {
       e.printStackTrace();
     }
+
     return objekt;
   }
 
@@ -156,25 +161,16 @@ public class PosluziteljUdaljenosti {
 
   // stvaranje komunikacije
   public void pripremiPosluzitelja() {
-    Properties objekt = new Properties();
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       while (!this.kraj) {
         Socket veza = ss.accept();
-
-        // String zahtjev = procitajZahtjev();
-        // Čitanje zahtjeva
         BufferedReader ulaz = new BufferedReader(new InputStreamReader(veza.getInputStream()));
         String zahtjev = ulaz.readLine();
-
-        // Obrada zahtjeva i dobivanje odgovora
         String odgovor = obradiZahtjev(zahtjev);
-
-        // Slanje odgovora
         PrintWriter izlaz = new PrintWriter(new OutputStreamWriter(veza.getOutputStream()));
+
         izlaz.println(odgovor);
         izlaz.flush();
-
-        // Zatvaranje veze
         veza.close();
       }
     } catch (IOException e) {
@@ -222,37 +218,50 @@ public class PosluziteljUdaljenosti {
 
   public String obradiZahtjev(String zahtjev) {
     String[] dijelovi = zahtjev.trim().split("\\s+");
-    if (dijelovi.length != 5 || !dijelovi[0].equalsIgnoreCase("UDALJENOST")) {
-      return "GRESKA: Neispravan format zahtjeva.";
+
+    if (dijelovi.length < 1 || !dijelovi[0].equalsIgnoreCase("UDALJENOST")) {
+      return "ERROR 10: Neispravan format komande.";
     }
 
-    try {
-      double lat1 = Double.parseDouble(dijelovi[1]);
-      double lon1 = Double.parseDouble(dijelovi[2]);
-      double lat2 = Double.parseDouble(dijelovi[3]);
-      double lon2 = Double.parseDouble(dijelovi[4]);
-
-      String kljuc = lat1 + "," + lon1 + "," + lat2 + "," + lon2;
-
-      // Provjerite da li zahtjev postoji u kolekciji zadnjih zahtjeva
-      if (zadnjiZahtjevi.containsKey(kljuc)) {
-        return "OK " + zadnjiZahtjevi.get(kljuc);
+    if (dijelovi.length == 2 && dijelovi[1].equalsIgnoreCase("SPREMI")) {
+      // obrada naredbe "UDALJENOST SPREMI"
+      if (serijalizirajPodatke()) {
+        return "OK";
+      } else {
+        return "ERROR 19: Neuspješno spremanje podataka.";
       }
+    } else if (dijelovi.length == 5) {
+      // obrada naredbe "UDALJENOST 46.30771 16.33808 46.02419 15.90968"
+      try {
+        double lat1 = Double.parseDouble(dijelovi[1]);
+        double lon1 = Double.parseDouble(dijelovi[2]);
+        double lat2 = Double.parseDouble(dijelovi[3]);
+        double lon2 = Double.parseDouble(dijelovi[4]);
 
-      // Ako ne postoji, izračunajte udaljenost
-      double udaljenost = izracunajUdaljenost(lat1, lon1, lat2, lon2);
+        String kljuc = lat1 + "," + lon1 + "," + lat2 + "," + lon2;
 
-      // Ažurirajte kolekciju zadnjih zahtjeva
-      if (zadnjiZahtjevi.size() >= Integer.parseInt(konf.dajPostavku("brojZadnjihSpremljenih"))) {
-        String najstarijiKljuc = zadnjiZahtjevi.keySet().iterator().next();
-        zadnjiZahtjevi.remove(najstarijiKljuc);
+        // provjeri da li zahtjev postoji u kolekciji zadnjih zahtjeva
+        if (zadnjiZahtjevi.containsKey(kljuc)) {
+          return "OK " + zadnjiZahtjevi.get(kljuc);
+        }
+
+        // ako ne postoji, izračunaj udaljenost
+        double udaljenost = izracunajUdaljenost(lat1, lon1, lat2, lon2);
+
+        // ažuriraj kolekciju zadnjih zahtjeva
+        if (zadnjiZahtjevi.size() >= Integer.parseInt(konf.dajPostavku("brojZadnjihSpremljenih"))) {
+          String najstarijiKljuc = zadnjiZahtjevi.keySet().iterator().next();
+          zadnjiZahtjevi.remove(najstarijiKljuc);
+        }
+        zadnjiZahtjevi.put(kljuc, String.format("%.2f", udaljenost));
+
+        return "OK " + String.format("%.2f", udaljenost);
+
+      } catch (NumberFormatException e) {
+        return "ERROR 19: Neispravne koordinate.";
       }
-      zadnjiZahtjevi.put(kljuc, String.format("%.2f", udaljenost));
-
-      return "OK " + String.format("%.2f", udaljenost);
-
-    } catch (NumberFormatException e) {
-      return "GRESKA: Neispravne koordinate.";
+    } else {
+      return "ERROR 10: Neispravan format komande.";
     }
   }
 

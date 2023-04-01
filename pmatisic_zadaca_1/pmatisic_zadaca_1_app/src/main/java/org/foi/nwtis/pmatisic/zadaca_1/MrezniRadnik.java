@@ -55,8 +55,8 @@ public class MrezniRadnik extends Thread {
           new InputStreamReader(this.mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
       var pisac = new BufferedWriter(
           new OutputStreamWriter(this.mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
-
       var poruka = new StringBuilder();
+
       while (true) {
         var red = citac.readLine();
         if (red == null)
@@ -73,6 +73,7 @@ public class MrezniRadnik extends Thread {
       String neobradenaPoruka = poruka.toString();
       m1 = provjeraZaGlavniKlijent(neobradenaPoruka);
       m2 = provjeraZaSimulatorMeteo(neobradenaPoruka);
+
       if (m1 != null) {
         obradenaPoruka = obradiKomanduZaGlavniKlijent(m1);
       } else if (m2 != null) {
@@ -122,6 +123,7 @@ public class MrezniRadnik extends Thread {
   // obrada dobivene komande da bi se dobili podaci iz njih
   private static Map<String, String> obradiKomanduZaGlavniKlijent(Matcher m) {
     Map<String, String> grupe = new HashMap<>();
+
     grupe.put("KORISNIK", m.group("korisnik"));
     grupe.put("LOZINKA", m.group("lozinka"));
     grupe.put("METEO", m.group("meteo"));
@@ -134,6 +136,7 @@ public class MrezniRadnik extends Thread {
     grupe.put("KRAJ", m.group("kraj"));
 
     Map<String, String> pomocnaGrupa = new HashMap<>();
+
     for (String key : grupe.keySet()) {
       if (grupe.get(key) != null) {
         if (key == "UDALJENOST" || key == "UDALJENOST SPREMI") {
@@ -151,6 +154,7 @@ public class MrezniRadnik extends Thread {
   // obrada dobivene komande da bi se dobili podaci iz njih
   private static Map<String, String> obradiKomanduZaSimulatorMeteo(Matcher m) {
     Map<String, String> grupe = new HashMap<>();
+
     grupe.put("KORISNIK", m.group("korisnik"));
     grupe.put("LOZINKA", m.group("lozinka"));
     grupe.put("SENZOR", m.group("senzor"));
@@ -160,6 +164,7 @@ public class MrezniRadnik extends Thread {
     grupe.put("tlak", m.group("tlak"));
 
     Map<String, String> pomocnaGrupa = new HashMap<>();
+
     for (String key : grupe.keySet()) {
       if (grupe.get(key) != null) {
         pomocnaGrupa.put(key, grupe.get(key));

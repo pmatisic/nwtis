@@ -16,8 +16,10 @@ import java.util.regex.Pattern;
 
 public class GlavniKlijent {
 
+  // main
   public static void main(String[] args) {
     StringBuilder sb = new StringBuilder();
+
     for (int i = 0; i < args.length; i++) {
       if (args[i].contains(" ")) {
         String trenutni = args[i];
@@ -25,18 +27,19 @@ public class GlavniKlijent {
       }
       sb.append(args[i]).append(" ");
     }
-    String s = sb.toString().trim();
 
+    String s = sb.toString().trim();
     var gk = new GlavniKlijent();
     Matcher unos = gk.provjeriArgumente(s);
-
     String komanda = "";
+
     if (unos == null) {
       Logger.getGlobal().log(Level.SEVERE, "Greška u argumentima, provjerite unos!");
       return;
     } else {
       komanda = obradiKomandu(unos);
     }
+
     gk.spojiSeNaPosluzitelj(unos.group("adresa"), Integer.parseInt(unos.group("port")), komanda);
   }
 
@@ -56,6 +59,7 @@ public class GlavniKlijent {
   // obrada dobivene komande u razumljiv oblik
   private static String obradiKomandu(Matcher m) {
     Map<String, String> grupe = new HashMap<>();
+
     grupe.put("korisnik", "-k");
     grupe.put("lozinka", "-l");
     grupe.put("adresa", "-a");
@@ -82,13 +86,11 @@ public class GlavniKlijent {
     }
 
     String komanda = pretvoriUKomandu(pomocnaGrupa);
-
     return komanda;
   }
 
   // prosirenje prethodne metode na nacin da se dobije cjelovita naredba
   private static String pretvoriUKomandu(Map<String, String> mapa) {
-
     String naredba = "KORISNIK " + mapa.get("KORISNIK") + " LOZINKA " + mapa.get("LOZINKA");
 
     if (mapa.containsKey("UDALJENOST")) {

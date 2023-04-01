@@ -25,6 +25,8 @@ import org.foi.nwtis.pmatisic.zadaca_1.podaci.MeteoSimulacija;
 
 public class SimulatorMeteo {
 
+  private int ispis = 0;
+
   // main
   public static void main(String[] args) {
     var sm = new SimulatorMeteo();
@@ -87,6 +89,11 @@ public class SimulatorMeteo {
       if (red == null)
         break;
 
+      // TODO ispis, varijabla na pocetku klase
+      if (this.ispis == 1) {
+        Logger.getGlobal().log(Level.INFO, red);
+      }
+
       brojac++;
       if (jestZaglavlje(brojac))
         continue;
@@ -101,6 +108,7 @@ public class SimulatorMeteo {
         String foo = this.posaljiMeteoPodatak(vazeciMeteo, konf); // primljeni odgovor od mr
         System.out.println(foo);
 
+        // TODO odgovor od mr
         if (foo.contains("ERROR")) {
           provjeriPostupak(vazeciMeteo, konf);
         }
