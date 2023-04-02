@@ -1,6 +1,6 @@
-ispis=1
+ispis=0
 maksCekanje=500
-trajanjeSekunde=1
+trajanjeSekunde=10
 brojPokusaja=5
 korisnickoIme=pkos
 korisnickaLozinka=123456

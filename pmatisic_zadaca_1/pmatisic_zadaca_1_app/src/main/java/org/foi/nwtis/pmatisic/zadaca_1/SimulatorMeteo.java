@@ -175,6 +175,8 @@ public class SimulatorMeteo {
       String adresa = konf.dajPostavku("posluziteljGlavniAdresa");
       short mreznaVrata = Short.parseShort(konf.dajPostavku("posluziteljGlavniVrata"));
       Socket mreznaUticnica = new Socket(adresa, mreznaVrata);
+      // TODO doraditi makscekanje
+      mreznaUticnica.setSoTimeout(Short.parseShort(konf.dajPostavku("maksCekanje")));
       var citac = new BufferedReader(
           new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
       var pisac = new BufferedWriter(
@@ -190,6 +192,10 @@ public class SimulatorMeteo {
         var red = citac.readLine();
         if (red == null)
           break;
+
+        if (this.ispis == 1) {
+          Logger.getGlobal().log(Level.INFO, red);
+        }
 
         poruka.append(red);
       }

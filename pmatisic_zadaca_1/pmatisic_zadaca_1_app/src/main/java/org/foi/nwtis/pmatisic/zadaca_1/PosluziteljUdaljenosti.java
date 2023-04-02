@@ -30,10 +30,19 @@ public class PosluziteljUdaljenosti {
   protected Konfiguracija konf;
   protected int brojRadnika;
   protected int maksVrijemeNeaktivnosti;
-  private int ispis = 0; // TODO napravit ispis prema tablici
+  private int ispis = 0;
   private int mreznaVrata = 8000;
   private int brojCekaca = 10;
   private boolean kraj = false;
+  private Matcher m;
+
+  /**
+   * ugradbena metoda na eng
+   * 
+   * @see https://stackoverflow.com/questions/20772869/what-is-the-use-of-linkedhashmap-removeeldestentry
+   * @see https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html#removeEldestEntry-java.util.Map.Entry-
+   */
+  @SuppressWarnings("serial")
   LinkedHashMap<String, String> zadnjiZahtjevi = new LinkedHashMap<String, String>() {
     protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
       return size() > Integer.parseInt(konf.dajPostavku("brojZadnjihSpremljenih"));
@@ -166,7 +175,21 @@ public class PosluziteljUdaljenosti {
         Socket veza = ss.accept();
         BufferedReader ulaz = new BufferedReader(new InputStreamReader(veza.getInputStream()));
         String zahtjev = ulaz.readLine();
-        String odgovor = obradiZahtjev(zahtjev);
+        String odgovor = "";
+
+        // TODO napravit ispis prema tablici
+        if (this.ispis == 1) {
+          Logger.getGlobal().log(Level.INFO, zahtjev);
+        }
+
+        m = jestIspravanZahtjev(zahtjev);
+
+        if (m != null) {
+          odgovor = obradiZahtjev(zahtjev);
+        } else {
+          odgovor = "ERROR 10";
+        }
+
         PrintWriter izlaz = new PrintWriter(new OutputStreamWriter(veza.getOutputStream()));
 
         izlaz.println(odgovor);
@@ -175,6 +198,19 @@ public class PosluziteljUdaljenosti {
       }
     } catch (IOException e) {
       Logger.getGlobal().log(Level.SEVERE, "Greška u stvaranju veze! " + e.getMessage());
+    }
+  }
+
+  // provjera ispravnosti dobivenog zahtjeva
+  private Matcher jestIspravanZahtjev(String s) {
+    String sintaksa =
+        "(UDALJENOST \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d)|(UDALJENOST SPREMI)";
+    Pattern p = Pattern.compile(sintaksa);
+    Matcher m = p.matcher(s);
+    if (!m.matches()) {
+      return null;
+    } else {
+      return m;
     }
   }
 
@@ -216,11 +252,12 @@ public class PosluziteljUdaljenosti {
     return R * c;
   }
 
+  // obrada zahtjeva
   public String obradiZahtjev(String zahtjev) {
     String[] dijelovi = zahtjev.trim().split("\\s+");
 
     if (dijelovi.length < 1 || !dijelovi[0].equalsIgnoreCase("UDALJENOST")) {
-      return "ERROR 10: Neispravan format komande.";
+      return "ERROR 10 Neispravan format komande.";
     }
 
     if (dijelovi.length == 2 && dijelovi[1].equalsIgnoreCase("SPREMI")) {
@@ -228,7 +265,7 @@ public class PosluziteljUdaljenosti {
       if (serijalizirajPodatke()) {
         return "OK";
       } else {
-        return "ERROR 19: Neuspješno spremanje podataka.";
+        return "ERROR 19 Neuspješno spremanje podataka.";
       }
     } else if (dijelovi.length == 5) {
       // obrada naredbe "UDALJENOST 46.30771 16.33808 46.02419 15.90968"
@@ -253,15 +290,14 @@ public class PosluziteljUdaljenosti {
           String najstarijiKljuc = zadnjiZahtjevi.keySet().iterator().next();
           zadnjiZahtjevi.remove(najstarijiKljuc);
         }
+
         zadnjiZahtjevi.put(kljuc, String.format("%.2f", udaljenost));
-
         return "OK " + String.format("%.2f", udaljenost);
-
       } catch (NumberFormatException e) {
-        return "ERROR 19: Neispravne koordinate.";
+        return "ERROR 19 Neispravne koordinate.";
       }
     } else {
-      return "ERROR 10: Neispravan format komande.";
+      return "ERROR 10 Neispravan format komande.";
     }
   }
 
