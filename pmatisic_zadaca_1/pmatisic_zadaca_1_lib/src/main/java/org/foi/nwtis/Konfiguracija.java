@@ -3,7 +3,7 @@ package org.foi.nwtis;
 import java.util.Properties;
 
 /**
- * Sučelje za rad s postavkama iz konfiguracijske datoteke
+ * Sučelje za rad s postavkama iz konfiguracijske datoteke.
  */
 public interface Konfiguracija {
 

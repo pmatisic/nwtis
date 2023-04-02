@@ -15,7 +15,6 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,31 +24,45 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
+/**
+ * Klasa PosluziteljUdaljenosti.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class PosluziteljUdaljenosti {
 
+  /** konf. */
   protected Konfiguracija konf;
+
+  /** broj radnika. */
   protected int brojRadnika;
+
+  /** maks vrijeme neaktivnosti. */
   protected int maksVrijemeNeaktivnosti;
+
+  /** ispis. */
   private int ispis = 0;
+
+  /** mrezna vrata. */
   private int mreznaVrata = 8000;
+
+  /** broj cekaca. */
   private int brojCekaca = 10;
+
+  /** kraj. */
   private boolean kraj = false;
+
+  /** matcher. */
   private Matcher m;
 
-  /**
-   * ugradbena metoda na eng
-   * 
-   * @see https://stackoverflow.com/questions/20772869/what-is-the-use-of-linkedhashmap-removeeldestentry
-   * @see https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html#removeEldestEntry-java.util.Map.Entry-
-   */
-  @SuppressWarnings("serial")
-  LinkedHashMap<String, String> zadnjiZahtjevi = new LinkedHashMap<String, String>() {
-    protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
-      return size() > Integer.parseInt(konf.dajPostavku("brojZadnjihSpremljenih"));
-    }
-  };
+  /** Kolekcija zadnjiZahtjevi. */
+  private LinkedHashMap<String, String> zadnjiZahtjevi = new LinkedHashMap<String, String>();
 
-  // main
+  /**
+   * Main metoda.
+   *
+   * @param args argumenti
+   */
   public static void main(String[] args) {
     var pu = new PosluziteljUdaljenosti();
 
@@ -71,7 +84,12 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  // provjerava dobivene argumente
+  /**
+   * Provjeri argumente.
+   *
+   * @param args argumenti
+   * @return istina, ako je uspješno
+   */
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
       var argument = args[0];
@@ -91,12 +109,23 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  // ucitaj postavke
+  /**
+   * Učitaj postavke.
+   *
+   * @param nazivDatoteke naziv datoteke
+   * @return konfiguracija
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
+   */
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
   }
 
-  // pokretanje posluzitelja
+  /**
+   * Pokreni poslužitelja.
+   *
+   * @param konf konf
+   * @throws I/O iznimka
+   */
   public void pokreniPosluzitelja(Konfiguracija konf) throws IOException {
     this.konf = konf;
     this.ispis = Integer.parseInt(konf.dajPostavku("ispis"));
@@ -121,7 +150,11 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  // serijaliacija podataka za komandu
+  /**
+   * Serijaliziraj podatke.
+   *
+   * @return istina, ako je uspješno
+   */
   private boolean serijalizirajPodatke() {
     String nazivDatoteke = konf.dajPostavku("datotekaSerijalizacija");
     File datoteka = new File(nazivDatoteke);
@@ -138,7 +171,12 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  // deserijaliacija podataka na pokretanju posluzitelja
+  /**
+   * Deserijaliziraj podatke.
+   *
+   * @param s s
+   * @return objekt
+   */
   private Properties deserijalizirajPodatke(String s) {
     var nazivDatoteke = konf.dajPostavku("datotekaSerijalizacija");
     Properties objekt = new Properties();
@@ -158,7 +196,11 @@ public class PosluziteljUdaljenosti {
     return objekt;
   }
 
-  // provjera je li port slobodan
+  /**
+   * Provjera je li port slobodan
+   *
+   * @return istina, ako je uspješno
+   */
   public boolean jestSlobodan() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata)) {
       return true;
@@ -168,7 +210,9 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  // stvaranje komunikacije
+  /**
+   * Pripremi poslužitelja.
+   */
   public void pripremiPosluzitelja() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       while (!this.kraj) {
@@ -177,7 +221,6 @@ public class PosluziteljUdaljenosti {
         String zahtjev = ulaz.readLine();
         String odgovor = "";
 
-        // TODO napravit ispis prema tablici
         if (this.ispis == 1) {
           Logger.getGlobal().log(Level.INFO, zahtjev);
         }
@@ -201,7 +244,12 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  // provjera ispravnosti dobivenog zahtjeva
+  /**
+   * Jest ispravan zahtjev.
+   *
+   * @param s s
+   * @return matcher
+   */
   private Matcher jestIspravanZahtjev(String s) {
     String sintaksa =
         "(UDALJENOST \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d)|(UDALJENOST SPREMI)";
@@ -219,13 +267,7 @@ public class PosluziteljUdaljenosti {
    * koristi za izračunavanje udaljenosti između dvije točke na Zemljinoj površini pomoću njihovih
    * geografskih koordinata (širina i dužina). Haversineova formula je posebno korisna za male
    * udaljenosti, gdje se uzima u obzir zakrivljenost Zemlje.
-   * 
-   * @see - Wikipedia članak o Haversineovoj formuli:
-   *      <a href="https://en.wikipedia.org/wiki/Haversine_formula">Haversine formula</a>
-   * @see - StackOverflow odgovor s implementacijom u Javi: <a href=
-   *      "https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula">Calculate
-   *      distance between two latitude-longitude points? (Haversine formula)</a>
-   * 
+   *
    * @param lat1 Geografska širina prve točke (u stupnjevima). Geografska širina je kutna udaljenost
    *        neke točke sjeverno ili južno od ekvatora. Vrijednost varira od -90° (južni pol) do 90°
    *        (sjeverni pol).
@@ -235,6 +277,11 @@ public class PosluziteljUdaljenosti {
    * @param lat2 Geografska širina druge točke (u stupnjevima).
    * @param lon2 Geografska dužina druge točke (u stupnjevima).
    * @return Funkcija vraća udaljenost između dvije točke u kilometrima kao rezultat tipa double.
+   * @see - Wikipedia članak o Haversineovoj formuli:
+   *      <a href="https://en.wikipedia.org/wiki/Haversine_formula">Haversine formula</a>
+   * @see - StackOverflow odgovor s implementacijom u Javi: <a href=
+   *      "https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula">Calculate
+   *      distance between two latitude-longitude points? (Haversine formula)</a>
    */
   public static double izracunajUdaljenost(double lat1, double lon1, double lat2, double lon2) {
     final int R = 6371; // Radijus Zemlje u kilometrima
@@ -249,10 +296,15 @@ public class PosluziteljUdaljenosti {
 
     double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c;
+    return (R * c);
   }
 
-  // obrada zahtjeva
+  /**
+   * Obradi zahtjev.
+   *
+   * @param zahtjev zahtjev
+   * @return string
+   */
   public String obradiZahtjev(String zahtjev) {
     String[] dijelovi = zahtjev.trim().split("\\s+");
 
@@ -261,14 +313,12 @@ public class PosluziteljUdaljenosti {
     }
 
     if (dijelovi.length == 2 && dijelovi[1].equalsIgnoreCase("SPREMI")) {
-      // obrada naredbe "UDALJENOST SPREMI"
       if (serijalizirajPodatke()) {
         return "OK";
       } else {
         return "ERROR 19 Neuspješno spremanje podataka.";
       }
     } else if (dijelovi.length == 5) {
-      // obrada naredbe "UDALJENOST 46.30771 16.33808 46.02419 15.90968"
       try {
         double lat1 = Double.parseDouble(dijelovi[1]);
         double lon1 = Double.parseDouble(dijelovi[2]);
@@ -277,15 +327,12 @@ public class PosluziteljUdaljenosti {
 
         String kljuc = lat1 + "," + lon1 + "," + lat2 + "," + lon2;
 
-        // provjeri da li zahtjev postoji u kolekciji zadnjih zahtjeva
         if (zadnjiZahtjevi.containsKey(kljuc)) {
           return "OK " + zadnjiZahtjevi.get(kljuc);
         }
 
-        // ako ne postoji, izračunaj udaljenost
         double udaljenost = izracunajUdaljenost(lat1, lon1, lat2, lon2);
 
-        // ažuriraj kolekciju zadnjih zahtjeva
         if (zadnjiZahtjevi.size() >= Integer.parseInt(konf.dajPostavku("brojZadnjihSpremljenih"))) {
           String najstarijiKljuc = zadnjiZahtjevi.keySet().iterator().next();
           zadnjiZahtjevi.remove(najstarijiKljuc);

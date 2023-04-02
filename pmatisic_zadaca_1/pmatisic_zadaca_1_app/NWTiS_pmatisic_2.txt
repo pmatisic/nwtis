@@ -1,4 +1,4 @@
-ispis=0
+ispis=1
 mreznaVrata=8080
 brojCekaca=5
 brojZadnjihSpremljenih=5

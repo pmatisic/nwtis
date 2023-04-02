@@ -14,9 +14,18 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Klasa GlavniKlijent.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class GlavniKlijent {
 
-  // main
+  /**
+   * Main metoda.
+   *
+   * @param args argumenti
+   */
   public static void main(String[] args) {
     StringBuilder sb = new StringBuilder();
 
@@ -43,7 +52,12 @@ public class GlavniKlijent {
     gk.spojiSeNaPosluzitelj(unos.group("adresa"), Integer.parseInt(unos.group("port")), komanda);
   }
 
-  // provjera kor. unosa za argument
+  /**
+   * Provjerava korisnički unos tj. argumente.
+   *
+   * @param s s
+   * @return matcher
+   */
   private Matcher provjeriArgumente(String s) {
     String sintaksa =
         "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--makstemp) (?<makstemp>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--makstlak) (?<makstlak>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
@@ -56,7 +70,12 @@ public class GlavniKlijent {
     }
   }
 
-  // obrada dobivene komande u razumljiv oblik
+  /**
+   * Obrađuje komandu u razumljiv oblik mrežnom radniku.
+   *
+   * @param m m
+   * @return string
+   */
   private static String obradiKomandu(Matcher m) {
     Map<String, String> grupe = new HashMap<>();
 
@@ -78,7 +97,7 @@ public class GlavniKlijent {
     for (String key : grupe.keySet()) {
       if (m.group(key) != null) {
         if (key == "udaljenostnavodnici" || key == "udaljenostspremi") {
-          pomocnaGrupa.put("UDALJENOST", m.group(key));
+          pomocnaGrupa.put("UDALJENOST", m.group(key).toUpperCase());
         } else {
           pomocnaGrupa.put(key.toUpperCase(), m.group(key));
         }
@@ -89,7 +108,12 @@ public class GlavniKlijent {
     return komanda;
   }
 
-  // prosirenje prethodne metode na nacin da se dobije cjelovita naredba
+  /**
+   * Proširenje metode <i>obradiKomandu</i> na način da se dobije cjelovita naredba.
+   *
+   * @param mapa mapa
+   * @return string
+   */
   private static String pretvoriUKomandu(Map<String, String> mapa) {
     String naredba = "KORISNIK " + mapa.get("KORISNIK") + " LOZINKA " + mapa.get("LOZINKA");
 
@@ -114,7 +138,13 @@ public class GlavniKlijent {
     return naredba;
   }
 
-  // metoda za spajanje na posluzitelj
+  /**
+   * Spoji se na poslužitelj.
+   *
+   * @param adresa adresa
+   * @param mreznaVrata mrežna vrata
+   * @param komanda komanda
+   */
   private void spojiSeNaPosluzitelj(String adresa, int mreznaVrata, String komanda) {
     try {
       Socket mreznaUticnica = new Socket(adresa, mreznaVrata);

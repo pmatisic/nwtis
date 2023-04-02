@@ -1,13 +1,11 @@
 package org.foi.nwtis;
 
 /**
- * Iznimka za slučaj kada je neispravna konfiguracija s postavmaka
+ * Iznimka za slučaj kada je neispravna konfiguracija s postavmaka.
  */
 public class NeispravnaKonfiguracija extends Exception {
 
-  /**
-   * Serijski id verzije
-   */
+  /** Serijski id verzije. */
   private static final long serialVersionUID = 8075964301691709607L;
 
   /**

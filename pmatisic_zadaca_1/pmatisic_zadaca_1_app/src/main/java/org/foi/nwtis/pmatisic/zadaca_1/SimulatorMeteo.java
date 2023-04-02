@@ -23,11 +23,21 @@ import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 import org.foi.nwtis.pmatisic.zadaca_1.podaci.MeteoSimulacija;
 
+/**
+ * Klasa SimulatorMeteo.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class SimulatorMeteo {
 
+  /** ispis. */
   private int ispis = 0;
 
-  // main
+  /**
+   * Main metoda.
+   *
+   * @param args argumenti
+   */
   public static void main(String[] args) {
     var sm = new SimulatorMeteo();
 
@@ -49,7 +59,12 @@ public class SimulatorMeteo {
     }
   }
 
-  // provjerava dobivene argumente
+  /**
+   * Provjeri argumente.
+   *
+   * @param args argumenti
+   * @return istina, ako je uspješno
+   */
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
       var argument = args[0];
@@ -68,12 +83,23 @@ public class SimulatorMeteo {
     }
   }
 
-  // ucitaj postavke
+  /**
+   * Učitaj postavke.
+   *
+   * @param nazivDatoteke naziv datoteke
+   * @return konfiguracija
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
+   */
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
   }
 
-  // pokretanje simulatora
+  /**
+   * Pokreni simulator.
+   *
+   * @param konf konf
+   * @throws I/O iznimka
+   */
   private void pokreniSimulator(Konfiguracija konf) throws IOException {
     var nazivDatoteke = konf.dajPostavku("datotekaMeteo");
     var putanja = Path.of(nazivDatoteke);
@@ -89,7 +115,6 @@ public class SimulatorMeteo {
       if (red == null)
         break;
 
-      // TODO ispis, varijabla na pocetku klase
       if (this.ispis == 1) {
         Logger.getGlobal().log(Level.INFO, red);
       }
@@ -105,17 +130,9 @@ public class SimulatorMeteo {
         var vazeciMeteo = new MeteoSimulacija(kolone[0], kolone[1], Float.parseFloat(kolone[2]),
             Float.parseFloat(kolone[3]), Float.parseFloat(kolone[4]));
 
-        String foo = this.posaljiMeteoPodatak(vazeciMeteo, konf); // primljeni odgovor od mr
-        System.out.println(foo);
+        String odgovor = this.posaljiMeteoPodatak(vazeciMeteo, konf);
 
-        // TODO odgovor od mr
-        if (foo.contains("ERROR")) {
-          provjeriPostupak(vazeciMeteo, konf);
-        }
-        if (foo.contains("OK ")) {
-          provjeriPostupak(vazeciMeteo, konf);
-        }
-        if (foo.equals("OK")) {
+        if (odgovor.contains("ERROR")) {
           provjeriPostupak(vazeciMeteo, konf);
         }
         if (!jestPrviMeteoPodatak(brojac)) {
@@ -128,22 +145,45 @@ public class SimulatorMeteo {
     }
   }
 
+  /**
+   * Provjerava je li zaglavlje
+   *
+   * @param brojac brojač
+   * @return istina, ako je uspješno
+   */
   // provjerava je li zaglavlje
   private boolean jestZaglavlje(int brojac) {
     return brojac == 1;
   }
 
+  /**
+   * Red ima pet kolona.
+   *
+   * @param kolone kolone
+   * @return istina, ako je uspješno
+   */
   // provjerava je li red u datoteci ima 5 kolona
   private boolean redImaPetKolona(String[] kolone) {
     return kolone.length == 5;
   }
 
-  // provjerava je li meteo podatak drugi red u datoteci
+  /**
+   * Provjerava je li meteo podatak drugi red u datoteci
+   *
+   * @param brojac brojač
+   * @return istina, ako je uspješno
+   */
   private boolean jestPrviMeteoPodatak(int brojac) {
     return brojac == 2;
   }
 
-  // obradiva spavanje i pretvaranje vremena
+  /**
+   * Obradi spavanje i pretvori vrijeme.
+   *
+   * @param prethodniMeteo prethodni meteo
+   * @param vazeciMeteo važeći meteo
+   * @param trajanjeSekunde trajanje sekunde
+   */
   private void obradiSpavanje(MeteoSimulacija prethodniMeteo, MeteoSimulacija vazeciMeteo,
       int trajanjeSekunde) {
     String prvi = prethodniMeteo.vrijeme();
@@ -153,11 +193,11 @@ public class SimulatorMeteo {
     try {
       Date vrijeme1 = format.parse(prvi);
       Date vrijeme2 = format.parse(drugi);
-      long razlika = vrijeme2.getTime() - vrijeme1.getTime(); // u ms
-      razlika = razlika / 1000; // u sekundama
-      razlika = razlika - trajanjeSekunde; // korigiranje razlike
+      long razlika = vrijeme2.getTime() - vrijeme1.getTime();
+      razlika = razlika / 1000;
+      razlika = razlika - trajanjeSekunde;
       if (razlika > 0) {
-        long spavaj = razlika * 1000; // pretvaranje u ms
+        long spavaj = razlika * 1000;
         Thread.sleep(spavaj);
       }
     } catch (ParseException e) {
@@ -167,15 +207,19 @@ public class SimulatorMeteo {
     }
   }
 
-  // primanje odgovora i slanje podataka na mr
+  /**
+   * Pošalji meteo podatak na MrezniRadnik.
+   *
+   * @param vazeciMeteo važeći meteo
+   * @param konf konf
+   * @return string
+   */
   private String posaljiMeteoPodatak(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
     String primitak = "";
-
     try {
       String adresa = konf.dajPostavku("posluziteljGlavniAdresa");
       short mreznaVrata = Short.parseShort(konf.dajPostavku("posluziteljGlavniVrata"));
       Socket mreznaUticnica = new Socket(adresa, mreznaVrata);
-      // TODO doraditi makscekanje
       mreznaUticnica.setSoTimeout(Short.parseShort(konf.dajPostavku("maksCekanje")));
       var citac = new BufferedReader(
           new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
@@ -200,7 +244,7 @@ public class SimulatorMeteo {
         poruka.append(red);
       }
 
-      primitak = poruka.toString(); // primljeni odgovor od mr
+      primitak = poruka.toString();
       mreznaUticnica.shutdownInput();
       mreznaUticnica.close();
     } catch (IOException e) {
@@ -210,7 +254,13 @@ public class SimulatorMeteo {
     return primitak;
   }
 
-  // ovdje obradivam komandu
+  /**
+   * Obradi zahtjev.
+   *
+   * @param vazeciMeteo važeći meteo
+   * @param konf konf
+   * @return string
+   */
   private String obradiZahtjev(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
     HashMap<String, String> komanda = new HashMap<>();
 
@@ -251,7 +301,12 @@ public class SimulatorMeteo {
     return komandaString;
   }
 
-  // provjeravam postupak slanja preko uvjeta iz pdfa
+  /**
+   * Provjeri postupak.
+   *
+   * @param vazeciMeteo važeći meteo
+   * @param konf konf
+   */
   public void provjeriPostupak(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
     int brojPokusaja = Integer.parseInt(konf.dajPostavku("brojPokusaja"));
     String datotekaProblema = konf.dajPostavku("datotekaProblema");

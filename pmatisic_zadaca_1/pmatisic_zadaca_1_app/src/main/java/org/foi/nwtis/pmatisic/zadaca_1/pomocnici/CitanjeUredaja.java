@@ -11,10 +11,19 @@ import java.util.logging.Logger;
 import org.foi.nwtis.pmatisic.zadaca_1.podaci.Uredaj;
 import org.foi.nwtis.pmatisic.zadaca_1.podaci.UredajVrsta;
 
-// TODO napravit dokumentaciju
-
+/**
+ * Klasa služi za čitanje podataka o uređaju iz csv datoteke.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class CitanjeUredaja {
 
+  /**
+   * Ucitaj datoteku.
+   *
+   * @param nazivDatoteke naziv datoteke
+   * @return mapa
+   */
   public Map<String, Uredaj> ucitajDatoteku(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
     if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
@@ -42,6 +51,12 @@ public class CitanjeUredaja {
     return uredaji;
   }
 
+  /**
+   * Provjerava je li red ima cetiri kolone.
+   *
+   * @param kolona u datoteci
+   * @return istina, ako je uspješno
+   */
   private boolean redImaCetiriKolone(String[] kolone) {
     return kolone.length == 4;
   }

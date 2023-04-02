@@ -13,31 +13,61 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.foi.nwtis.Konfiguracija;
+import org.foi.nwtis.pmatisic.zadaca_1.podaci.Lokacija;
+import org.foi.nwtis.pmatisic.zadaca_1.podaci.Uredaj;
 
+/**
+ * Klasa MrezniRadnik.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class MrezniRadnik extends Thread {
 
+  /** mrezna utičnica. */
   protected Socket mreznaUticnica;
+
+  /** konf. */
   protected Konfiguracija konf;
+
+  /** ispis. */
   private int ispis = 0;
+
+  /** gp. */
   private GlavniPosluzitelj gp;
-  private PosluziteljUdaljenosti pu;
+
+  /** Matcher 1. */
   private Matcher m1;
+
+  /** Matcher 2. */
   private Matcher m2;
-  private static AtomicInteger brojZahtjeva = new AtomicInteger(0);
-  private static AtomicInteger brojOdgovora = new AtomicInteger(0);
-  private static Object lockOdgovora = new Object();
-  private List<String> poznatiUredjaji = new ArrayList<>();
+
+  /** broj podataka po uređaju. */
   private Map<String, Integer> brojPodatakaPoUredjaju = new HashMap<>();
+
+  /** očitanja. */
   private Map<String, List<Map<String, Double>>> ocitanja = new HashMap<>();
+
+  /** alarm info log. */
   private List<String> alarmInfoLog = new ArrayList<>();
 
-  // konstruktor
+  /** poznate lokacije. */
+  private Map<String, Lokacija> poznateLokacije = new HashMap<>();
+
+  /** poznati uredjaji. */
+  private Map<String, Uredaj> poznatiUredjaji = new HashMap<>();
+
+
+  /**
+   * Instancira mrežni radnik.
+   *
+   * @param mreznaUticnica mrezna uticnica
+   * @param konf konf
+   */
   public MrezniRadnik(Socket mreznaUticnica, Konfiguracija konf) {
     super();
     this.mreznaUticnica = mreznaUticnica;
@@ -45,62 +75,37 @@ public class MrezniRadnik extends Thread {
     this.ispis = Integer.parseInt(this.konf.dajPostavku("ispis"));
   }
 
-  // overloadani konstruktor mreznog radnika
+  /**
+   * Instancira mrežni radnik.
+   *
+   * @param mreznaUticnica mrezna utičnica
+   * @param konf konf
+   * @param gp gp
+   */
   public MrezniRadnik(Socket mreznaUticnica, Konfiguracija konf, GlavniPosluzitelj gp) {
     super();
     this.mreznaUticnica = mreznaUticnica;
     this.konf = konf;
     this.ispis = Integer.parseInt(this.konf.dajPostavku("ispis"));
     this.gp = gp;
-    ucitajPoznateUredjaje(konf.dajPostavku("datotekaMeteo"));
+    this.poznatiUredjaji = gp.uredaji;
+    this.poznateLokacije = gp.lokacije;
   }
 
-  // ra algoritam
-  private void posaljiZahtjev() {
-    synchronized (lockOdgovora) {
-      brojZahtjeva.incrementAndGet();
-    }
-  }
-
-  // ra algoritam
-  private void obradiOdgovor() {
-    synchronized (lockOdgovora) {
-      brojOdgovora.incrementAndGet();
-      lockOdgovora.notifyAll();
-    }
-  }
-
-  // ra algoritam
-  private void cekajOdgovore(int ukupnoDretvi) {
-    synchronized (lockOdgovora) {
-      while (brojOdgovora.get() < ukupnoDretvi - 1) {
-        try {
-          lockOdgovora.wait();
-        } catch (InterruptedException e) {
-          Logger.getGlobal().log(Level.SEVERE, "Greška u čekanju odgovora! " + e.getMessage());
-        }
-      }
-    }
-  }
-
-  // pokretanje dretve
+  /**
+   * Start.
+   */
   @Override
   public synchronized void start() {
     super.start();
   }
 
-  // sredisnji dio
+  /**
+   * Run.
+   */
   @Override
   public void run() {
     try {
-      // Ovdje dodajemo Ricart-Agrawala algoritam
-      posaljiZahtjev();
-
-      // Čekamo odgovore od ostalih dretvi
-      // Pretpostavimo da ukupnoDretvi varijabla predstavlja ukupan broj dretvi koje koriste resurs
-      int ukupnoDretvi = Integer.parseInt(konf.dajPostavku("brojRadnika"));
-      cekajOdgovore(ukupnoDretvi);
-
       var citac = new BufferedReader(
           new InputStreamReader(this.mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
       var pisac = new BufferedWriter(
@@ -136,10 +141,6 @@ public class MrezniRadnik extends Thread {
       String odgovor = this.obradiZahtjev(obradenaPoruka);
       pisac.write(odgovor);
       pisac.flush();
-
-      // Nakon završetka kritičnog dijela, šaljemo odgovor ostalim dretvama
-      obradiOdgovor();
-
       this.mreznaUticnica.shutdownOutput();
       this.mreznaUticnica.close();
     } catch (IOException e) {
@@ -147,20 +148,28 @@ public class MrezniRadnik extends Thread {
     }
   }
 
-  // prekidanje dretve
+  /**
+   * Interrupt.
+   */
   @Override
   public void interrupt() {
-    Logger.getLogger(MrezniRadnik.class.getName()).info("Mrezni radnik se gasi");
+    Logger.getLogger(MrezniRadnik.class.getName()).info("Mrežni radnik se gasi");
     super.interrupt();
   }
 
-  // TODO metoda za spajanje na posluzitelj udaljenosti
-  private void spojiSeNaPU(String adresa, int mreznaVrata, String komanda) {
-    String primitak = ""; // jel ova metoda spojise ista vraca?
+  /**
+   * Spoji se na poslužitelj udaljenosti.
+   *
+   * @param adresa adresa
+   * @param mreznaVrata mrežna vrata
+   * @param komanda komanda
+   * @return string
+   */
+  private String spojiSeNaPU(String adresa, int mreznaVrata, String komanda) {
+    String primitak = "";
     try {
       Socket mreznaUticnica = new Socket(adresa, mreznaVrata);
-      // TODO doraditi maksCekanje
-      // mreznaUticnica.setSoTimeout(Short.parseShort(konf.dajPostavku("maksCekanje")));
+      mreznaUticnica.setSoTimeout(Short.parseShort(konf.dajPostavku("maksCekanje")));
       var citac = new BufferedReader(
           new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
       var pisac = new BufferedWriter(
@@ -186,9 +195,15 @@ public class MrezniRadnik extends Thread {
       Logger.getGlobal().log(Level.SEVERE,
           "Greška u spajanju na PosluziteljUdaljenosti! " + e.getMessage());
     }
+    return primitak;
   }
 
-  // provjera kor. unosa za komande
+  /**
+   * Provjeri komandu za glavni klijent.
+   *
+   * @param s s
+   * @return matcher
+   */
   private Matcher provjeriZaGlavniKlijent(String s) {
     String sintaksa =
         "(KORISNIK) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (LOZINKA) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) ((((METEO) (?<meteo>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((MAKS TEMP) (?<makstemp>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((MAKS VLAGA) (?<maksvlaga>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((MAKS TLAK) (?<makstlak>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((ALARM) (?<alarm>[0-9a-zA-Z' ]+))|((UDALJENOST) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((UDALJENOST) (?<udaljenostspremi>SPREMI))|(?<kraj>KRAJ)))";
@@ -201,7 +216,12 @@ public class MrezniRadnik extends Thread {
     }
   }
 
-  // provjera kor. unosa za komande
+  /**
+   * Provjeri komandu za simulator meteo.
+   *
+   * @param s s
+   * @return matcher
+   */
   private Matcher provjeriZaSimulatorMeteo(String s) {
     String sintaksa =
         "((KORISNIK) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (LOZINKA) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (SENZOR) (?<senzor>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+) (?<vrijeme>(?:[1-9]|1\\d|2[0-3]):(?:[1-5]?\\d|0):(?:[1-5]?\\d|0)|0:(?:[1-5]?\\d):(?:[1-5]?\\d)) (?<temp>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?))( (?<vlaga>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?)( (?<tlak>(?:(?<=^|[^\\d.])[1-9]\\d{0,3}|0)(?:\\.\\d)?))?)?";
@@ -214,7 +234,12 @@ public class MrezniRadnik extends Thread {
     }
   }
 
-  // obrada dobivene komande da bi se dobili podaci iz njih
+  /**
+   * Obradi komandu za glavni klijent.
+   *
+   * @param m m
+   * @return mapa
+   */
   private static Map<String, String> obradiKomanduZaGlavniKlijent(Matcher m) {
     Map<String, String> grupe = new HashMap<>();
 
@@ -244,7 +269,12 @@ public class MrezniRadnik extends Thread {
     return pomocnaGrupa;
   }
 
-  // obrada dobivene komande da bi se dobili podaci iz njih
+  /**
+   * Obradi komandu za simulator meteo.
+   *
+   * @param m m
+   * @return mapa
+   */
   private static Map<String, String> obradiKomanduZaSimulatorMeteo(Matcher m) {
     Map<String, String> grupe = new HashMap<>();
 
@@ -267,64 +297,125 @@ public class MrezniRadnik extends Thread {
     return pomocnaGrupa;
   }
 
-  // ovdje obradivam zahtjev koji dobijem kroz komandu
+  /**
+   * Obradi zahtjev.
+   *
+   * @param mapa mapa
+   * @return string
+   */
   private String obradiZahtjev(Map<String, String> mapa) {
-    // autentikacijski dio
     String korisnik = mapa.get("KORISNIK");
     String lozinka = mapa.get("LOZINKA");
     String korisnickaUloga = autenticirajKorisnika(korisnik, lozinka);
 
     if (korisnickaUloga.equals("0")) {
-      return "Greška: Neispravni korisnički podaci.";
+      return "ERROR 21 Neispravni korisnički podaci.";
     }
 
-    // predmetni dio
     String komanda = izvuciKomandu(mapa);
-    String idUredjaj = mapa.get("senzor");
+    String idUredjaj = mapa.get("METEO");
     String vrijeme = mapa.get("vrijeme");
     String temp = mapa.get("temp");
     String vlaga = mapa.get("vlaga");
     String tlak = mapa.get("tlak");
 
-    // Obradi predmetni dio na temelju komande
     switch (komanda) {
       case "KRAJ":
         if (korisnickaUloga.equals("1")) {
-          // Prekini čekanje, zatvori mrežna vrata i pričekaj da sve aktivne dretve završe svoj rad
-          return "Poslužitelj je završio s radom.";
+          gp.kraj = true;
+          return "OK";
         } else {
-          return "Greška: Korisnik nije administrator.";
+          return "ERROR 22 Korisnik nije administrator.";
         }
       case "SENZOR":
         return obradiSenzor(korisnickaUloga, idUredjaj, vrijeme, temp, vlaga, tlak);
       case "METEO":
-        // return obradiMeteo(idUredjaj);
+        return obradiMeteo(idUredjaj);
       case "UDALJENOST":
-        // return obradiUdaljenost(mapa.get("UDALJENOST"));
-      case "UDALJENOST SPREMI":
-        // Obradi komandu UDALJENOST SPREMI
-      case "MAKS TEMP":
-        // Obradi komandu MAKS TEMP
-      case "MAKS VLAGA":
-        // Obradi komandu MAKS VLAGA
-      case "MAKS TLAK":
-        // Obradi komandu MAKS TLAK
-      case "ALARM":
-        // Obradi komandu ALARM
+        String lokacijeString = mapa.get("UDALJENOST");
+        String[] lokacije = lokacijeString.split("'\\s+'");
+        if (lokacije.length == 1) {
+          return obradiUdaljenostSpremi();
+        }
+        if (lokacije.length != 2) {
+          return "ERROR 25 Neispravan broj lokacija.";
+        }
+        String idLokacija1 = lokacije[0].substring(1, lokacije[0].length());
+        String idLokacija2 = lokacije[1].substring(0, lokacije[1].length() - 1);
+        return obradiUdaljenost(idLokacija1, idLokacija2);
       default:
-        return "Greška: Nepoznata komanda.";
+        return "ERROR 20 Nepoznata komanda ili format komande nije ispravan.";
     }
   }
 
+  /**
+   * Obradi podatke za senzor.
+   *
+   * @param korisnickaUloga korisnicka uloga
+   * @param idUredjaj ID uređaja
+   * @param vrijeme vrijeme
+   * @param temp temp
+   * @param vlaga vlaga
+   * @param tlak tlak
+   * @return string
+   */
+  private String obradiSenzor(String korisnickaUloga, String idUredjaj, String vrijeme, String temp,
+      String vlaga, String tlak) {
+    if (!korisnickaUloga.equals("1")) {
+      return "ERROR 22 Korisnik nije administrator.";
+    }
+    if (!poznatiUredjaji.containsKey(idUredjaj)) {
+      return "ERROR 23 Uređaj ne postoji.";
+    }
+    int brojPrimljenihMeteoPodataka = 1;
+    if (vlaga != null)
+      brojPrimljenihMeteoPodataka++;
+    if (tlak != null)
+      brojPrimljenihMeteoPodataka++;
+    Integer brojOcekivanihMeteoPodataka = brojPodatakaPoUredjaju.get(idUredjaj);
+    if (brojOcekivanihMeteoPodataka == null
+        || brojPrimljenihMeteoPodataka != brojOcekivanihMeteoPodataka) {
+      return "ERROR 29 Pogrešan broj primljenih meteo podataka.";
+    }
+    Map<String, Double> novoOcitanje = kreirajNovoOcitanje(temp, vlaga, tlak);
+    List<Map<String, Double>> očitanjaUređaja = ocitanja.get(idUredjaj);
+    if (očitanjaUređaja == null) {
+      očitanjaUređaja = new ArrayList<>();
+      ocitanja.put(idUredjaj, očitanjaUređaja);
+    }
+    očitanjaUređaja.add(novoOcitanje);
+    List<Map<String, Double>> prethodnaOcitanja = ocitanja.get(idUredjaj);
+    String alarmInfo = "";
+    if (prethodnaOcitanja != null && !prethodnaOcitanja.isEmpty()) {
+      alarmInfo =
+          obradiAlarm(novoOcitanje, prethodnaOcitanja.subList(0, prethodnaOcitanja.size() - 1));
+    }
+    if (!alarmInfo.isEmpty()) {
+      StringBuilder logEntry = new StringBuilder();
+      logEntry.append("Vrijeme: ").append(vrijeme).append(", ID uređaja: ").append(idUredjaj)
+          .append(", Meteo podaci: ").append(novoOcitanje.toString()).append(", Odstupanje: ")
+          .append(alarmInfo);
+      alarmInfoLog.add(logEntry.toString());
+
+      očitanjaUređaja.clear();
+    }
+    String odgovor = generirajOdgovor(alarmInfo);
+    return odgovor;
+  }
+
+  /**
+   * Autenticiraj korisnika.
+   *
+   * @param korisnik korisnik
+   * @param lozinka lozinka
+   * @return string
+   */
   private String autenticirajKorisnika(String korisnik, String lozinka) {
     String datotekaKorisnika = konf.dajPostavku("datotekaKorisnika");
-
     try (BufferedReader br = new BufferedReader(new FileReader(datotekaKorisnika))) {
       String linija;
-
       while ((linija = br.readLine()) != null) {
         String[] podaci = linija.split(";");
-
         if (podaci.length >= 5) {
           String korisnickoIme = podaci[2];
           String korisnickaLozinka = podaci[3];
@@ -337,15 +428,20 @@ public class MrezniRadnik extends Thread {
       }
     } catch (FileNotFoundException e) {
       Logger.getLogger(PosluziteljUdaljenosti.class.getName()).log(Level.SEVERE,
-          "Greška: datoteka korisnika nije pronađena!", e);
+          "Datoteka korisnika nije pronađena!", e);
     } catch (IOException e) {
       Logger.getLogger(PosluziteljUdaljenosti.class.getName()).log(Level.SEVERE,
-          "Greška: problem s čitanjem datoteke korisnika!", e);
+          "Problem s čitanjem datoteke korisnika!", e);
     }
-
-    return "0"; // Vraća 0 ako korisnik nije pronađen ili lozinka nije ispravna
+    return "0";
   }
 
+  /**
+   * Izvuci ključnu riječ iz komande.
+   *
+   * @param mapa mapa
+   * @return string
+   */
   private String izvuciKomandu(Map<String, String> mapa) {
     for (String kljuc : mapa.keySet()) {
       if (kljuc.equals("KRAJ") || kljuc.equals("SENZOR") || kljuc.equals("METEO")
@@ -358,116 +454,34 @@ public class MrezniRadnik extends Thread {
     return "";
   }
 
-  private String obradiSenzor(String korisnickaUloga, String idUredjaj, String vrijeme, String temp,
-      String vlaga, String tlak) {
-    // Provjeri je li korisnik administrator
-    if (!korisnickaUloga.equals("1")) {
-      return "Greška: Korisnik nije administrator.";
-    }
-    // Provjeri je li ID uređaja poznat
-    if (!poznatiUredjaji.contains(idUredjaj)) {
-      return "Unknown device ID";
-    }
-
-    int brojPrimljenihMeteoPodataka = 1; // temperatura je uvijek prisutna
-    if (vlaga != null)
-      brojPrimljenihMeteoPodataka++;
-    if (tlak != null)
-      brojPrimljenihMeteoPodataka++;
-
-    Integer brojOcekivanihMeteoPodataka = brojPodatakaPoUredjaju.get(idUredjaj);
-    if (brojOcekivanihMeteoPodataka == null
-        || brojPrimljenihMeteoPodataka != brojOcekivanihMeteoPodataka) {
-      return "Invalid number of received meteo data";
-    }
-
-    // Ažurirajte način na koji dodajete novo očitanje u ocitanja
-    Map<String, Double> novoOcitanje = kreirajNovoOcitanje(temp, vlaga, tlak);
-    List<Map<String, Double>> očitanjaUređaja = ocitanja.get(idUredjaj);
-    if (očitanjaUređaja == null) {
-      očitanjaUređaja = new ArrayList<>();
-      ocitanja.put(idUredjaj, očitanjaUređaja);
-    }
-    očitanjaUređaja.add(novoOcitanje);
-
-    // Ažurirajte poziv metode obradiAlarm kako biste proslijedili cijeli popis prethodnih očitanja
-    List<Map<String, Double>> prethodnaOcitanja = ocitanja.get(idUredjaj);
-    String alarmInfo = "";
-    if (prethodnaOcitanja != null && !prethodnaOcitanja.isEmpty()) {
-      alarmInfo =
-          obradiAlarm(novoOcitanje, prethodnaOcitanja.subList(0, prethodnaOcitanja.size() - 1)); // Ne
-                                                                                                 // uključuj
-                                                                                                 // trenutno
-                                                                                                 // očitanje
-    }
-
-    if (!alarmInfo.isEmpty()) {
-      StringBuilder logEntry = new StringBuilder();
-      logEntry.append("Vrijeme: ").append(vrijeme).append(", ID uređaja: ").append(idUredjaj)
-          .append(", Meteo podaci: ").append(novoOcitanje.toString()).append(", Odstupanje: ")
-          .append(alarmInfo);
-      alarmInfoLog.add(logEntry.toString());
-    }
-
-    // Generiraj odgovor
-    String odgovor = generirajOdgovor(alarmInfo);
-    return odgovor;
-  }
-
-
-  private void ucitajPoznateUredjaje(String csvDatoteka) {
-    List<String[]> podaci = procitajCsvDatoteku(csvDatoteka);
-
-    for (String[] red : podaci) {
-      String idUredjaja = red[0]; // Pretpostavljamo da je ID uređaja prvi stupac u CSV datoteci
-      poznatiUredjaji.add(idUredjaja);
-
-      int brojMeteoPodataka = 0;
-      for (int i = 2; i < red.length; i++) {
-        if (!red[i].equals("-999")) {
-          brojMeteoPodataka++;
-        }
-      }
-      brojPodatakaPoUredjaju.put(idUredjaja, brojMeteoPodataka);
-    }
-  }
-
-  private List<String[]> procitajCsvDatoteku(String csvDatoteka) {
-    List<String[]> podaci = new ArrayList<>();
-
-    try (BufferedReader br = new BufferedReader(new FileReader(csvDatoteka))) {
-      String linija;
-      boolean prviRed = true;
-      while ((linija = br.readLine()) != null) {
-        if (prviRed) {
-          prviRed = false;
-          continue; // preskače prvi red (zaglavlje)
-        }
-        String[] red = linija.split(";"); // mijenjamo razdjelnik na točku sa zarezom
-        podaci.add(red);
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return podaci;
-  }
-
+  /**
+   * Provjeri odstupanje.
+   *
+   * @param trenutnaVrijednost trenutna vrijednost
+   * @param prethodnaVrijednost prethodna vrijednost
+   * @param dozvoljenoOdstupanje dozvoljeno odstupanje
+   * @return istina, ako je uspješno
+   */
   private boolean provjeriOdstupanje(double trenutnaVrijednost, double prethodnaVrijednost,
       double dozvoljenoOdstupanje) {
     return Math.abs(trenutnaVrijednost - prethodnaVrijednost) > dozvoljenoOdstupanje;
   }
 
+  /**
+   * Obradi alarm.
+   *
+   * @param zadnjeOcitanje zadnje očitanje
+   * @param prethodnaOcitanja prethodna očitanja
+   * @return string
+   */
   private String obradiAlarm(Map<String, Double> zadnjeOcitanje,
       List<Map<String, Double>> prethodnaOcitanja) {
     StringBuilder alarm = new StringBuilder();
-
     for (Map<String, Double> prethodnoOcitanje : prethodnaOcitanja) {
       for (String tip : zadnjeOcitanje.keySet()) {
         double trenutnaVrijednost = zadnjeOcitanje.get(tip);
         double prethodnaVrijednost = prethodnoOcitanje.get(tip);
         double dozvoljenoOdstupanje;
-
         switch (tip) {
           case "temperatura":
             dozvoljenoOdstupanje = Double.parseDouble(konf.dajPostavku("odstupanjeTemp"));
@@ -481,19 +495,23 @@ public class MrezniRadnik extends Thread {
           default:
             throw new IllegalStateException("Nepoznat tip senzora: " + tip);
         }
-
         if (provjeriOdstupanje(trenutnaVrijednost, prethodnaVrijednost, dozvoljenoOdstupanje)) {
           alarm.append(tip.toUpperCase()).append(" ");
-          break; // Ako je odstupanje pronađeno, nema potrebe provjeravati ostala očitanja za isti
-                 // tip senzora
+          break;
         }
       }
     }
-
     return alarm.toString().trim();
   }
 
-
+  /**
+   * Kreiraj novo očitanje.
+   *
+   * @param temp temp
+   * @param vlaga vlaga
+   * @param tlak tlak
+   * @return mapa
+   */
   private Map<String, Double> kreirajNovoOcitanje(String temp, String vlaga, String tlak) {
     Map<String, Double> novoOcitanje = new HashMap<>();
     novoOcitanje.put("temp", Double.parseDouble(temp));
@@ -506,12 +524,128 @@ public class MrezniRadnik extends Thread {
     return novoOcitanje;
   }
 
+  /**
+   * Generiraj odgovor.
+   *
+   * @param alarmInfo alarm info
+   * @return string
+   */
   private String generirajOdgovor(String alarmInfo) {
     String odgovor = "OK";
     if (!alarmInfo.isEmpty()) {
-      odgovor += " " + alarmInfo;
+      odgovor += " ALARM " + alarmInfo;
     }
     return odgovor;
+  }
+
+  /**
+   * Obradi meteo.
+   *
+   * @param idUredjaj ID uređaja
+   * @return string
+   */
+  private String obradiMeteo(String idUredjaj) {
+    if (senzorPostoji(idUredjaj)) {
+      Map<String, Double> zadnjeOcitanje = dohvatiZadnjeOcitanje(idUredjaj);
+      String vrijeme = dohvatiVrijemeOcitanja(idUredjaj);
+      String temp = String.valueOf(zadnjeOcitanje.get("temp"));
+      String vlaga = String.valueOf(zadnjeOcitanje.get("vlaga"));
+      String tlak = String.valueOf(zadnjeOcitanje.get("tlak"));
+      return String.format("OK %s %s (%s (%s)+)+", vrijeme, temp, vlaga, tlak);
+    } else {
+      return "ERROR 23 Nepostojeći senzor.";
+    }
+  }
+
+  /**
+   * Dohvati vrijeme očitanja.
+   *
+   * @param idUredjaj ID uređaja
+   * @return string
+   */
+  private String dohvatiVrijemeOcitanja(String idUredjaj) {
+    for (int i = alarmInfoLog.size() - 1; i >= 0; i--) {
+      String log = alarmInfoLog.get(i);
+      if (log.contains(idUredjaj)) {
+        String[] dijelovi = log.split(" ");
+        return dijelovi[0];
+      }
+    }
+    return "";
+  }
+
+  /**
+   * Provjeri je li senzor postoji.
+   *
+   * @param idUredjaj ID uređaja
+   * @return istina, ako je uspješno
+   */
+  private boolean senzorPostoji(String idUredjaj) {
+    return poznatiUredjaji.containsKey(idUredjaj);
+  }
+
+  /**
+   * Dohvati zadnje očitanje.
+   *
+   * @param idUredjaj ID uređaja
+   * @return mapa
+   */
+  private Map<String, Double> dohvatiZadnjeOcitanje(String idUredjaj) {
+    List<Map<String, Double>> listaOcitanja = ocitanja.get(idUredjaj);
+    if (listaOcitanja != null && !listaOcitanja.isEmpty()) {
+      return listaOcitanja.get(listaOcitanja.size() - 1);
+    } else {
+      return new HashMap<>();
+    }
+  }
+
+  /**
+   * Obradi udaljenost.
+   *
+   * @param idLokacija1 id lokacija 1
+   * @param idLokacija2 id lokacija 2
+   * @return string
+   */
+  private String obradiUdaljenost(String idLokacija1, String idLokacija2) {
+    if (lokacijaPostoji(idLokacija1) && lokacijaPostoji(idLokacija2)) {
+      String adresa = konf.dajPostavku("posluziteljUdaljenostiAdresa");
+      short mreznaVrata = Short.parseShort(konf.dajPostavku("posluziteljUdaljenostiVrata"));
+      Lokacija lok1 = poznateLokacije.get(idLokacija1);
+      Lokacija lok2 = poznateLokacije.get(idLokacija2);
+      String komanda = String.format("UDALJENOST %s %s %s %s", lok1.gpsSirina(), lok1.gpsDuzina(),
+          lok2.gpsSirina(), lok2.gpsDuzina());
+      String odgovor = spojiSeNaPU(adresa, mreznaVrata, komanda);
+      return odgovor;
+    } else {
+      return "ERROR 24 Nepostojeća lokacija.";
+    }
+  }
+
+  /**
+   * Provjeri je li lokacija postoji.
+   *
+   * @param idLokacija id lokacija
+   * @return istina, ako je uspješno
+   */
+  private boolean lokacijaPostoji(String idLokacija) {
+    return poznateLokacije.containsKey(idLokacija);
+  }
+
+  /**
+   * Obradi udaljenost spremi.
+   *
+   * @return string
+   */
+  private String obradiUdaljenostSpremi() {
+    String adresa = konf.dajPostavku("posluziteljUdaljenostiAdresa");
+    short mreznaVrata = Short.parseShort(konf.dajPostavku("posluziteljUdaljenostiVrata"));
+    String komanda = "UDALJENOST SPREMI";
+    String odgovor = spojiSeNaPU(adresa, mreznaVrata, komanda);
+    if (odgovor.startsWith("OK")) {
+      return "OK";
+    } else {
+      return "ERROR 29 Serijalizacija nije uspjela.";
+    }
   }
 
 }

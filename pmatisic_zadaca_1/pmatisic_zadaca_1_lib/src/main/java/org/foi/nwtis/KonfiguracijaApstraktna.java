@@ -29,11 +29,21 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     this.postavke = new Properties();
   }
 
+  /**
+   * Daj sve postavke.
+   *
+   * @return the properties
+   */
   @Override
   public Properties dajSvePostavke() {
     return this.postavke;
   }
 
+  /**
+   * Obrisi sve postavke.
+   *
+   * @return true, if successful
+   */
   @Override
   public boolean obrisiSvePostavke() {
     if (this.postavke.isEmpty())
@@ -43,11 +53,24 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     return true;
   }
 
+  /**
+   * Daj postavku.
+   *
+   * @param kljuc the kljuc
+   * @return the string
+   */
   @Override
   public String dajPostavku(String kljuc) {
     return this.postavke.getProperty(kljuc);
   }
 
+  /**
+   * Spremi postavku.
+   *
+   * @param kljuc the kljuc
+   * @param vrijednost the vrijednost
+   * @return true, if successful
+   */
   @Override
   public boolean spremiPostavku(String kljuc, String vrijednost) {
     if (this.postojiPostavka(kljuc))
@@ -57,6 +80,13 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     return true;
   }
 
+  /**
+   * Azuriraj postavku.
+   *
+   * @param kljuc the kljuc
+   * @param vrijednost the vrijednost
+   * @return true, if successful
+   */
   @Override
   public boolean azurirajPostavku(String kljuc, String vrijednost) {
     if (!this.postojiPostavka(kljuc))
@@ -66,11 +96,23 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     return true;
   }
 
+  /**
+   * Postoji postavka.
+   *
+   * @param kljuc the kljuc
+   * @return true, if successful
+   */
   @Override
   public boolean postojiPostavka(String kljuc) {
     return this.postavke.contains(kljuc);
   }
 
+  /**
+   * Obrisi postavku.
+   *
+   * @param kljuc the kljuc
+   * @return true, if successful
+   */
   @Override
   public boolean obrisiPostavku(String kljuc) {
     if (!this.postojiPostavka(kljuc))

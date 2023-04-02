@@ -1,5 +1,8 @@
 package org.foi.nwtis.pmatisic.zadaca_1.podaci;
 
+/**
+ * Korisnik.
+ */
 public record Korisnik(String prezime, String ime, String korisnickoIme, String lozinka,
     boolean administrator) {
 }

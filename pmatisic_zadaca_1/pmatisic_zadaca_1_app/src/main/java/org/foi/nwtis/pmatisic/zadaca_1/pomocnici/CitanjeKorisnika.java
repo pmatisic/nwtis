@@ -10,10 +10,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.pmatisic.zadaca_1.podaci.Korisnik;
 
-// TODO napravit dokumentaciju
-
+/**
+ * Klasa služi za čitanje podataka o korisnicima iz csv datoteke.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class CitanjeKorisnika {
 
+  /**
+   * Ucitaj datoteku.
+   *
+   * @param nazivDatoteke naziv datoteke
+   * @return mapa
+   */
   public Map<String, Korisnik> ucitajDatoteku(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
     if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
@@ -41,10 +50,22 @@ public class CitanjeKorisnika {
     return korisnici;
   }
 
+  /**
+   * Provjerava je li administrator.
+   *
+   * @param kolona u datoteci
+   * @return istina, ako je uspješno
+   */
   private boolean jestAdministrator(String kolona) {
     return kolona.compareTo("1") == 0 ? true : false;
   }
 
+  /**
+   * Provjerava je li red ima pet kolona.
+   *
+   * @param kolona u datoteci
+   * @return istina, ako je uspješno
+   */
   private boolean redImaPetKolona(String[] kolone) {
     return kolone.length == 5;
   }

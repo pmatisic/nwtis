@@ -10,10 +10,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.pmatisic.zadaca_1.podaci.Lokacija;
 
-// TODO napravit dokumentaciju
-
+/**
+ * Klasa služi za čitanje podataka o lokacijama iz csv datoteke.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class CitanjeLokacija {
 
+  /**
+   * Ucitaj datoteku.
+   *
+   * @param nazivDatoteke naziv datoteke
+   * @return mapa
+   */
   public Map<String, Lokacija> ucitajDatoteku(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
     if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
@@ -40,6 +49,12 @@ public class CitanjeLokacija {
     return lokacije;
   }
 
+  /**
+   * RProvjerava je li red ima cetiri kolone.
+   *
+   * @param kolona u datoteci
+   * @return istina, ako je uspješno
+   */
   private boolean redImaCetiriKolone(String[] kolone) {
     return kolone.length == 4;
   }

@@ -14,21 +14,51 @@ import org.foi.nwtis.pmatisic.zadaca_1.pomocnici.CitanjeKorisnika;
 import org.foi.nwtis.pmatisic.zadaca_1.pomocnici.CitanjeLokacija;
 import org.foi.nwtis.pmatisic.zadaca_1.pomocnici.CitanjeUredaja;
 
+/**
+ * Klasa GlavniPosluzitelj.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class GlavniPosluzitelj {
 
+  /** konf. */
   protected Konfiguracija konf;
-  protected int brojRadnika;
-  protected int maksVrijemeNeaktivnosti;
-  protected Map<String, Korisnik> korisnici;
-  protected Map<String, Lokacija> lokacije;
-  protected Map<String, Uredaj> uredaji;
-  private int dretva = 0;
-  private int ispis = 0;
-  private int mreznaVrata = 8000;
-  private int brojCekaca = 10;
-  private boolean kraj = false;
 
-  // dohvacanje postavki i podataka
+  /** broj radnika. */
+  protected int brojRadnika;
+
+  /** maks vrijeme neaktivnosti. */
+  protected int maksVrijemeNeaktivnosti;
+
+  /** korisnici. */
+  protected Map<String, Korisnik> korisnici;
+
+  /** lokacije. */
+  protected Map<String, Lokacija> lokacije;
+
+  /** uređaji. */
+  protected Map<String, Uredaj> uredaji;
+
+  /** dretva. */
+  private int dretva = 0;
+
+  /** ispis. */
+  private int ispis = 0;
+
+  /** mrežna vrata. */
+  private int mreznaVrata = 8000;
+
+  /** broj čekača. */
+  private int brojCekaca = 10;
+
+  /** kraj. */
+  protected boolean kraj = false;
+
+  /**
+   * Instancira glavni poslužitelj.
+   *
+   * @param konf konf
+   */
   public GlavniPosluzitelj(Konfiguracija konf) {
     this.konf = konf;
     this.brojRadnika = Integer.parseInt(konf.dajPostavku("brojRadnika"));
@@ -37,7 +67,9 @@ public class GlavniPosluzitelj {
     this.brojCekaca = Integer.parseInt(konf.dajPostavku("brojCekaca"));
   }
 
-  // pokretanje posluzitelja
+  /**
+   * Pokreće poslužitelja.
+   */
   public void pokreniPosluzitelja() {
     try {
       if (jestSlobodan()) {
@@ -51,7 +83,11 @@ public class GlavniPosluzitelj {
     }
   }
 
-  // provjera je li port slobodan
+  /**
+   * Provjera je li mrežna vrata/port slobodan.
+   *
+   * @return istina, ako je uspješno
+   */
   public boolean jestSlobodan() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata)) {
       return true;
@@ -61,7 +97,9 @@ public class GlavniPosluzitelj {
     }
   }
 
-  // stvaranje komunikacije
+  /**
+   * Stvaranje komunikacije i pripremanje poslužitelja.
+   */
   public void pripremiPosluzitelja() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       while (!this.kraj) {
@@ -76,7 +114,9 @@ public class GlavniPosluzitelj {
     }
   }
 
-  // metoda za ucitavanje podataka korisnika
+  /**
+   * Učitava korisnike.
+   */
   public void ucitajKorisnike() throws IOException {
     var nazivDatoteke = this.konf.dajPostavku("datotekaKorisnika");
     var citac = new CitanjeKorisnika();
@@ -89,7 +129,9 @@ public class GlavniPosluzitelj {
     }
   }
 
-  // metoda za ucitavanje podataka lokacija
+  /**
+   * Učitava lokacije.
+   */
   public void ucitajLokacije() throws IOException {
     var nazivDatoteke = this.konf.dajPostavku("datotekaLokacija");
     var citac = new CitanjeLokacija();
@@ -102,7 +144,9 @@ public class GlavniPosluzitelj {
     }
   }
 
-  // metoda za ucitavanje podataka uredaja
+  /**
+   * Učitava uređaje.
+   */
   public void ucitajUredaje() throws IOException {
     var nazivDatoteke = this.konf.dajPostavku("datotekaUredaja");
     var citac = new CitanjeUredaja();

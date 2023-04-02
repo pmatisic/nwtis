@@ -8,8 +8,18 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
+/**
+ * Klasa PokretacPosluzitelja.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class PokretacPosluzitelja {
 
+  /**
+   * Main metoda.
+   *
+   * @param args argumenti
+   */
   public static void main(String[] args) {
     var pokretac = new PokretacPosluzitelja();
     if (!pokretac.provjeriArgumente(args)) {
@@ -26,7 +36,12 @@ public class PokretacPosluzitelja {
     }
   }
 
-  // provjera argumenata za GP
+  /**
+   * Provjerava unesene argumente.
+   *
+   * @param args argumenti
+   * @return istina, ako je uspješno
+   */
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
       var argument = args[0];
@@ -46,7 +61,13 @@ public class PokretacPosluzitelja {
     }
   }
 
-  // ucitavanje postavki iz datoteke konfiguracije
+  /**
+   * Učitava postavke.
+   *
+   * @param nazivDatoteke naziv datoteke
+   * @return konfiguracija
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
+   */
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
   }
