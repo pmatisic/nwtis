@@ -9,14 +9,14 @@ import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
 /**
- * Klasa PokretacPosluzitelja.
+ * Klasa PokretacPosluzitelja koja pokreće glavni poslužitelj.
  * 
  * @author Petar Matišić (pmatisic@foi.hr)
  */
 public class PokretacPosluzitelja {
 
   /**
-   * Main metoda.
+   * Glavna metoda koja pokreće glavni poslužitelj s konfiguracijom iz datoteke.
    *
    * @param args argumenti
    */
@@ -37,10 +37,10 @@ public class PokretacPosluzitelja {
   }
 
   /**
-   * Provjerava unesene argumente.
+   * Provjerava ispravnost unesenih argumenata.
    *
    * @param args argumenti
-   * @return istina, ako je uspješno
+   * @return istina, ako je unos ispravan
    */
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
@@ -62,7 +62,7 @@ public class PokretacPosluzitelja {
   }
 
   /**
-   * Učitava postavke.
+   * Učitava konfiguracijske postavke iz datoteke.
    *
    * @param nazivDatoteke naziv datoteke
    * @return konfiguracija

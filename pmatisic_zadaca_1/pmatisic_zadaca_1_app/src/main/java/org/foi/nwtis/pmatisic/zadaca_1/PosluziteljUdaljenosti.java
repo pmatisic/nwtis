@@ -24,45 +24,18 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
-/**
- * Klasa PosluziteljUdaljenosti.
- * 
- * @author Petar Matišić (pmatisic@foi.hr)
- */
 public class PosluziteljUdaljenosti {
 
-  /** konf. */
   protected Konfiguracija konf;
-
-  /** broj radnika. */
   protected int brojRadnika;
-
-  /** maks vrijeme neaktivnosti. */
   protected int maksVrijemeNeaktivnosti;
-
-  /** ispis. */
   private int ispis = 0;
-
-  /** mrezna vrata. */
   private int mreznaVrata = 8000;
-
-  /** broj cekaca. */
   private int brojCekaca = 10;
-
-  /** kraj. */
   private boolean kraj = false;
-
-  /** matcher. */
   private Matcher m;
-
-  /** Kolekcija zadnjiZahtjevi. */
   private LinkedHashMap<String, String> zadnjiZahtjevi = new LinkedHashMap<String, String>();
 
-  /**
-   * Main metoda.
-   *
-   * @param args argumenti
-   */
   public static void main(String[] args) {
     var pu = new PosluziteljUdaljenosti();
 
@@ -84,12 +57,6 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  /**
-   * Provjeri argumente.
-   *
-   * @param args argumenti
-   * @return istina, ako je uspješno
-   */
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
       var argument = args[0];
@@ -109,23 +76,10 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  /**
-   * Učitaj postavke.
-   *
-   * @param nazivDatoteke naziv datoteke
-   * @return konfiguracija
-   * @throws NeispravnaKonfiguracija neispravna konfiguracija
-   */
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
   }
 
-  /**
-   * Pokreni poslužitelja.
-   *
-   * @param konf konf
-   * @throws I/O iznimka
-   */
   public void pokreniPosluzitelja(Konfiguracija konf) throws IOException {
     this.konf = konf;
     this.ispis = Integer.parseInt(konf.dajPostavku("ispis"));
@@ -150,11 +104,6 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  /**
-   * Serijaliziraj podatke.
-   *
-   * @return istina, ako je uspješno
-   */
   private boolean serijalizirajPodatke() {
     String nazivDatoteke = konf.dajPostavku("datotekaSerijalizacija");
     File datoteka = new File(nazivDatoteke);
@@ -171,12 +120,6 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  /**
-   * Deserijaliziraj podatke.
-   *
-   * @param s s
-   * @return objekt
-   */
   private Properties deserijalizirajPodatke(String s) {
     var nazivDatoteke = konf.dajPostavku("datotekaSerijalizacija");
     Properties objekt = new Properties();
@@ -196,11 +139,6 @@ public class PosluziteljUdaljenosti {
     return objekt;
   }
 
-  /**
-   * Provjera je li port slobodan
-   *
-   * @return istina, ako je uspješno
-   */
   public boolean jestSlobodan() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata)) {
       return true;
@@ -210,9 +148,6 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  /**
-   * Pripremi poslužitelja.
-   */
   public void pripremiPosluzitelja() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       while (!this.kraj) {
@@ -244,12 +179,6 @@ public class PosluziteljUdaljenosti {
     }
   }
 
-  /**
-   * Jest ispravan zahtjev.
-   *
-   * @param s s
-   * @return matcher
-   */
   private Matcher jestIspravanZahtjev(String s) {
     String sintaksa =
         "(UDALJENOST \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d)|(UDALJENOST SPREMI)";
@@ -299,12 +228,6 @@ public class PosluziteljUdaljenosti {
     return (R * c);
   }
 
-  /**
-   * Obradi zahtjev.
-   *
-   * @param zahtjev zahtjev
-   * @return string
-   */
   public String obradiZahtjev(String zahtjev) {
     String[] dijelovi = zahtjev.trim().split("\\s+");
 

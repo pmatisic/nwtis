@@ -15,49 +15,49 @@ import org.foi.nwtis.pmatisic.zadaca_1.pomocnici.CitanjeLokacija;
 import org.foi.nwtis.pmatisic.zadaca_1.pomocnici.CitanjeUredaja;
 
 /**
- * Klasa GlavniPosluzitelj.
+ * Klasa GlavniPosluzitelj služi za upravljanje i pokretanje glavnog poslužitelja.
  * 
  * @author Petar Matišić (pmatisic@foi.hr)
  */
 public class GlavniPosluzitelj {
 
-  /** konf. */
+  /** Konfiguracijski objekt koji sadrži postavke poslužitelja. */
   protected Konfiguracija konf;
 
-  /** broj radnika. */
+  /** Broj radnika koji će se koristiti za obradu zahtjeva. */
   protected int brojRadnika;
 
-  /** maks vrijeme neaktivnosti. */
+  /** Maksimalno vrijeme neaktivnosti poslužitelja. */
   protected int maksVrijemeNeaktivnosti;
 
-  /** korisnici. */
+  /** Mapa koja sadrži korisnike s njihovim korisničkim imenima kao ključevima. */
   protected Map<String, Korisnik> korisnici;
 
-  /** lokacije. */
+  /** Mapa koja sadrži lokacije s njihovim identifikatorima kao ključevima. */
   protected Map<String, Lokacija> lokacije;
 
-  /** uređaji. */
+  /** Mapa koja sadrži uređaje s njihovim identifikatorima kao ključevima. */
   protected Map<String, Uredaj> uredaji;
 
-  /** dretva. */
+  /** Brojač za dretve koje se koriste za obradu zahtjeva. */
   private int dretva = 0;
 
-  /** ispis. */
+  /** Oznaka za ispis dodatnih informacija. */
   private int ispis = 0;
 
-  /** mrežna vrata. */
+  /** Mrežna vrata na kojima će poslužitelj slušati dolazne veze. */
   private int mreznaVrata = 8000;
 
-  /** broj čekača. */
+  /** Broj čekača koji će se koristiti za spajanje na poslužitelj. */
   private int brojCekaca = 10;
 
-  /** kraj. */
+  /** Zastavica za zaustavljanje poslužitelja. */
   protected boolean kraj = false;
 
   /**
-   * Instancira glavni poslužitelj.
+   * Instancira glavni poslužitelj s konfiguracijskim objektom.
    *
-   * @param konf konf
+   * @param konf Konfiguracijski objekt koji sadrži postavke poslužitelja.
    */
   public GlavniPosluzitelj(Konfiguracija konf) {
     this.konf = konf;
@@ -68,7 +68,8 @@ public class GlavniPosluzitelj {
   }
 
   /**
-   * Pokreće poslužitelja.
+   * Pokreće poslužitelja, učitava korisnike, lokacije i uređaje te priprema poslužitelj za obradu
+   * zahtjeva.
    */
   public void pokreniPosluzitelja() {
     try {
@@ -84,9 +85,9 @@ public class GlavniPosluzitelj {
   }
 
   /**
-   * Provjera je li mrežna vrata/port slobodan.
+   * Provjerava je li mrežna vrata (port) slobodna za korištenje.
    *
-   * @return istina, ako je uspješno
+   * @return true ako su mrežna vrata slobodna, false inače.
    */
   public boolean jestSlobodan() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata)) {
@@ -98,7 +99,7 @@ public class GlavniPosluzitelj {
   }
 
   /**
-   * Stvaranje komunikacije i pripremanje poslužitelja.
+   * Priprema poslužitelj za obradu zahtjeva stvaranjem komunikacije i pokretanjem mrežnih radnika.
    */
   public void pripremiPosluzitelja() {
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
@@ -115,7 +116,10 @@ public class GlavniPosluzitelj {
   }
 
   /**
-   * Učitava korisnike.
+   * Učitava korisnike iz datoteke korisnika i sprema ih u mapu korisnici. Ispisuje informacije o
+   * korisnicima ako je ispis postavljen na 1.
+   *
+   * @throws IOException ako se dogodi greška pri čitanju datoteke.
    */
   public void ucitajKorisnike() throws IOException {
     var nazivDatoteke = this.konf.dajPostavku("datotekaKorisnika");
@@ -130,7 +134,10 @@ public class GlavniPosluzitelj {
   }
 
   /**
-   * Učitava lokacije.
+   * Učitava lokacije iz datoteke lokacija i sprema ih u mapu lokacije. Ispisuje informacije o
+   * lokacijama ako je ispis postavljen na 1.
+   *
+   * @throws IOException ako se dogodi greška pri čitanju datoteke.
    */
   public void ucitajLokacije() throws IOException {
     var nazivDatoteke = this.konf.dajPostavku("datotekaLokacija");
@@ -145,7 +152,10 @@ public class GlavniPosluzitelj {
   }
 
   /**
-   * Učitava uređaje.
+   * Učitava uređaje iz datoteke uređaja i sprema ih u mapu uređaja. Ispisuje informacije o
+   * uređajima ako je ispis postavljen na 1.
+   *
+   * @throws IOException ako se dogodi greška pri čitanju datoteke.
    */
   public void ucitajUredaje() throws IOException {
     var nazivDatoteke = this.konf.dajPostavku("datotekaUredaja");

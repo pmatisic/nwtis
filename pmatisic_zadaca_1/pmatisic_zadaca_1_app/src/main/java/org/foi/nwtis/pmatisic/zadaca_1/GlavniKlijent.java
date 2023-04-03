@@ -15,16 +15,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Klasa GlavniKlijent.
+ * Klasa za obradu komandi glavnog klijenta.
  * 
  * @author Petar Matišić (pmatisic@foi.hr)
  */
 public class GlavniKlijent {
 
   /**
-   * Main metoda.
-   *
-   * @param args argumenti
+   * Main metoda koja pokreće klijenta.
+   * 
+   * @param args argumenti potrebni za pokretanje klijenta
    */
   public static void main(String[] args) {
     StringBuilder sb = new StringBuilder();
@@ -54,9 +54,9 @@ public class GlavniKlijent {
 
   /**
    * Provjerava korisnički unos tj. argumente.
-   *
-   * @param s s
-   * @return matcher
+   * 
+   * @param s ulazni string s argumentima
+   * @return Matcher objekt ako su argumenti ispravni, inače null
    */
   private Matcher provjeriArgumente(String s) {
     String sintaksa =
@@ -71,10 +71,10 @@ public class GlavniKlijent {
   }
 
   /**
-   * Obrađuje komandu u razumljiv oblik mrežnom radniku.
-   *
-   * @param m m
-   * @return string
+   * Obrađuje komandu u razumljiv oblik za mrežnog radnika.
+   * 
+   * @param m Matcher objekt s grupama iz ulaznih argumenata
+   * @return komanda u string formatu
    */
   private static String obradiKomandu(Matcher m) {
     Map<String, String> grupe = new HashMap<>();
@@ -110,9 +110,10 @@ public class GlavniKlijent {
 
   /**
    * Proširenje metode <i>obradiKomandu</i> na način da se dobije cjelovita naredba.
-   *
-   * @param mapa mapa
-   * @return string
+   * 
+   * @param mapa Mapa s ključem koji predstavlja tip komande i vrijednosti koje su povezane s tim
+   *        ključem
+   * @return komanda u string formatu
    */
   private static String pretvoriUKomandu(Map<String, String> mapa) {
     String naredba = "KORISNIK " + mapa.get("KORISNIK") + " LOZINKA " + mapa.get("LOZINKA");
@@ -139,11 +140,11 @@ public class GlavniKlijent {
   }
 
   /**
-   * Spoji se na poslužitelj.
-   *
-   * @param adresa adresa
-   * @param mreznaVrata mrežna vrata
-   * @param komanda komanda
+   * Spaja se na poslužitelj i šalje komandu.
+   * 
+   * @param adresa IP adresa ili domensko ime poslužitelja
+   * @param mreznaVrata broj mrežnih vrata na kojima poslužitelj sluša
+   * @param komanda komanda koja se šalje poslužitelju
    */
   private void spojiSeNaPosluzitelj(String adresa, int mreznaVrata, String komanda) {
     try {

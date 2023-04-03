@@ -23,21 +23,10 @@ import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 import org.foi.nwtis.pmatisic.zadaca_1.podaci.MeteoSimulacija;
 
-/**
- * Klasa SimulatorMeteo.
- * 
- * @author Petar Matišić (pmatisic@foi.hr)
- */
 public class SimulatorMeteo {
 
-  /** ispis. */
   private int ispis = 0;
 
-  /**
-   * Main metoda.
-   *
-   * @param args argumenti
-   */
   public static void main(String[] args) {
     var sm = new SimulatorMeteo();
 
@@ -59,12 +48,6 @@ public class SimulatorMeteo {
     }
   }
 
-  /**
-   * Provjeri argumente.
-   *
-   * @param args argumenti
-   * @return istina, ako je uspješno
-   */
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
       var argument = args[0];
@@ -83,23 +66,10 @@ public class SimulatorMeteo {
     }
   }
 
-  /**
-   * Učitaj postavke.
-   *
-   * @param nazivDatoteke naziv datoteke
-   * @return konfiguracija
-   * @throws NeispravnaKonfiguracija neispravna konfiguracija
-   */
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
   }
 
-  /**
-   * Pokreni simulator.
-   *
-   * @param konf konf
-   * @throws I/O iznimka
-   */
   private void pokreniSimulator(Konfiguracija konf) throws IOException {
     var nazivDatoteke = konf.dajPostavku("datotekaMeteo");
     var putanja = Path.of(nazivDatoteke);
@@ -145,45 +115,18 @@ public class SimulatorMeteo {
     }
   }
 
-  /**
-   * Provjerava je li zaglavlje
-   *
-   * @param brojac brojač
-   * @return istina, ako je uspješno
-   */
-  // provjerava je li zaglavlje
   private boolean jestZaglavlje(int brojac) {
     return brojac == 1;
   }
 
-  /**
-   * Red ima pet kolona.
-   *
-   * @param kolone kolone
-   * @return istina, ako je uspješno
-   */
-  // provjerava je li red u datoteci ima 5 kolona
   private boolean redImaPetKolona(String[] kolone) {
     return kolone.length == 5;
   }
 
-  /**
-   * Provjerava je li meteo podatak drugi red u datoteci
-   *
-   * @param brojac brojač
-   * @return istina, ako je uspješno
-   */
   private boolean jestPrviMeteoPodatak(int brojac) {
     return brojac == 2;
   }
 
-  /**
-   * Obradi spavanje i pretvori vrijeme.
-   *
-   * @param prethodniMeteo prethodni meteo
-   * @param vazeciMeteo važeći meteo
-   * @param trajanjeSekunde trajanje sekunde
-   */
   private void obradiSpavanje(MeteoSimulacija prethodniMeteo, MeteoSimulacija vazeciMeteo,
       int trajanjeSekunde) {
     String prvi = prethodniMeteo.vrijeme();
@@ -207,13 +150,6 @@ public class SimulatorMeteo {
     }
   }
 
-  /**
-   * Pošalji meteo podatak na MrezniRadnik.
-   *
-   * @param vazeciMeteo važeći meteo
-   * @param konf konf
-   * @return string
-   */
   private String posaljiMeteoPodatak(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
     String primitak = "";
     try {
@@ -254,13 +190,6 @@ public class SimulatorMeteo {
     return primitak;
   }
 
-  /**
-   * Obradi zahtjev.
-   *
-   * @param vazeciMeteo važeći meteo
-   * @param konf konf
-   * @return string
-   */
   private String obradiZahtjev(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
     HashMap<String, String> komanda = new HashMap<>();
 
@@ -301,12 +230,6 @@ public class SimulatorMeteo {
     return komandaString;
   }
 
-  /**
-   * Provjeri postupak.
-   *
-   * @param vazeciMeteo važeći meteo
-   * @param konf konf
-   */
   public void provjeriPostupak(MeteoSimulacija vazeciMeteo, Konfiguracija konf) {
     int brojPokusaja = Integer.parseInt(konf.dajPostavku("brojPokusaja"));
     String datotekaProblema = konf.dajPostavku("datotekaProblema");
