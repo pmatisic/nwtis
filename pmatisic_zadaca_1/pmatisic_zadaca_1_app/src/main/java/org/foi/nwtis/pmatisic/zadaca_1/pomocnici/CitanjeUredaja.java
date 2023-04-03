@@ -19,10 +19,10 @@ import org.foi.nwtis.pmatisic.zadaca_1.podaci.UredajVrsta;
 public class CitanjeUredaja {
 
   /**
-   * Ucitaj datoteku.
+   * Učitava datoteku.
    *
    * @param nazivDatoteke naziv datoteke
-   * @return mapa
+   * @return mapa kao skup podataka
    */
   public Map<String, Uredaj> ucitajDatoteku(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
@@ -52,9 +52,9 @@ public class CitanjeUredaja {
   }
 
   /**
-   * Provjerava je li red ima cetiri kolone.
+   * Provjerava je li red ima četiri kolone.
    *
-   * @param kolona u datoteci
+   * @param kolone kolone u csv datoteci
    * @return istina, ako je uspješno
    */
   private boolean redImaCetiriKolone(String[] kolone) {

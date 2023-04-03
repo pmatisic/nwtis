@@ -32,7 +32,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
   /**
    * Daj sve postavke.
    *
-   * @return the properties
+   * @return properties
    */
   @Override
   public Properties dajSvePostavke() {
@@ -42,7 +42,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
   /**
    * Obrisi sve postavke.
    *
-   * @return true, if successful
+   * @return istina, ako je uspješno
    */
   @Override
   public boolean obrisiSvePostavke() {
@@ -56,8 +56,8 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
   /**
    * Daj postavku.
    *
-   * @param kljuc the kljuc
-   * @return the string
+   * @param kljuc kljuc
+   * @return string
    */
   @Override
   public String dajPostavku(String kljuc) {
@@ -67,9 +67,9 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
   /**
    * Spremi postavku.
    *
-   * @param kljuc the kljuc
-   * @param vrijednost the vrijednost
-   * @return true, if successful
+   * @param kljuc kljuc
+   * @param vrijednost vrijednost
+   * @return istina, ako je uspješno
    */
   @Override
   public boolean spremiPostavku(String kljuc, String vrijednost) {
@@ -83,9 +83,9 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
   /**
    * Azuriraj postavku.
    *
-   * @param kljuc the kljuc
-   * @param vrijednost the vrijednost
-   * @return true, if successful
+   * @param kljuc kljuc
+   * @param vrijednost vrijednost
+   * @return istina, ako je uspješno
    */
   @Override
   public boolean azurirajPostavku(String kljuc, String vrijednost) {
@@ -99,8 +99,8 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
   /**
    * Postoji postavka.
    *
-   * @param kljuc the kljuc
-   * @return true, if successful
+   * @param kljuc kljuc
+   * @return istina, ako je uspješno
    */
   @Override
   public boolean postojiPostavka(String kljuc) {
@@ -110,8 +110,8 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
   /**
    * Obrisi postavku.
    *
-   * @param kljuc the kljuc
-   * @return true, if successful
+   * @param kljuc kljuc
+   * @return istina, ako je uspješno
    */
   @Override
   public boolean obrisiPostavku(String kljuc) {
@@ -125,7 +125,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
   /**
    * Spremi konfiguraciju.
    *
-   * @param datoteka the datoteka
+   * @param datoteka datoteka
    * @throws NeispravnaKonfiguracija ako tip nije podržan ili se javi problem kod spremanja datoteke
    *         konfiguracije
    */
@@ -150,7 +150,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
   /**
    * Kreira objekt konfiguracije i sprema u datoteku pod zadanim nazivom.
    *
-   * @param nazivDatoteke the naziv datoteke
+   * @param nazivDatoteke naziv datoteke
    * @return objekt konfiguracije bez postavki
    * @throws NeispravnaKonfiguracija ako tip konfiguracije nije podržan ili je došlo do pogreške kod
    *         spremanja u datoteku

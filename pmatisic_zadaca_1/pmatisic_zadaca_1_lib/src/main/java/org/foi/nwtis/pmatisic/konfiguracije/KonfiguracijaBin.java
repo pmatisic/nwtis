@@ -20,7 +20,7 @@ import org.foi.nwtis.NeispravnaKonfiguracija;
  */
 public class KonfiguracijaBin extends KonfiguracijaApstraktna {
 
-  /** Konstanta TIP. */
+  /** konstanta TIP. */
   public static final String TIP = "bin";
 
   /**

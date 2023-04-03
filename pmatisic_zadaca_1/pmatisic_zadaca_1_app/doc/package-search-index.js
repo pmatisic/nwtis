@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.foi.nwtis.pmatisic.konfiguracije"},{"l":"org.foi.nwtis.pmatisic.zadaca_1"},{"l":"org.foi.nwtis.pmatisic.zadaca_1.podaci"},{"l":"org.foi.nwtis.pmatisic.zadaca_1.pomocnici"}];updateSearchResults();

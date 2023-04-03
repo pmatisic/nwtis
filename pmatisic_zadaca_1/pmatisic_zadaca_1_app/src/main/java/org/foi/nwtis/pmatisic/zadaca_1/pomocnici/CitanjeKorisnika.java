@@ -18,10 +18,10 @@ import org.foi.nwtis.pmatisic.zadaca_1.podaci.Korisnik;
 public class CitanjeKorisnika {
 
   /**
-   * Ucitaj datoteku.
+   * Učitava datoteku.
    *
    * @param nazivDatoteke naziv datoteke
-   * @return mapa
+   * @return mapa kao skup podataka
    */
   public Map<String, Korisnik> ucitajDatoteku(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
@@ -51,9 +51,9 @@ public class CitanjeKorisnika {
   }
 
   /**
-   * Provjerava je li administrator.
+   * Provjerava je li korisnik administrator.
    *
-   * @param kolona u datoteci
+   * @param kolona kolone u csv datoteci
    * @return istina, ako je uspješno
    */
   private boolean jestAdministrator(String kolona) {
@@ -63,7 +63,7 @@ public class CitanjeKorisnika {
   /**
    * Provjerava je li red ima pet kolona.
    *
-   * @param kolona u datoteci
+   * @param kolone kolone u csv datoteci
    * @return istina, ako je uspješno
    */
   private boolean redImaPetKolona(String[] kolone) {

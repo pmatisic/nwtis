@@ -3,7 +3,6 @@ maksCekanje=500
 mreznaVrata=8000
 brojCekaca=5
 brojRadnika=5
-datotekaSerijalizacija=datotekaSerijalizacija.bin
 datotekaKorisnika=korisnici.csv
 datotekaLokacija=lokacije.csv
 datotekaUredaja=uredaji.csv

@@ -15,11 +15,11 @@ public enum UredajVrsta {
   SenzorSvjetlo(4),
   /** Senzor kontakt. */
   SenzorKontakt(5),
-  /** Senzor temperatura vlaga. */
+  /** Senzor temperatura-vlaga. */
   SenzorTemperaturaVlaga(50),
-  /** Senzor temperatura tlak. */
+  /** Senzor temperatura-tlak. */
   SenzorTemperaturaTlak(51),
-  /** Senzor temperatura vlaga tlak. */
+  /** Senzor temperatura-vlaga-tlak. */
   SenzorTemperaturaVlagaTlak(52),
   /** Aktuator ventilator. */
   AktuatorVentilator(100),
@@ -34,7 +34,7 @@ public enum UredajVrsta {
   private int broj;
 
   /**
-   * Instancira novu uredaj vrstu.
+   * Instancira UredajVrsta.
    *
    * @param broj broj
    */
@@ -43,7 +43,7 @@ public enum UredajVrsta {
   }
 
   /**
-   * Dohvaća vrstu preko broja
+   * Dohvaća vrstu preko broja.
    *
    * @param broj broj
    * @return uredaj vrsta
