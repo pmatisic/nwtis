@@ -1,0 +1,4 @@
+cd /opt/hsqldb-2.7.1/hsqldb/data
+
+sudo java -classpath ../lib/hsqldb.jar org.hsqldb.server.Server \
+--database.0 file:nwtis_4 --dbname.0 nwtis_4 --port 9001
