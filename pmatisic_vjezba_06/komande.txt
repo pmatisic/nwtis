@@ -2,6 +2,8 @@ Rad na labosu:
 cd /opt/apache-tomcat-10.1.5/bin/
 ./startup.sh
 
+cd /opt/apache-tomcat-10.1.5/logs
+watch -n 1 tail catalina.out
 
 
 Rad od kuće:
