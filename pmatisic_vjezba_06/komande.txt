@@ -5,7 +5,6 @@ cd /opt/apache-tomcat-10.1.5/bin/
 cd /opt/apache-tomcat-10.1.5/logs
 watch -n 1 tail catalina.out
 
-
 Rad od kuće:
 
 Postaviti se na direktorij: cd pmatisic/pmatisic_vjezba_06/

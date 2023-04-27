@@ -1,0 +1,14 @@
+#POKRETANJE SERVERA
+export JAVA_HOME=/usr/lib/jvm/jdk-17.0.2
+export PATH=/usr/lib/jvm/jdk-17.0.2/bin:$PATH
+sudo chmod -R g+w /opt/payara-web-6.2023.1/glassfish/domains/domain1/applications/
+sudo chmod -R g+w /opt/payara-web-6.2023.1/glassfish/domains/domain1/generated/
+cd /opt/payara-web-6.2023.1/glassfish/bin
+./asadmin start-domain
+
+#TEST
+curl -X OPTIONS -H "Accept: application/vnd.sun.wadl+xml" "http://localhost:8080/pmatisic_zadaca_2_wa_1/api/aerodromi"
+
+curl -X GET -H "Accept: application/json" "http://localhost:8080/pmatisic_zadaca_2_wa_1/api/aerodromi"
+curl -X GET -H "Accept: application/json" "http://localhost:8080/pmatisic_zadaca_2_wa_1/api/aerodromi/LDZA"
+curl -X GET -H "Accept: application/json" "http://localhost:8080/pmatisic_zadaca_2_wa_1/api/aerodromi/LDZA/LOWW"

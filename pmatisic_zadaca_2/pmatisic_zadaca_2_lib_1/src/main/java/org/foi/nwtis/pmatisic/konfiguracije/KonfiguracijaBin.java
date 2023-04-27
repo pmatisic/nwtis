@@ -14,15 +14,19 @@ import org.foi.nwtis.NeispravnaKonfiguracija;
 
 /**
  * Podklasa KonfiguracijaApstraktna i koristi serijalizaciju za spremanje i čitanje podataka iz
- * datoteke
- * 
- * @author Petar Matišić (pmatisic@foi.hr)
+ * datoteke.
  *
+ * @author Petar Matišić (pmatisic@foi.hr)
  */
 public class KonfiguracijaBin extends KonfiguracijaApstraktna {
 
+  /** konstanta TIP. */
   public static final String TIP = "bin";
 
+  /**
+   *
+   * @param nazivDatoteke naziv datoteke
+   */
   public KonfiguracijaBin(String nazivDatoteke) {
     super(nazivDatoteke);
   }
@@ -31,9 +35,9 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
    * Metoda za spremanje konfiguracije. Ako je neispravan naziv datoteke izbacuje se iznimka
    * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
    * NeispravnaKonfiguracija.
-   * 
-   * Referenca:
-   * 
+   *
+   * @param datoteka datoteka
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
    * @see https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectOutputStream.html
    */
   @Override
@@ -65,9 +69,8 @@ public class KonfiguracijaBin extends KonfiguracijaApstraktna {
    * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
    * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
    * iznimka NeispravnaKonfiguracija.
-   * 
-   * Referenca:
-   * 
+   *
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
    * @see https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectInputStream.html
    */
   @Override

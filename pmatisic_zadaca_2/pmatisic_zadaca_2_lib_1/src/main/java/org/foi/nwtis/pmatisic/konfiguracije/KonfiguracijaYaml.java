@@ -17,15 +17,19 @@ import org.snakeyaml.engine.v2.common.FlowStyle;
 
 /**
  * Podklasa KonfiguracijaApstraktna i koristi standardno spremanje i čitanje podataka iz datoteke uz
- * pomoć String uz pretvaranje Java objekata u YAML i obratno
- * 
- * @author Petar Matišić (pmatisic@foi.hr)
+ * pomoć String uz pretvaranje Java objekata u YAML i obratno.
  *
+ * @author Petar Matišić (pmatisic@foi.hr)
  */
 public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
 
+  /** konstanta TIP. */
   public static final String TIP = "yaml";
 
+  /**
+   *
+   * @param nazivDatoteke naziv datoteke
+   */
   public KonfiguracijaYaml(String nazivDatoteke) {
     super(nazivDatoteke);
   }
@@ -34,9 +38,9 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
    * Metoda za spremanje konfiguracije. Ako je neispravan naziv datoteke izbacuje se iznimka
    * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
    * NeispravnaKonfiguracija.
-   * 
-   * Reference:
-   * 
+   *
+   * @param datoteka datoteka
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
    * @see https://www.geeksforgeeks.org/linkedhashmap-class-in-java/
    * @see https://stackoverflow.com/questions/12310914/how-to-iterate-through-linkedhashmap-with-lists-as-values
    * @see https://javadoc.io/static/com.hazelcast.jet/hazelcast-jet/3.2/com/hazelcast/org/snakeyaml/engine/v1/api/DumpSettingsBuilder.html
@@ -85,9 +89,8 @@ public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
    * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
    * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
    * iznimka NeispravnaKonfiguracija.
-   * 
-   * Reference:
-   * 
+   *
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
    * @see https://www.geeksforgeeks.org/linkedhashmap-class-in-java/
    * @see https://www.tabnine.com/code/java/methods/java.nio.file.Files/newInputStream
    */

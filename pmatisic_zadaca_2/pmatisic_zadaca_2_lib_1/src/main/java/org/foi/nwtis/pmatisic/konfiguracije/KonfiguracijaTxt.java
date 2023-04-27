@@ -8,15 +8,19 @@ import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
 /**
- * Podklasa KonfiguracijaApstraktna i koristi TXT format
- * 
- * @author NWTiS_4
+ * Podklasa KonfiguracijaApstraktna i koristi TXT format.
  *
+ * @author NWTiS_4
  */
 public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
 
+  /** konstanta TIP. */
   public static final String TIP = "txt";
 
+  /**
+   *
+   * @param nazivDatoteke naziv datoteke
+   */
   public KonfiguracijaTxt(String nazivDatoteke) {
     super(nazivDatoteke);
   }
@@ -25,6 +29,9 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
    * Metoda za spremanje konfiguracije. Ako je neispravan naziv datoteke izbacuje se iznimka
    * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
    * NeispravnaKonfiguracija.
+   *
+   * @param datoteka datoteka
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
    */
   @Override
   public void spremiKonfiguraciju(String datoteka) throws NeispravnaKonfiguracija {
@@ -52,6 +59,8 @@ public class KonfiguracijaTxt extends KonfiguracijaApstraktna {
    * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
    * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
    * iznimka NeispravnaKonfiguracija.
+   *
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
    */
   @Override
   public void ucitajKonfiguraciju() throws NeispravnaKonfiguracija {

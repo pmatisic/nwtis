@@ -7,7 +7,7 @@ public class DretvaVremena extends Thread {
   private boolean kraj = false;
 
   public DretvaVremena(int brojCiklusa, int trajanjeCiklusa) {
-    super("matnovak-" + brojDretve++);
+    super("pmatisic-" + brojDretve++);
     this.brojCiklusa = brojCiklusa;
     this.trajanjeCiklusa = trajanjeCiklusa;
   }

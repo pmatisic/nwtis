@@ -1,0 +1,3 @@
+java -jar target/nwtis_rest_demo-3.0.0.jar korisnik lozinka icao odVremena doVremena
+
+java -jar target/nwtis_rest_demo-3.0.0.jar pero 123456 LOWW 1677628800 1677715200

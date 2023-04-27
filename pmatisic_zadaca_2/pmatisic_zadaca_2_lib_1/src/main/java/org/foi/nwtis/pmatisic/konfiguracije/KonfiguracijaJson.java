@@ -15,15 +15,19 @@ import com.google.gson.Gson;
 
 /**
  * Podklasa KonfiguracijaApstraktna i koristi standardno spremanje i čitanje podataka iz datoteke uz
- * pomoć String uz pretvaranje Java objekata u JSON i obratno
- * 
- * @author Petar Matišić (pmatisic@foi.hr)
+ * pomoć String uz pretvaranje Java objekata u JSON i obratno.
  *
+ * @author Petar Matišić (pmatisic@foi.hr)
  */
 public class KonfiguracijaJson extends KonfiguracijaApstraktna {
 
+  /** konstanta TIP. */
   public static final String TIP = "json";
 
+  /**
+   *
+   * @param nazivDatoteke naziv datoteke
+   */
   public KonfiguracijaJson(String nazivDatoteke) {
     super(nazivDatoteke);
   }
@@ -32,9 +36,9 @@ public class KonfiguracijaJson extends KonfiguracijaApstraktna {
    * Metoda za spremanje konfiguracije. Ako je neispravan naziv datoteke izbacuje se iznimka
    * NeispravnaKonfiguracija, ako se javi problem kod spremanja izbacuje se iznimka
    * NeispravnaKonfiguracija.
-   * 
-   * Referenca:
-   * 
+   *
+   * @param datoteka datoteka
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
    * @see https://www.javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/com/google/gson/Gson.html
    */
   @Override
@@ -69,9 +73,8 @@ public class KonfiguracijaJson extends KonfiguracijaApstraktna {
    * Metoda za učitavanje konfiguracije. Ako je neispravan naziv datoteke ili ne postoji datoteka
    * izbacuje se iznimka NeispravnaKonfiguracija, ako se javi problem kod čitanja izbacuje se
    * iznimka NeispravnaKonfiguracija.
-   * 
-   * Referenca:
-   * 
+   *
+   * @throws NeispravnaKonfiguracija neispravna konfiguracija
    * @see https://www.javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/com/google/gson/Gson.html
    */
   @Override
