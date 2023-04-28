@@ -38,7 +38,7 @@ public class RestAerodromi {
       odBroja = "1";
       broj = "20";
     } else {
-      if (false) {
+      if (!jesuLiParametriIspravni(odBroja, broj)) {
         return Response.status(400).build();
       }
     }
@@ -82,6 +82,16 @@ public class RestAerodromi {
     return odgovor;
   }
 
+  private boolean jesuLiParametriIspravni(String odBroja, String broj) {
+    try {
+      Integer.parseInt(odBroja);
+      Integer.parseInt(broj);
+    } catch (NumberFormatException e) {
+      return false;
+    }
+    return true;
+  }
+
   private boolean jesuLiParametriPrazni(String odBroja, String broj) {
     return odBroja == null && broj == null;
   }
@@ -90,23 +100,38 @@ public class RestAerodromi {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}")
   public Response dajAerodrom(@PathParam("icao") String icao) {
-    List<Aerodrom> aerodromi = new ArrayList<>();
-    Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("LDVA", "Airport Varaždin", "HR", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("EDDB", "Airport Berlin", "DE", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("LOWW", "Airport Vienna", "AT", new Lokacija("0", "0"));
-    aerodromi.add(ad);
+
+    if (!jesuLiParametriIspravni(icao)) {
+      return Response.status(400).build();
+    }
 
     Aerodrom aerodrom = null;
-    for (Aerodrom a : aerodromi) {
-      if (a.getIcao().compareTo(icao) == 0) {
-        aerodrom = a;
-        break;
+
+    String upit = "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES FROM AIRPORTS WHERE ICAO = ?";
+
+    PreparedStatement stmt = null;
+    try (Connection con = ds.getConnection()) {
+      stmt = con.prepareStatement(upit);
+      stmt.setString(1, icao);
+      ResultSet rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        aerodrom = new Aerodrom();
+        aerodrom.setIcao(rs.getString("ICAO"));
+        aerodrom.setNaziv(rs.getString("NAME"));
+        aerodrom.setDrzava(rs.getString("ISO_COUNTRY"));
+        String koordinate[] = rs.getString("COORDINATES").split(",");
+        Lokacija lokacija = new Lokacija(koordinate[0], koordinate[1].trim());
+        aerodrom.setLokacija(lokacija);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        if (stmt != null && !stmt.isClosed())
+          stmt.close();
+      } catch (SQLException e) {
+        e.printStackTrace();
       }
     }
 
@@ -117,6 +142,10 @@ public class RestAerodromi {
     String podaci = gson.toJson(aerodrom);
     Response odgovor = Response.ok().entity(podaci).build();
     return odgovor;
+  }
+
+  private boolean jesuLiParametriIspravni(String icao) {
+    return icao != null && icao.length() == 4 && icao.chars().allMatch(Character::isUpperCase);
   }
 
   @GET

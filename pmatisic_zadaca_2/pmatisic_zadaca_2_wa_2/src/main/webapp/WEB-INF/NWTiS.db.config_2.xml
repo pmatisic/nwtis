@@ -4,9 +4,9 @@
 <comment>NWTiS konfiguracija 2</comment>
 <entry key="adresa.wa_1">http://200.20.0.4:8080/pmatisic/api/</entry>
 <entry key="stranica.brojRedova">15</entry>
-<entry key="autor.ime">Pero</entry>
-<entry key="autor.prezime">Kos</entry>
+<entry key="autor.ime">Petar</entry>
+<entry key="autor.prezime">Matišić</entry>
 <entry key="autor.predmet">NWTiS</entry>
 <entry key="aplikacija.godina">2023.</entry>
-<entry key="aplikacija.verzija">1.23</entry>
+<entry key="aplikacija.verzija">1.0</entry>
 </properties>
