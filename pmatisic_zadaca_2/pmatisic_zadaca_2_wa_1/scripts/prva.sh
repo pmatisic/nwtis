@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "GASI DOCKER"
+echo "Gasim docker..."
 docker stop pmatisic_payara_micro
-echo "BRISI CONTAINER"
+echo "Brišem kontejner..."
 docker rm pmatisic_payara_micro
-echo "PRIPREMI SLIKU"
+echo "Pripremam sliku..."
 ./scripts/pripremiSliku.sh
-echo "POKRENI SLIKU"
+echo "Pokrećem sliku..."
 ./scripts/pokreniSliku.sh
