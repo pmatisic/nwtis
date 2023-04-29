@@ -1,1 +1,1 @@
-{"resources":{"Scripts/Script.sql":{"default-datasource":"hsqldb_server-1874e3c4ec0-1b822d97be5b84d4","default-catalog":"PUBLIC"}}}
+{"resources":{"Scripts/Script-1.sql":{"default-datasource":"hsqldb_server-1874e4d6159-56e19c542ea80d53","default-catalog":"PUBLIC"},"Scripts/Script-2.sql":{"default-datasource":"hsqldb_server-1874e4d6159-56e19c542ea80d53","default-catalog":"PUBLIC"},"Scripts/Script.sql":{"default-datasource":"hsqldb_server-1874e3c4ec0-1b822d97be5b84d4","default-catalog":"PUBLIC"}}}

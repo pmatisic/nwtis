@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<comment>NWTiS konfiguracija 1</comment>
 <entry key="OpenSkyNetwork.korisnik">petarmatisic</entry>
 <entry key="OpenSkyNetwork.lozinka">chelsea1003</entry>
 </properties>
