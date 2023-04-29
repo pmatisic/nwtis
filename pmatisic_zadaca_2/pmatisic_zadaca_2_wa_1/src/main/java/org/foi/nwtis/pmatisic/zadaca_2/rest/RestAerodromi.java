@@ -34,8 +34,6 @@ public class RestAerodromi {
   public Response dajSveAerodrome(@QueryParam("odBroja") String odBroja,
       @QueryParam("broj") String broj) {
 
-    List<Aerodrom> aerodromi = new ArrayList<>();
-
     if (jesuLiParametriPrazni(odBroja, broj)) {
       odBroja = "1";
       broj = "20";
@@ -45,7 +43,12 @@ public class RestAerodromi {
       }
     }
 
-    String upit = "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES FROM AIRPORTS LIMIT ? OFFSET ?";
+    List<Aerodrom> aerodromi = new ArrayList<>();
+    String upit =
+        "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES "
+        + "FROM AIRPORTS "
+        + "LIMIT ? "
+        + "OFFSET ?";
     String offset =
         String.valueOf(Integer.parseInt(odBroja) * Integer.parseInt(broj) - Integer.parseInt(broj));
 
@@ -86,8 +89,11 @@ public class RestAerodromi {
 
   private boolean jesuLiParametriBroj(String odBroja, String broj) {
     try {
-      Integer.parseInt(odBroja);
-      Integer.parseInt(broj);
+      int parsedOdBroja = Integer.parseInt(odBroja);
+      int parsedBroj = Integer.parseInt(broj);
+      if (parsedOdBroja <= 0 || parsedBroj <= 0) {
+        return false;
+      }
     } catch (NumberFormatException e) {
       return false;
     }
@@ -108,8 +114,10 @@ public class RestAerodromi {
     }
 
     Aerodrom aerodrom = null;
-
-    String upit = "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES FROM AIRPORTS WHERE ICAO = ?";
+    String upit =
+        "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES "
+        + "FROM AIRPORTS "
+        + "WHERE ICAO = ?";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
@@ -161,9 +169,10 @@ public class RestAerodromi {
     }
 
     var udaljenosti = new ArrayList<Udaljenost>();
-
-    String upit =
-        "SELECT ICAO_FROM, ICAO_TO, COUNTRY, DIST_CTRY FROM AIRPORTS_DISTANCE_MATRIX WHERE ICAO_FROM = ? AND ICAO_TO = ?";
+    String upit = 
+        "SELECT ICAO_FROM, ICAO_TO, COUNTRY, DIST_CTRY "
+        + "FROM AIRPORTS_DISTANCE_MATRIX " 
+        + "WHERE ICAO_FROM = ? AND ICAO_TO = ?";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
@@ -225,11 +234,14 @@ public class RestAerodromi {
     int odBrojaInt = Integer.parseInt(odBroja);
     int brojInt = Integer.parseInt(broj);
     int offset = (odBrojaInt - 1) * brojInt;
-
     var udaljenosti = new ArrayList<UdaljenostAerodrom>();
-
-    String upit =
-        "SELECT ICAO_FROM, ICAO_TO, DIST_TOT FROM AIRPORTS_DISTANCE_MATRIX WHERE ICAO_FROM = ? ORDER BY DIST_TOT LIMIT ? OFFSET ?";
+    String upit = 
+        "SELECT ICAO_FROM, ICAO_TO, DIST_TOT " 
+        + "FROM AIRPORTS_DISTANCE_MATRIX "
+        + "WHERE ICAO_FROM = ? " 
+        + "ORDER BY DIST_TOT " 
+        + "LIMIT ? " 
+        + "OFFSET ?";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
@@ -273,14 +285,13 @@ public class RestAerodromi {
     }
 
     UdaljenostAerodromDrzava najduziPut = null;
-
-    String upit =
+    String upit = 
         "SELECT ADM.ICAO_TO, ADM.COUNTRY, MAX(ADM.DIST_CTRY) AS MAX_DIST_CTRY "
-        + "FROM AIRPORTS_DISTANCE_MATRIX ADM "
+        + "FROM AIRPORTS_DISTANCE_MATRIX ADM " 
         + "JOIN AIRPORTS A ON ADM.COUNTRY = A.ISO_COUNTRY "
-        + "WHERE ADM.ICAO_FROM = ? AND A.ICAO = ? "
+        + "WHERE ADM.ICAO_FROM = ? AND A.ICAO = ? " 
         + "GROUP BY ADM.COUNTRY, ADM.ICAO_TO "
-        + "ORDER BY MAX_DIST_CTRY DESC "
+        + "ORDER BY MAX_DIST_CTRY DESC " 
         + "LIMIT 1";
 
     PreparedStatement stmt = null;

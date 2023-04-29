@@ -66,8 +66,4 @@ public final class SlusacAplikacije implements ServletContextListener {
     System.out.println("Obrisan kontekst: " + context.getContextPath());
   }
 
-  public ServletContext dohvatiServletContext() {
-    return context;
-  }
-
 }
