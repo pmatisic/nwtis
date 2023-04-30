@@ -1,0 +1,9 @@
+#NWTiS pmatisic 2023.
+#Sun Apr 30 16:37:39 CEST 2023
+adresa.wa_1=http\://200.20.0.4\:8080/pmatisic_zadaca_2_wa_1/api/
+aplikacija.godina=2023.
+aplikacija.verzija=1.0
+autor.ime=Petar
+autor.predmet=NWTiS
+autor.prezime=Mati\u0161i\u0107
+stranica.brojRedova=15

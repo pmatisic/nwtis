@@ -1,0 +1,4 @@
+#NWTiS pmatisic 2023.
+#Sun Apr 30 16:12:38 CEST 2023
+OpenSkyNetwork.korisnik=petarmatisic
+OpenSkyNetwork.lozinka=chelsea1003
