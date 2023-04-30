@@ -1,4 +1,0 @@
-#NWTiS pmatisic 2023.
-#Thu Mar 23 02:12:09 CET 2023
-ime=petar
-prezime=matisic
