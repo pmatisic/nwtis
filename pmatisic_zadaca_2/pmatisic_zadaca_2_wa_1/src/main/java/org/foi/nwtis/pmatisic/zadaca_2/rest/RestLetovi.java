@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -22,6 +23,7 @@ import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -209,6 +211,10 @@ public class RestLetovi {
       } else {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
       }
+    } catch (SQLIntegrityConstraintViolationException ex) {
+      ex.printStackTrace();
+      return Response.status(Response.Status.CONFLICT)
+          .entity("Kršenje ograničenja integriteta: " + ex.getMessage()).build();
     } catch (SQLException ex) {
       ex.printStackTrace();
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -255,6 +261,30 @@ public class RestLetovi {
       return Response.ok().entity(podaci).build();
     } else {
       return Response.status(Response.Status.NOT_FOUND).build();
+    }
+  }
+
+  @DELETE
+  @Path("{id}")
+  public Response obrisiLet(@PathParam("id") int id) {
+    if (id <= 0) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    String upit = "DELETE FROM LETOVI_POLASCI WHERE id = ?";
+
+    try (Connection con = ds.getConnection(); PreparedStatement stmt = con.prepareStatement(upit)) {
+      stmt.setInt(1, id);
+      int brojAzuriranihRedova = stmt.executeUpdate();
+
+      if (brojAzuriranihRedova > 0) {
+        return Response.status(Response.Status.OK).build();
+      } else {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
+    } catch (SQLException ex) {
+      ex.printStackTrace();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
 
