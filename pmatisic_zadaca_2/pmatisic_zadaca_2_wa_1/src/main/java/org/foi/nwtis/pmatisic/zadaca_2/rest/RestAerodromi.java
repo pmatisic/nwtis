@@ -45,7 +45,7 @@ public class RestAerodromi {
     List<Aerodrom> aerodromi = new ArrayList<>();
     int odBrojaInt = Integer.parseInt(odBroja);
     int brojInt = Integer.parseInt(broj);
-    int offset = odBrojaInt - 1;
+    int offset = (odBrojaInt - 1) * brojInt;
     String upit =
         "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES "
         + "FROM AIRPORTS "
@@ -234,7 +234,7 @@ public class RestAerodromi {
 
     int odBrojaInt = Integer.parseInt(odBroja);
     int brojInt = Integer.parseInt(broj);
-    int offset = odBrojaInt - 1;
+    int offset = (odBrojaInt - 1) * brojInt;
     var udaljenosti = new ArrayList<UdaljenostAerodrom>();
     String upit = 
         "SELECT DISTINCT ICAO_TO, DIST_TOT " 

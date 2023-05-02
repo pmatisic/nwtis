@@ -11,9 +11,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
 @Controller
-@Path("aerodromi")
+@Path("letovi")
 @RequestScoped
-public class KontrolerAerodroma {
+public class KontrolerLetova {
 
   @Inject
   private Models model;

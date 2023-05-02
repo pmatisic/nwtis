@@ -74,7 +74,7 @@ public class RestLetovi {
     }
 
     if (avioniPolasci != null) {
-      int startIndex = odBroja - 1;
+      int startIndex = (odBroja - 1) * broj;
       int endIndex = Math.min(startIndex + broj, avioniPolasci.size());
       List<LetAviona> avioniPolasciStraniceni = avioniPolasci.subList(startIndex, endIndex);
 
