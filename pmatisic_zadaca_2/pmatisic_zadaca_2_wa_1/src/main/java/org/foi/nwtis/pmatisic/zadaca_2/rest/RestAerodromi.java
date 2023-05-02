@@ -235,7 +235,7 @@ public class RestAerodromi {
     int offset = (odBrojaInt - 1) * brojInt;
     var udaljenosti = new ArrayList<UdaljenostAerodrom>();
     String upit = 
-        "SELECT ICAO_FROM, ICAO_TO, DIST_TOT " 
+        "SELECT DISTINCT ICAO_FROM, ICAO_TO, DIST_TOT " 
         + "FROM AIRPORTS_DISTANCE_MATRIX "
         + "WHERE ICAO_FROM = ? " 
         + "ORDER BY DIST_TOT " 

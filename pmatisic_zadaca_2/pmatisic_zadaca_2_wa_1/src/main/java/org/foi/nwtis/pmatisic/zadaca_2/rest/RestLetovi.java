@@ -39,7 +39,7 @@ import jakarta.ws.rs.core.Response;
 public class RestLetovi {
 
   @Context
-  private ServletContext context;
+  private ServletContext konfig;
 
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
@@ -65,8 +65,8 @@ public class RestLetovi {
     int odVremena = (int) datum.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
     int doVremena = odVremena + 86400;
 
-    String korisnik = (String) context.getAttribute("OpenSkyNetwork.korisnik");
-    String lozinka = (String) context.getAttribute("OpenSkyNetwork.lozinka");
+    String korisnik = (String) konfig.getAttribute("OpenSkyNetwork.korisnik");
+    String lozinka = (String) konfig.getAttribute("OpenSkyNetwork.lozinka");
     OSKlijent oSKlijent = new OSKlijent(korisnik, lozinka);
 
     List<LetAviona> avioniPolasci;
@@ -141,8 +141,8 @@ public class RestLetovi {
     int odVremena = (int) datum.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
     int doVremena = odVremena + 86400;
 
-    String korisnik = (String) context.getAttribute("OpenSkyNetwork.korisnik");
-    String lozinka = (String) context.getAttribute("OpenSkyNetwork.lozinka");
+    String korisnik = (String) konfig.getAttribute("OpenSkyNetwork.korisnik");
+    String lozinka = (String) konfig.getAttribute("OpenSkyNetwork.lozinka");
     OSKlijent oSKlijent = new OSKlijent(korisnik, lozinka);
 
     List<LetAviona> avioniPolasci;
