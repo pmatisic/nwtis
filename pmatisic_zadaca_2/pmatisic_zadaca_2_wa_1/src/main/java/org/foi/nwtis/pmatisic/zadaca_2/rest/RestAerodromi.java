@@ -43,26 +43,28 @@ public class RestAerodromi {
     }
 
     List<Aerodrom> aerodromi = new ArrayList<>();
+    int odBrojaInt = Integer.parseInt(odBroja);
+    int brojInt = Integer.parseInt(broj);
+    int offset = odBrojaInt - 1;
     String upit =
         "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES "
         + "FROM AIRPORTS "
+        + "ORDER BY ICAO " 
         + "LIMIT ? "
         + "OFFSET ?";
-    String offset =
-        String.valueOf(Integer.parseInt(odBroja) * Integer.parseInt(broj) - Integer.parseInt(broj));
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
       stmt = con.prepareStatement(upit);
-      stmt.setString(1, broj);
-      stmt.setString(2, offset);
+      stmt.setInt(1, brojInt);
+      stmt.setInt(2, offset);
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
         Aerodrom aerodrom = new Aerodrom();
         aerodrom.setIcao(rs.getString("ICAO"));
-        aerodrom.setNaziv(rs.getString("ISO_COUNTRY"));
-        aerodrom.setDrzava(rs.getString("ICAO"));
+        aerodrom.setNaziv(rs.getString("NAME"));
+        aerodrom.setDrzava(rs.getString("ISO_COUNTRY"));
         String koordinate[] = rs.getString("COORDINATES").split(",");
         Lokacija lokacija = new Lokacija(koordinate[0], koordinate[1].trim());
         aerodrom.setLokacija(lokacija);
@@ -232,10 +234,10 @@ public class RestAerodromi {
 
     int odBrojaInt = Integer.parseInt(odBroja);
     int brojInt = Integer.parseInt(broj);
-    int offset = (odBrojaInt - 1) * brojInt;
+    int offset = odBrojaInt - 1;
     var udaljenosti = new ArrayList<UdaljenostAerodrom>();
     String upit = 
-        "SELECT DISTINCT ICAO_FROM, ICAO_TO, DIST_TOT " 
+        "SELECT DISTINCT ICAO_TO, DIST_TOT " 
         + "FROM AIRPORTS_DISTANCE_MATRIX "
         + "WHERE ICAO_FROM = ? " 
         + "ORDER BY DIST_TOT " 
@@ -279,50 +281,50 @@ public class RestAerodromi {
   @Path("{icao}/najduljiPutDrzave")
   public Response dajNajduljiPutDrzave(@PathParam("icao") String icao) {
 
-      if (!jesuLiParametriIspravni(icao)) {
-          return Response.status(400).build();
+    if (!jesuLiParametriIspravni(icao)) {
+      return Response.status(400).build();
+    }
+
+    Udaljenost najduziPut = null;
+    String upit = 
+        "SELECT ADM.COUNTRY, MAX(ADM.DIST_CTRY) AS MAX_DIST_CTRY " 
+        + "FROM AIRPORTS_DISTANCE_MATRIX ADM " 
+        + "WHERE ADM.ICAO_FROM = ? " 
+        + "GROUP BY ADM.COUNTRY " 
+        + "ORDER BY MAX_DIST_CTRY DESC " 
+        + "LIMIT 1";
+
+    PreparedStatement stmt = null;
+    try (Connection con = ds.getConnection()) {
+      stmt = con.prepareStatement(upit);
+      stmt.setString(1, icao);
+      ResultSet rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        String drzava = rs.getString("COUNTRY");
+        float udaljenost = rs.getFloat("MAX_DIST_CTRY");
+        najduziPut = new Udaljenost(drzava, udaljenost);
       }
 
-      Udaljenost najduziPut = null;
-      String upit = 
-          "SELECT ADM.COUNTRY, MAX(ADM.DIST_CTRY) AS MAX_DIST_CTRY " 
-          + "FROM AIRPORTS_DISTANCE_MATRIX ADM " 
-          + "WHERE ADM.ICAO_FROM = ? " 
-          + "GROUP BY ADM.COUNTRY " 
-          + "ORDER BY MAX_DIST_CTRY DESC " 
-          + "LIMIT 1";
-
-      PreparedStatement stmt = null;
-      try (Connection con = ds.getConnection()) {
-          stmt = con.prepareStatement(upit);
-          stmt.setString(1, icao);
-          ResultSet rs = stmt.executeQuery();
-
-          if (rs.next()) {
-              String drzava = rs.getString("COUNTRY");
-              float udaljenost = rs.getFloat("MAX_DIST_CTRY");
-              najduziPut = new Udaljenost(drzava, udaljenost);
-          }
-
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        if (stmt != null && !stmt.isClosed())
+          stmt.close();
       } catch (SQLException e) {
-          e.printStackTrace();
-      } finally {
-          try {
-              if (stmt != null && !stmt.isClosed())
-                  stmt.close();
-          } catch (SQLException e) {
-              e.printStackTrace();
-          }
+        e.printStackTrace();
       }
+    }
 
-      if (najduziPut == null) {
-          return Response.status(404).build();
-      }
+    if (najduziPut == null) {
+      return Response.status(404).build();
+    }
 
-      Gson gson = new Gson();
-      String podaci = gson.toJson(najduziPut);
-      Response odgovor = Response.ok().entity(podaci).build();
-      return odgovor;
+    Gson gson = new Gson();
+    String podaci = gson.toJson(najduziPut);
+    Response odgovor = Response.ok().entity(podaci).build();
+    return odgovor;
   }
 
 }

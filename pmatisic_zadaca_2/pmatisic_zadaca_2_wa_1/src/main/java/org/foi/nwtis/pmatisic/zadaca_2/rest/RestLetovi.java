@@ -11,13 +11,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.foi.nwtis.rest.klijenti.NwtisRestIznimka;
 import org.foi.nwtis.rest.klijenti.OSKlijent;
 import org.foi.nwtis.rest.podaci.LetAviona;
+import org.foi.nwtis.rest.podaci.LetAvionaID;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
@@ -50,15 +49,12 @@ public class RestLetovi {
   public Response dajSvePolaske(@PathParam("icao") String icao, @QueryParam("dan") String dan,
       @QueryParam("odBroja") String odBrojaStr, @QueryParam("broj") String brojStr) {
 
-    Integer odBroja = null;
-    Integer broj = null;
-
     if (!jesuLiParametriIspravni(icao, dan, odBrojaStr, brojStr)) {
       return Response.status(400).build();
     }
 
-    odBroja = odBrojaStr == null ? 1 : Integer.parseInt(odBrojaStr);
-    broj = brojStr == null ? 20 : Integer.parseInt(brojStr);
+    Integer odBroja = odBrojaStr == null ? 1 : Integer.parseInt(odBrojaStr);
+    Integer broj = brojStr == null ? 20 : Integer.parseInt(brojStr);
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     LocalDate datum = LocalDate.parse(dan, dtf);
@@ -78,7 +74,7 @@ public class RestLetovi {
     }
 
     if (avioniPolasci != null) {
-      int startIndex = (odBroja - 1) * broj;
+      int startIndex = odBroja - 1;
       int endIndex = Math.min(startIndex + broj, avioniPolasci.size());
       List<LetAviona> avioniPolasciStraniceni = avioniPolasci.subList(startIndex, endIndex);
 
@@ -132,6 +128,7 @@ public class RestLetovi {
   @Path("{icaoOd}/{icaoDo}")
   public Response dajSvePolaskeAerodroma(@PathParam("icaoOd") String icaoOd,
       @PathParam("icaoDo") String icaoDo, @QueryParam("dan") String dan) {
+
     if (!jesuLiParametriIspravni(icaoOd, dan) || !jesuLiParametriIspravni(icaoDo, dan)) {
       return Response.status(400).build();
     }
@@ -185,11 +182,11 @@ public class RestLetovi {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response dodajLet(LetAviona let) {
+    
     String upit =
         "INSERT INTO LETOVI_POLASCI (icao24, firstSeen, estDepartureAirport, lastSeen, estArrivalAirport, callsign, estDepartureAirportHorizDistance, estDepartureAirportVertDistance, estArrivalAirportHorizDistance, estArrivalAirportVertDistance, departureAirportCandidatesCount, arrivalAirportCandidatesCount, stored) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (Connection con = ds.getConnection(); PreparedStatement stmt = con.prepareStatement(upit)) {
-
       stmt.setString(1, let.getIcao24());
       stmt.setInt(2, let.getFirstSeen());
       stmt.setString(3, let.getEstDepartureAirport());
@@ -225,30 +222,28 @@ public class RestLetovi {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("spremljeni")
   public Response dajSpremljeneLetove() {
-    List<Map<String, Object>> spremljeniLetovi = new ArrayList<>();
-
+    
+    List<LetAvionaID> spremljeniLetovi = new ArrayList<>();
     String upit = "SELECT * FROM LETOVI_POLASCI";
+    
     try (Connection con = ds.getConnection(); PreparedStatement stmt = con.prepareStatement(upit)) {
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
-        Map<String, Object> pom = new HashMap<>();
-        pom.put("id", rs.getInt("id"));
-        pom.put("icao24", rs.getString("icao24"));
-        pom.put("firstSeen", rs.getInt("firstSeen"));
-        pom.put("estDepartureAirport", rs.getString("estDepartureAirport"));
-        pom.put("lastSeen", rs.getInt("lastSeen"));
-        pom.put("estArrivalAirport", rs.getString("estArrivalAirport"));
-        pom.put("callsign", rs.getString("callsign"));
-        pom.put("estDepartureAirportHorizDistance", rs.getInt("estDepartureAirportHorizDistance"));
-        pom.put("estDepartureAirportVertDistance", rs.getInt("estDepartureAirportVertDistance"));
-        pom.put("estArrivalAirportHorizDistance", rs.getInt("estArrivalAirportHorizDistance"));
-        pom.put("estArrivalAirportVertDistance", rs.getInt("estArrivalAirportVertDistance"));
-        pom.put("departureAirportCandidatesCount", rs.getInt("departureAirportCandidatesCount"));
-        pom.put("arrivalAirportCandidatesCount", rs.getInt("arrivalAirportCandidatesCount"));
-        pom.put("stored", rs.getTimestamp("stored").toInstant().toString());
-
-        spremljeniLetovi.add(pom);
+        LetAvionaID let = new LetAvionaID(
+            rs.getLong("id"), 
+            rs.getString("icao24"),
+            rs.getInt("firstSeen"), 
+            rs.getString("estDepartureAirport"), 
+            rs.getInt("lastSeen"),
+            rs.getString("estArrivalAirport"), 
+            rs.getString("callsign"),
+            rs.getInt("estDepartureAirportHorizDistance"),
+            rs.getInt("estDepartureAirportVertDistance"),
+            rs.getInt("estArrivalAirportHorizDistance"), rs.getInt("estArrivalAirportVertDistance"),
+            rs.getInt("departureAirportCandidatesCount"),
+            rs.getInt("arrivalAirportCandidatesCount"));
+        spremljeniLetovi.add(let);
       }
     } catch (SQLException ex) {
       ex.printStackTrace();
@@ -270,13 +265,12 @@ public class RestLetovi {
     if (id <= 0) {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
-
+    
     String upit = "DELETE FROM LETOVI_POLASCI WHERE id = ?";
-
+    
     try (Connection con = ds.getConnection(); PreparedStatement stmt = con.prepareStatement(upit)) {
       stmt.setInt(1, id);
       int brojAzuriranihRedova = stmt.executeUpdate();
-
       if (brojAzuriranihRedova > 0) {
         return Response.status(Response.Status.OK).build();
       } else {
