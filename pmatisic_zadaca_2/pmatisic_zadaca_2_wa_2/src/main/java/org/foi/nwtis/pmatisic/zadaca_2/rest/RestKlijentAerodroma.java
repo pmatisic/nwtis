@@ -18,12 +18,12 @@ public class RestKlijentAerodroma {
 
   public List<Aerodrom> getAerodromi(int odBroja, int broj) {
     RestKKlijent rc = new RestKKlijent();
-    Aerodrom[] json_Aerodromi = rc.getAerodromi(odBroja, broj);
+    Aerodrom[] jsonAerodromi = rc.getAerodromi(odBroja, broj);
     List<Aerodrom> korisnici;
-    if (json_Aerodromi == null) {
+    if (jsonAerodromi == null) {
       korisnici = new ArrayList<>();
     } else {
-      korisnici = Arrays.asList(json_Aerodromi);
+      korisnici = Arrays.asList(jsonAerodromi);
     }
     rc.close();
     return korisnici;
@@ -53,6 +53,7 @@ public class RestKlijentAerodroma {
 
     public Aerodrom[] getAerodromi(int odBroja, int broj) throws ClientErrorException {
       WebTarget resource = webTarget;
+      resource = resource.queryParam("odBroja", odBroja).queryParam("broj", broj);
 
       Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
       if (request.get(String.class).isEmpty()) {
@@ -63,6 +64,7 @@ public class RestKlijentAerodroma {
 
       return aerodromi;
     }
+
 
     public Aerodrom getAerodrom(String icao) throws ClientErrorException {
       WebTarget resource = webTarget;
