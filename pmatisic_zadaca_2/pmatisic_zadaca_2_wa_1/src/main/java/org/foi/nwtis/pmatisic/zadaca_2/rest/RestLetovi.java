@@ -13,6 +13,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.rest.klijenti.NwtisRestIznimka;
 import org.foi.nwtis.rest.klijenti.OSKlijent;
 import org.foi.nwtis.rest.podaci.LetAviona;
@@ -61,8 +62,9 @@ public class RestLetovi {
     int odVremena = (int) datum.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
     int doVremena = odVremena + 86400;
 
-    String korisnik = (String) konfig.getAttribute("OpenSkyNetwork.korisnik");
-    String lozinka = (String) konfig.getAttribute("OpenSkyNetwork.lozinka");
+    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
+    String korisnik = konfiguracija.dajPostavku("OpenSkyNetwork.korisnik");
+    String lozinka = konfiguracija.dajPostavku("OpenSkyNetwork.lozinka");
     OSKlijent oSKlijent = new OSKlijent(korisnik, lozinka);
 
     List<LetAviona> avioniPolasci;
