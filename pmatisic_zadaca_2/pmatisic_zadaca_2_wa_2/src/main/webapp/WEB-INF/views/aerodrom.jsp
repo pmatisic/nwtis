@@ -1,4 +1,3 @@
-<%@page import="java.util.List"%>
 <%@page import="org.foi.nwtis.podaci.Aerodrom"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -6,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pregled svih aerodroma</title>
+<title>Pregled jednog aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -52,23 +51,11 @@ thead {
 	margin-top: 1rem;
 	margin-bottom: 1rem;
 }
-
-.pagination-container {
-	display: flex;
-	justify-content: center;
-	margin-top: 1rem;
-}
-
-.pagination-btns {
-	display: flex;
-	justify-content: center;
-	gap: 0.5rem;
-}
 </style>
 </head>
 <body>
 	<div class="container">
-		<h1>Pregled svih aerodroma</h1>
+		<h1>Pregled jednog aerodroma</h1>
 		<div class="author-info">
 			<p>
 				<strong>Autor:</strong>
@@ -99,12 +86,9 @@ thead {
 			</thead>
 			<tbody>
 				<%
-				List<Aerodrom> aerodromi = (List<Aerodrom>) request.getAttribute("aerodromi");
-				Integer odBroja = (Integer) request.getAttribute("odBroja");
-				Integer broj = (Integer) request.getAttribute("broj");
+				Aerodrom aerodrom = (Aerodrom) request.getAttribute("aerodrom");
 
-				if (aerodromi != null) {
-				  for (Aerodrom aerodrom : aerodromi) {
+				if (aerodrom != null) {
 				%>
 				<tr>
 					<td><%=aerodrom.getIcao()%></td>
@@ -114,20 +98,12 @@ thead {
 				</tr>
 				<%
 				}
-				}
 				%>
 			</tbody>
 		</table>
-		<div class="pagination-container">
-			<div class="pagination-btns">
-				<a href="<%=request.getContextPath()%>/mvc/aerodromi"
-					class="btn btn-primary">Početak</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja <= 1 ? 1 : odBroja - broj%>"
-					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna
-					stranica</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja + broj%>"
-					class="btn btn-primary">Sljedeća stranica</a>
-			</div>
+		<div class="d-flex justify-content-between mb-3">
+			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
+				class="btn btn-primary">Povratak na popis aerodroma</a>
 		</div>
 	</div>
 </body>

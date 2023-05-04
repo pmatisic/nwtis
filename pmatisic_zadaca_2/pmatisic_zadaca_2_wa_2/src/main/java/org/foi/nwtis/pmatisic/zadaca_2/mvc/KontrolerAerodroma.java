@@ -10,6 +10,7 @@ import jakarta.mvc.View;
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 
@@ -32,19 +33,31 @@ public class KontrolerAerodroma {
   @GET
   @View("aerodromi.jsp")
   public void getAerodromi(@QueryParam("odBroja") Integer odBroja) {
+
+    RestKlijentAerodroma rca = new RestKlijentAerodroma();
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
-    String nekiBroj = konfiguracija.dajPostavku("stranica.brojRedova");
-    int broj = Integer.parseInt(nekiBroj);
+
     if (odBroja == null) {
       odBroja = 1;
     }
+
+    int broj = Integer.parseInt(konfiguracija.dajPostavku("stranica.brojRedova"));
+    String ime = (konfiguracija.dajPostavku("autor.ime")).toString();
+    String prezime = (konfiguracija.dajPostavku("autor.prezime")).toString();
+    String predmet = (konfiguracija.dajPostavku("autor.predmet")).toString();
+    String godina = (konfiguracija.dajPostavku("aplikacija.godina")).toString();
+    String verzija = (konfiguracija.dajPostavku("aplikacija.verzija")).toString();
+    var aerodromi = rca.getAerodromi(odBroja, broj);
+
     try {
-      RestKlijentAerodroma rca = new RestKlijentAerodroma();
-      var aerodromi = rca.getAerodromi(odBroja, broj);
       model.put("aerodromi", aerodromi);
       model.put("odBroja", odBroja);
       model.put("broj", broj);
-      model.put("konf", konfig);
+      model.put("ime", ime);
+      model.put("prezime", prezime);
+      model.put("predmet", predmet);
+      model.put("godina", godina);
+      model.put("verzija", verzija);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -53,20 +66,90 @@ public class KontrolerAerodroma {
   @GET
   @Path("{icao}")
   @View("aerodrom.jsp")
-  public void getAerodrom(@QueryParam("icao") String icao) {
+  public void getAerodrom(@PathParam("icao") String icao) {
+
+    RestKlijentAerodroma rca = new RestKlijentAerodroma();
+    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
+    String ime = (konfiguracija.dajPostavku("autor.ime")).toString();
+    String prezime = (konfiguracija.dajPostavku("autor.prezime")).toString();
+    String predmet = (konfiguracija.dajPostavku("autor.predmet")).toString();
+    String godina = (konfiguracija.dajPostavku("aplikacija.godina")).toString();
+    String verzija = (konfiguracija.dajPostavku("aplikacija.verzija")).toString();
+    var aerodrom = rca.getAerodrom(icao);
+
     try {
-      RestKlijentAerodroma rca = new RestKlijentAerodroma();
-      var aerodrom = rca.getAerodrom(icao);
       model.put("aerodrom", aerodrom);
+      model.put("ime", ime);
+      model.put("prezime", prezime);
+      model.put("predmet", predmet);
+      model.put("godina", godina);
+      model.put("verzija", verzija);
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
   @GET
-  @Path("udaljenosti2aerodroma")
-  @View("aerodromiUdaljenosti.jsp")
-  public void getAerodromiUdaljenost(@QueryParam("icaoOd") String icaoOd,
-      @QueryParam("icaoDo") String icaoDo) {}
+  @Path("{icaoOd}/{icaoDo}")
+  @View("udaljenostiAerodroma.jsp")
+  public void getUdaljenostiAerodroma(@PathParam("icaoOd") String icaoFrom,
+      @PathParam("icaoDo") String icaoTo) {
+
+    RestKlijentAerodroma rca = new RestKlijentAerodroma();
+    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
+    String ime = (konfiguracija.dajPostavku("autor.ime")).toString();
+    String prezime = (konfiguracija.dajPostavku("autor.prezime")).toString();
+    String predmet = (konfiguracija.dajPostavku("autor.predmet")).toString();
+    String godina = (konfiguracija.dajPostavku("aplikacija.godina")).toString();
+    String verzija = (konfiguracija.dajPostavku("aplikacija.verzija")).toString();
+    var udaljenostiAerodroma = rca.getUdaljenostiAerodroma(icaoFrom, icaoTo);
+
+    try {
+      model.put("udaljenostiAerodroma", udaljenostiAerodroma);
+      model.put("ime", ime);
+      model.put("prezime", prezime);
+      model.put("predmet", predmet);
+      model.put("godina", godina);
+      model.put("verzija", verzija);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @GET
+  @Path("{icao}/udaljenosti")
+  @View("udaljenosti.jsp")
+  public void getUdaljenostiZaAerodome(@PathParam("icao") String icao,
+      @QueryParam("odBroja") Integer odBroja) {
+
+    RestKlijentAerodroma rca = new RestKlijentAerodroma();
+    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
+
+    if (odBroja == null) {
+      odBroja = 1;
+    }
+
+    int broj = Integer.parseInt(konfiguracija.dajPostavku("stranica.brojRedova"));
+    String ime = (konfiguracija.dajPostavku("autor.ime")).toString();
+    String prezime = (konfiguracija.dajPostavku("autor.prezime")).toString();
+    String predmet = (konfiguracija.dajPostavku("autor.predmet")).toString();
+    String godina = (konfiguracija.dajPostavku("aplikacija.godina")).toString();
+    String verzija = (konfiguracija.dajPostavku("aplikacija.verzija")).toString();
+    var udaljenosti = rca.getUdaljenostiZaAerodome(icao, odBroja, broj);
+
+    try {
+      model.put("udaljenosti", udaljenosti);
+      model.put("icao", icao);
+      model.put("odBroja", odBroja);
+      model.put("broj", broj);
+      model.put("ime", ime);
+      model.put("prezime", prezime);
+      model.put("predmet", predmet);
+      model.put("godina", godina);
+      model.put("verzija", verzija);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
 }

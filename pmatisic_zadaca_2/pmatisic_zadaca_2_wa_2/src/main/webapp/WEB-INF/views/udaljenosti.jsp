@@ -1,12 +1,12 @@
 <%@page import="java.util.List"%>
-<%@page import="org.foi.nwtis.podaci.Aerodrom"%>
+<%@page import="org.foi.nwtis.podaci.UdaljenostAerodrom"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pregled svih aerodroma</title>
+<title>Pregled udaljenosti svih aerodroma od odabranog aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -68,7 +68,7 @@ thead {
 </head>
 <body>
 	<div class="container">
-		<h1>Pregled svih aerodroma</h1>
+		<h1>Pregled udaljenosti svih aerodroma od odabranog aerodroma</h1>
 		<div class="author-info">
 			<p>
 				<strong>Autor:</strong>
@@ -87,30 +87,30 @@ thead {
 		<div class="d-flex justify-content-between mb-3">
 			<a href="<%=request.getContextPath()%>/index.jsp"
 				class="btn btn-secondary">Početna stranica</a>
+			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
+				class="btn btn-secondary">Povratak na popis aerodroma</a>
 		</div>
-		<table id="aerodromiTable" class="table table-striped">
+		<table id="udaljenostiAerodromaTable" class="table table-striped">
 			<thead>
 				<tr>
 					<th>ICAO</th>
-					<th>Naziv</th>
-					<th>Država</th>
-					<th>Koordinate</th>
+					<th>Udaljenost (km)</th>
 				</tr>
 			</thead>
 			<tbody>
 				<%
-				List<Aerodrom> aerodromi = (List<Aerodrom>) request.getAttribute("aerodromi");
+				List<UdaljenostAerodrom> udaljenosti =
+				    (List<UdaljenostAerodrom>) request.getAttribute("udaljenosti");
 				Integer odBroja = (Integer) request.getAttribute("odBroja");
 				Integer broj = (Integer) request.getAttribute("broj");
 
-				if (aerodromi != null) {
-				  for (Aerodrom aerodrom : aerodromi) {
+				if (udaljenosti != null) {
+				  for (UdaljenostAerodrom udaljenost : udaljenosti) {
 				%>
+
 				<tr>
-					<td><%=aerodrom.getIcao()%></td>
-					<td><%=aerodrom.getNaziv()%></td>
-					<td><%=aerodrom.getDrzava()%></td>
-					<td><%=aerodrom.getLokacija().getLatitude() + ", " + aerodrom.getLokacija().getLongitude()%></td>
+					<td><%=udaljenost.icao()%></td>
+					<td><%=udaljenost.km()%></td>
 				</tr>
 				<%
 				}

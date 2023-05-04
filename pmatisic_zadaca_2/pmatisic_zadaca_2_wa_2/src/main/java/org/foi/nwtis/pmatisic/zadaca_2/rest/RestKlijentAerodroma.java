@@ -1,10 +1,14 @@
 package org.foi.nwtis.pmatisic.zadaca_2.rest;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.foi.nwtis.podaci.Aerodrom;
+import org.foi.nwtis.podaci.Udaljenost;
+import org.foi.nwtis.podaci.UdaljenostAerodrom;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -19,25 +23,35 @@ public class RestKlijentAerodroma {
   public List<Aerodrom> getAerodromi(int odBroja, int broj) {
     RestKKlijent rc = new RestKKlijent();
     Aerodrom[] jsonAerodromi = rc.getAerodromi(odBroja, broj);
-    List<Aerodrom> korisnici;
+    List<Aerodrom> aerodromi;
     if (jsonAerodromi == null) {
-      korisnici = new ArrayList<>();
+      aerodromi = new ArrayList<>();
     } else {
-      korisnici = Arrays.asList(jsonAerodromi);
+      aerodromi = Arrays.asList(jsonAerodromi);
     }
     rc.close();
-    return korisnici;
-  }
-
-  public List<Aerodrom> getAerodromi() {
-    return this.getAerodromi(1, 20);
+    return aerodromi;
   }
 
   public Aerodrom getAerodrom(String icao) {
     RestKKlijent rc = new RestKKlijent();
-    Aerodrom k = rc.getAerodrom(icao);
+    Aerodrom a = rc.getAerodrom(icao);
     rc.close();
-    return k;
+    return a;
+  }
+
+  public List<Udaljenost> getUdaljenostiAerodroma(String icaoFrom, String icaoTo) {
+    RestKKlijent rc = new RestKKlijent();
+    List<Udaljenost> udaljenosti = rc.getUdaljenostiAerodroma(icaoFrom, icaoTo);
+    rc.close();
+    return udaljenosti;
+  }
+
+  public List<UdaljenostAerodrom> getUdaljenostiZaAerodome(String icao, int odBroja, int broj) {
+    RestKKlijent rc = new RestKKlijent();
+    List<UdaljenostAerodrom> udaljenosti = rc.getUdaljenostiZaAerodome(icao, odBroja, broj);
+    rc.close();
+    return udaljenosti;
   }
 
   static class RestKKlijent {
@@ -54,14 +68,14 @@ public class RestKlijentAerodroma {
     public Aerodrom[] getAerodromi(int odBroja, int broj) throws ClientErrorException {
       WebTarget resource = webTarget;
       resource = resource.queryParam("odBroja", odBroja).queryParam("broj", broj);
-
       Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
       if (request.get(String.class).isEmpty()) {
         return null;
       }
+
       Gson gson = new Gson();
       Aerodrom[] aerodromi = gson.fromJson(request.get(String.class), Aerodrom[].class);
-
       return aerodromi;
     }
 
@@ -70,12 +84,49 @@ public class RestKlijentAerodroma {
       WebTarget resource = webTarget;
       resource = resource.path(java.text.MessageFormat.format("{0}", new Object[] {icao}));
       Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
       if (request.get(String.class).isEmpty()) {
         return null;
       }
+
       Gson gson = new Gson();
       Aerodrom aerodrom = gson.fromJson(request.get(String.class), Aerodrom.class);
       return aerodrom;
+    }
+
+    public List<Udaljenost> getUdaljenostiAerodroma(String icaoFrom, String icaoTo)
+        throws ClientErrorException {
+      WebTarget resource = webTarget;
+      resource =
+          resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[] {icaoFrom, icaoTo}));
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
+      if (request.get(String.class).isEmpty()) {
+        return null;
+      }
+
+      Gson gson = new Gson();
+      Type listType = new TypeToken<ArrayList<Udaljenost>>() {}.getType();
+      List<Udaljenost> udaljenosti = gson.fromJson(request.get(String.class), listType);
+      return udaljenosti;
+    }
+
+    public List<UdaljenostAerodrom> getUdaljenostiZaAerodome(String icao, int odBroja, int broj)
+        throws ClientErrorException {
+      WebTarget resource = webTarget;
+      resource =
+          resource.path(java.text.MessageFormat.format("{0}/udaljenosti", new Object[] {icao}))
+              .queryParam("odBroja", odBroja).queryParam("broj", broj);
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
+      if (request.get(String.class).isEmpty()) {
+        return null;
+      }
+
+      Gson gson = new Gson();
+      Type listType = new TypeToken<ArrayList<UdaljenostAerodrom>>() {}.getType();
+      List<UdaljenostAerodrom> udaljenosti = gson.fromJson(request.get(String.class), listType);
+      return udaljenosti;
     }
 
     public void close() {
