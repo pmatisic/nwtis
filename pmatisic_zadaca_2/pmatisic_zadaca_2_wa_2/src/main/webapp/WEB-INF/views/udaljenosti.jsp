@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pregled udaljenosti svih aerodroma od odabranog aerodroma</title>
+<title>Pregled aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -130,6 +130,7 @@ thead {
 					class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>
+		<br>
 	</div>
 	<script
 		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>

@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pregled svih aerodroma</title>
+<title>Pregled aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -107,7 +107,11 @@ thead {
 				  for (Aerodrom aerodrom : aerodromi) {
 				%>
 				<tr>
-					<td><%=aerodrom.getIcao()%></td>
+                    <td>
+                        <a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>">
+                            <%=aerodrom.getIcao()%>
+                        </a>
+                    </td>
 					<td><%=aerodrom.getNaziv()%></td>
 					<td><%=aerodrom.getDrzava()%></td>
 					<td><%=aerodrom.getLokacija().getLatitude() + ", " + aerodrom.getLokacija().getLongitude()%></td>

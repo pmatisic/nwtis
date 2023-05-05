@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pregled udaljenosti po državama između dva aerodroma</title>
+<title>Pregled aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -56,7 +56,8 @@ thead {
 </head>
 <body>
 	<div class="container">
-		<h1>Pregled udaljenosti po državama između dva aerodroma</h1>
+		<h1>Pregled udaljenosti po državama između dva aerodroma i ukupne
+			udaljenosti</h1>
 		<div class="author-info">
 			<p>
 				<strong>Autor:</strong>
@@ -110,6 +111,7 @@ thead {
 			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
 				class="btn btn-primary">Povratak na popis aerodroma</a>
 		</div>
+		<br>
 	</div>
 	<script
 		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>

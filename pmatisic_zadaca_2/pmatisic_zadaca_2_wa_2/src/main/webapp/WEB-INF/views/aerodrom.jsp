@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pregled jednog aerodroma</title>
+<title>Pregled aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -73,7 +73,9 @@ thead {
 		</div>
 		<div class="d-flex justify-content-between mb-3">
 			<a href="<%=request.getContextPath()%>/index.jsp"
-				class="btn btn-secondary">Početna stranica</a>
+				class="btn btn-secondary">Početna stranica</a> <a
+				href="<%=request.getContextPath()%>/mvc/aerodromi"
+				class="btn btn-secondary">Povratak na popis aerodroma</a>
 		</div>
 		<table id="aerodromiTable" class="table table-striped">
 			<thead>
@@ -102,9 +104,13 @@ thead {
 			</tbody>
 		</table>
 		<div class="d-flex justify-content-between mb-3">
-			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
-				class="btn btn-primary">Povratak na popis aerodroma</a>
+			<a
+				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti"
+				class="btn btn-primary">Udaljenosti</a> <a
+				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave"
+				class="btn btn-primary">Najdulji put države</a>
 		</div>
+		<br>
 	</div>
 	<script
 		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>

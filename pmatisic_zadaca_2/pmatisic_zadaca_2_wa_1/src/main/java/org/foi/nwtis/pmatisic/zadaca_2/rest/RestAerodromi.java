@@ -157,7 +157,10 @@ public class RestAerodromi {
   }
 
   private boolean jesuLiParametriIspravni(String icao) {
-    return icao != null && icao.length() == 4 && icao.chars().allMatch(Character::isUpperCase);
+    if (icao == null || icao.length() < 2) {
+      return false;
+    }
+    return icao.chars().allMatch(c -> Character.isLetterOrDigit(c) || c == '-');
   }
 
   @GET
@@ -208,10 +211,7 @@ public class RestAerodromi {
   }
 
   private boolean jesuLiParametriIcao(String icaoFrom, String icaoTo) {
-    return (icaoFrom != null && icaoFrom.length() == 4
-        && icaoFrom.chars().allMatch(Character::isUpperCase))
-        && (icaoTo != null && icaoTo.length() == 4
-            && icaoTo.chars().allMatch(Character::isUpperCase));
+    return jesuLiParametriIspravni(icaoFrom) && jesuLiParametriIspravni(icaoTo);
   }
 
   @GET

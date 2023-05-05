@@ -6,8 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pregled najdužeg puta unutar države s pregledom aerodroma
-	od odabranog aerodroma</title>
+<title>Pregled aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -108,6 +107,11 @@ thead {
 				%>
 			</tbody>
 		</table>
+		<div class="d-flex justify-content-between mb-3">
+			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
+				class="btn btn-primary">Povratak na popis aerodroma</a>
+		</div>
+		<br>
 	</div>
 	<script
 		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
