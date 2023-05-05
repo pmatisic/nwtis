@@ -10,6 +10,7 @@ import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.podaci.Lokacija;
 import org.foi.nwtis.podaci.Udaljenost;
 import org.foi.nwtis.podaci.UdaljenostAerodrom;
+import org.foi.nwtis.podaci.UdaljenostAerodromDrzava;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
@@ -285,25 +286,32 @@ public class RestAerodromi {
       return Response.status(400).build();
     }
 
-    Udaljenost najduziPut = null;
+    UdaljenostAerodromDrzava najduziPut = null;
     String upit = 
-        "SELECT ADM.COUNTRY, MAX(ADM.DIST_CTRY) AS MAX_DIST_CTRY " 
-        + "FROM AIRPORTS_DISTANCE_MATRIX ADM " 
-        + "WHERE ADM.ICAO_FROM = ? " 
-        + "GROUP BY ADM.COUNTRY " 
-        + "ORDER BY MAX_DIST_CTRY DESC " 
+        "SELECT ADM1.ICAO_TO, ADM1.COUNTRY, ADM1.DIST_CTRY AS MAX_DIST_CTRY "
+        + "FROM AIRPORTS_DISTANCE_MATRIX ADM1 "
+        + "JOIN ("
+        + "SELECT ADM2.COUNTRY, MAX(ADM2.DIST_CTRY) AS MAX_DIST "
+        + "FROM AIRPORTS_DISTANCE_MATRIX ADM2 "
+        + "WHERE ADM2.ICAO_FROM = ? "
+        + "GROUP BY ADM2.COUNTRY"
+        + ") AS SUBQUERY ON ADM1.COUNTRY = SUBQUERY.COUNTRY AND ADM1.DIST_CTRY = SUBQUERY.MAX_DIST "
+        + "WHERE ADM1.ICAO_FROM = ? "
+        + "ORDER BY MAX_DIST_CTRY DESC "
         + "LIMIT 1";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
       stmt = con.prepareStatement(upit);
       stmt.setString(1, icao);
+      stmt.setString(2, icao);
       ResultSet rs = stmt.executeQuery();
 
       if (rs.next()) {
+        String icaoTo = rs.getString("ICAO_TO");
         String drzava = rs.getString("COUNTRY");
         float udaljenost = rs.getFloat("MAX_DIST_CTRY");
-        najduziPut = new Udaljenost(drzava, udaljenost);
+        najduziPut = new UdaljenostAerodromDrzava(icaoTo, drzava, udaljenost);
       }
 
     } catch (SQLException e) {

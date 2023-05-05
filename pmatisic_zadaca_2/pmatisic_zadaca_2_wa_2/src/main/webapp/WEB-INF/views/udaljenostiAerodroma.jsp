@@ -86,9 +86,10 @@ thead {
 			<tbody>
 				<%
 				List<Udaljenost> udaljenosti = (List<Udaljenost>) request.getAttribute("udaljenostiAerodroma");
-
+				double ukupnaUdaljenost = 0;
 				if (udaljenosti != null) {
 				  for (Udaljenost udaljenost : udaljenosti) {
+				    ukupnaUdaljenost += udaljenost.km();
 				%>
 
 				<tr>
@@ -99,6 +100,10 @@ thead {
 				}
 				}
 				%>
+				<tr>
+					<td><strong>Ukupna udaljenost:</strong></td>
+					<td><strong><%=ukupnaUdaljenost%> km</strong></td>
+				</tr>
 			</tbody>
 		</table>
 		<div class="d-flex justify-content-between mb-3">
@@ -106,5 +111,7 @@ thead {
 				class="btn btn-primary">Povratak na popis aerodroma</a>
 		</div>
 	</div>
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 </body>
 </html>

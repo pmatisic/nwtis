@@ -86,8 +86,8 @@ thead {
 		</div>
 		<div class="d-flex justify-content-between mb-3">
 			<a href="<%=request.getContextPath()%>/index.jsp"
-				class="btn btn-secondary">Početna stranica</a>
-			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
+				class="btn btn-secondary">Početna stranica</a> <a
+				href="<%=request.getContextPath()%>/mvc/aerodromi"
 				class="btn btn-secondary">Povratak na popis aerodroma</a>
 		</div>
 		<table id="udaljenostiAerodromaTable" class="table table-striped">
@@ -120,15 +120,18 @@ thead {
 		</table>
 		<div class="pagination-container">
 			<div class="pagination-btns">
-				<a href="<%=request.getContextPath()%>/mvc/aerodromi"
+				<a
+					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti"
 					class="btn btn-primary">Početak</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja <= 1 ? 1 : odBroja - broj%>"
+					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
 					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna
 					stranica</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja + broj%>"
+					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=odBroja + 1%>"
 					class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>
 	</div>
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 </body>
 </html>

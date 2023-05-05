@@ -1,11 +1,13 @@
-<%@page import="org.foi.nwtis.podaci.Aerodrom"%>
+<%@page import="java.util.List"%>
+<%@page import="org.foi.nwtis.podaci.UdaljenostAerodromDrzava"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pregled jednog aerodroma</title>
+<title>Pregled najdužeg puta unutar države s pregledom aerodroma
+	od odabranog aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -55,7 +57,8 @@ thead {
 </head>
 <body>
 	<div class="container">
-		<h1>Pregled jednog aerodroma</h1>
+		<h1>Pregled najdužeg puta unutar države s pregledom aerodroma od
+			odabranog aerodroma</h1>
 		<div class="author-info">
 			<p>
 				<strong>Autor:</strong>
@@ -75,36 +78,36 @@ thead {
 			<a href="<%=request.getContextPath()%>/index.jsp"
 				class="btn btn-secondary">Početna stranica</a>
 		</div>
-		<table id="aerodromiTable" class="table table-striped">
+		<table id="najduljiPutTable" class="table table-striped">
 			<thead>
 				<tr>
 					<th>ICAO</th>
-					<th>Naziv</th>
 					<th>Država</th>
-					<th>Koordinate</th>
+					<th>Udaljenost (km)</th>
 				</tr>
 			</thead>
 			<tbody>
 				<%
-				Aerodrom aerodrom = (Aerodrom) request.getAttribute("aerodrom");
-
-				if (aerodrom != null) {
+				UdaljenostAerodromDrzava najduljiPut =
+				    (UdaljenostAerodromDrzava) request.getAttribute("najduljiPut");
+				if (najduljiPut != null) {
 				%>
 				<tr>
-					<td><%=aerodrom.getIcao()%></td>
-					<td><%=aerodrom.getNaziv()%></td>
-					<td><%=aerodrom.getDrzava()%></td>
-					<td><%=aerodrom.getLokacija().getLatitude() + ", " + aerodrom.getLokacija().getLongitude()%></td>
+					<td><%=najduljiPut.icao()%></td>
+					<td><%=najduljiPut.drzava()%></td>
+					<td><%=najduljiPut.km()%></td>
+				</tr>
+				<%
+				} else {
+				%>
+				<tr>
+					<td colspan="3" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
 				}
 				%>
 			</tbody>
 		</table>
-		<div class="d-flex justify-content-between mb-3">
-			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
-				class="btn btn-primary">Povratak na popis aerodroma</a>
-		</div>
 	</div>
 	<script
 		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>

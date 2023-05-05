@@ -122,13 +122,16 @@ thead {
 			<div class="pagination-btns">
 				<a href="<%=request.getContextPath()%>/mvc/aerodromi"
 					class="btn btn-primary">Početak</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja <= 1 ? 1 : odBroja - broj%>"
+					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
 					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna
 					stranica</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja + broj%>"
+					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja + 1%>"
 					class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>
+		<br>
 	</div>
+	<script
+		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 </body>
 </html>
