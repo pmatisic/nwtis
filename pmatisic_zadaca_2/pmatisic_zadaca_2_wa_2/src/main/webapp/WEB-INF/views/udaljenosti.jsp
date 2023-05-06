@@ -98,30 +98,33 @@ thead {
 				</tr>
 			</thead>
 			<tbody>
-				<%
-				List<UdaljenostAerodrom> udaljenosti =
-				    (List<UdaljenostAerodrom>) request.getAttribute("udaljenosti");
-				Integer odBroja = (Integer) request.getAttribute("odBroja");
-				Integer broj = (Integer) request.getAttribute("broj");
-
-				if (udaljenosti != null) {
-				  for (UdaljenostAerodrom udaljenost : udaljenosti) {
+			    <%
+			    List<UdaljenostAerodrom> udaljenosti = (List<UdaljenostAerodrom>) request.getAttribute("udaljenosti");
+			    Integer odBroja = (Integer) request.getAttribute("odBroja");
+			    Integer broj = (Integer) request.getAttribute("broj");
+			
+			    if (udaljenosti != null) {
+			        for (UdaljenostAerodrom udaljenost : udaljenosti) {
+			    %>
+			    <tr>
+			        <td><% if (udaljenost.icao() == null) { %>Nema podatka<% } else { %><%=udaljenost.icao()%><% } %></td>
+			        <td><% if (udaljenost.km() == 0) { %>Nema podatka<% } else { %><%=udaljenost.km()%><% } %></td>
+			    </tr>
+			    <%
+			        }
+			    } else {
 				%>
-
 				<tr>
-					<td><%=udaljenost.icao()%></td>
-					<td><%=udaljenost.km()%></td>
+					<td colspan="3" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
 				}
-				}
-				%>
+			    %>
 			</tbody>
 		</table>
 		<div class="pagination-container">
 			<div class="pagination-btns">
-				<a
-					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti"
+				<a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti"
 					class="btn btn-primary">Početak</a> <a
 					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
 					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna

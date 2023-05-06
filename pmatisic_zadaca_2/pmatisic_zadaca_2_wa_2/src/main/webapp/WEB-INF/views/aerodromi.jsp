@@ -64,6 +64,13 @@ thead {
 	justify-content: center;
 	gap: 0.5rem;
 }
+
+.link-styled {
+	color: #007bff;
+	text-decoration: none; &: hover { color : #0056b3;
+	text-decoration: underline;
+}
+}
 </style>
 </head>
 <body>
@@ -95,6 +102,8 @@ thead {
 					<th>Naziv</th>
 					<th>Država</th>
 					<th>Koordinate</th>
+					<th>Udaljenosti</th>
+					<th>Najdulji put države</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -107,14 +116,19 @@ thead {
 				  for (Aerodrom aerodrom : aerodromi) {
 				%>
 				<tr>
-                    <td>
-                        <a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>">
-                            <%=aerodrom.getIcao()%>
-                        </a>
-                    </td>
+					<td><a
+						href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>"
+						class="link-styled"> <%=aerodrom.getIcao()%>
+					</a></td>
 					<td><%=aerodrom.getNaziv()%></td>
 					<td><%=aerodrom.getDrzava()%></td>
 					<td><%=aerodrom.getLokacija().getLatitude() + ", " + aerodrom.getLokacija().getLongitude()%></td>
+					<td><a
+						href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti"
+						class="link-styled">Prikaži</a></td>
+					<td><a
+						href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave"
+						class="link-styled">Prikaži</a></td>
 				</tr>
 				<%
 				}

@@ -73,9 +73,7 @@ thead {
 		</div>
 		<div class="d-flex justify-content-between mb-3">
 			<a href="<%=request.getContextPath()%>/index.jsp"
-				class="btn btn-secondary">Početna stranica</a> <a
-				href="<%=request.getContextPath()%>/mvc/aerodromi"
-				class="btn btn-secondary">Povratak na popis aerodroma</a>
+				class="btn btn-secondary">Početna stranica</a>
 		</div>
 		<table id="aerodromiTable" class="table table-striped">
 			<thead>
@@ -103,15 +101,32 @@ thead {
 				%>
 			</tbody>
 		</table>
-		<div class="d-flex justify-content-between mb-3">
-			<a
-				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti"
-				class="btn btn-primary">Udaljenosti</a> <a
-				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave"
-				class="btn btn-primary">Najdulji put države</a>
+		<div class="d-flex justify-content-center mb-3">
+		  <a href="<%=request.getContextPath()%>/mvc/aerodromi" class="btn btn-primary me-3">Povratak na popis aerodroma</a>
+		  <a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti" class="btn btn-primary me-3">Udaljenosti</a>
+		  <a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave" class="btn btn-primary me-3">Najdulji put države</a>
+		</div>
+		<br>
+		<div class="mb-3">
+			<h3>Pregled udaljenosti po državama između dva aerodroma i
+				ukupne udaljenosti</h3>
+			<div class="input-group">
+				<input type="text" class="form-control" id="icaoDo"
+					placeholder="Unesite odredišni ICAO" required>
+				<button type="button" class="btn btn-primary" onclick="submitForm()">Potvrdi</button>
+			</div>
 		</div>
 		<br>
 	</div>
+    <script>
+        function submitForm() {
+            var icaoDo = document.getElementById("icaoDo").value;
+            var currentICAO = '<%=aerodrom.getIcao()%>';
+            var contextPath = '<%=request.getContextPath()%>';
+            var url = contextPath + "/mvc/aerodromi/" + currentICAO + "/" + icaoDo;
+            window.location.href = url;
+        }
+    </script>
 	<script
 		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 </body>

@@ -101,10 +101,10 @@ thead {
 				}
 				}
 				%>
-				<tr>
-					<td><strong>Ukupna udaljenost:</strong></td>
-					<td><strong><%=ukupnaUdaljenost%> km</strong></td>
-				</tr>
+	            <tr>
+	                <td><strong>Ukupna udaljenost:</strong></td>
+	                <td><strong><% if (ukupnaUdaljenost == 0) { %>Nema podatka<% } else { %><%=ukupnaUdaljenost%> km<% } %></strong></td>
+	            </tr>
 			</tbody>
 		</table>
 		<div class="d-flex justify-content-between mb-3">
