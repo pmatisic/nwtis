@@ -82,6 +82,10 @@ public class RestAerodromi {
         e.printStackTrace();
       }
     }
+    
+    if (aerodromi.isEmpty()) {
+      return Response.status(404).build();
+    }
 
     Gson gson = new Gson();
     String podaci = gson.toJson(aerodromi);
@@ -147,9 +151,10 @@ public class RestAerodromi {
       }
     }
 
-    if (aerodrom == null)
+    if (aerodrom == null) {
       return Response.status(404).build();
-
+    }
+    
     Gson gson = new Gson();
     String podaci = gson.toJson(aerodrom);
     Response odgovor = Response.ok().entity(podaci).build();
@@ -202,6 +207,10 @@ public class RestAerodromi {
       } catch (SQLException e) {
         e.printStackTrace();
       }
+    }
+    
+    if (udaljenosti.isEmpty()) {
+      return Response.status(404).build();
     }
 
     Gson gson = new Gson();
@@ -270,7 +279,11 @@ public class RestAerodromi {
         e.printStackTrace();
       }
     }
-
+    
+    if (udaljenosti.isEmpty()) {
+      return Response.status(404).build();
+    }
+    
     Gson gson = new Gson();
     String podaci = gson.toJson(udaljenosti);
     Response odgovor = Response.ok().entity(podaci).build();

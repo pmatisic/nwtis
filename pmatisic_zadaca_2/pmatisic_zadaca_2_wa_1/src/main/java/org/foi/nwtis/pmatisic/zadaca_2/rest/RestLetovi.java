@@ -184,7 +184,7 @@ public class RestLetovi {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response dodajLet(LetAviona let) {
-    
+
     String upit =
         "INSERT INTO LETOVI_POLASCI (icao24, firstSeen, estDepartureAirport, lastSeen, estArrivalAirport, callsign, estDepartureAirportHorizDistance, estDepartureAirportVertDistance, estArrivalAirportHorizDistance, estArrivalAirportVertDistance, departureAirportCandidatesCount, arrivalAirportCandidatesCount, stored) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -224,22 +224,17 @@ public class RestLetovi {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("spremljeni")
   public Response dajSpremljeneLetove() {
-    
+
     List<LetAvionaID> spremljeniLetovi = new ArrayList<>();
     String upit = "SELECT * FROM LETOVI_POLASCI";
-    
+
     try (Connection con = ds.getConnection(); PreparedStatement stmt = con.prepareStatement(upit)) {
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
-        LetAvionaID let = new LetAvionaID(
-            rs.getLong("id"), 
-            rs.getString("icao24"),
-            rs.getInt("firstSeen"), 
-            rs.getString("estDepartureAirport"), 
-            rs.getInt("lastSeen"),
-            rs.getString("estArrivalAirport"), 
-            rs.getString("callsign"),
+        LetAvionaID let = new LetAvionaID(rs.getLong("id"), rs.getString("icao24"),
+            rs.getInt("firstSeen"), rs.getString("estDepartureAirport"), rs.getInt("lastSeen"),
+            rs.getString("estArrivalAirport"), rs.getString("callsign"),
             rs.getInt("estDepartureAirportHorizDistance"),
             rs.getInt("estDepartureAirportVertDistance"),
             rs.getInt("estArrivalAirportHorizDistance"), rs.getInt("estArrivalAirportVertDistance"),
@@ -264,12 +259,13 @@ public class RestLetovi {
   @DELETE
   @Path("{id}")
   public Response obrisiLet(@PathParam("id") int id) {
+
     if (id <= 0) {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
-    
+
     String upit = "DELETE FROM LETOVI_POLASCI WHERE id = ?";
-    
+
     try (Connection con = ds.getConnection(); PreparedStatement stmt = con.prepareStatement(upit)) {
       stmt.setInt(1, id);
       int brojAzuriranihRedova = stmt.executeUpdate();

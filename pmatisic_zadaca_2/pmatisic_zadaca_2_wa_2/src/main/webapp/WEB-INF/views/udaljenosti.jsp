@@ -106,16 +106,16 @@ thead {
 			    if (udaljenosti != null) {
 			        for (UdaljenostAerodrom udaljenost : udaljenosti) {
 			    %>
-			    <tr>
-			        <td><% if (udaljenost.icao() == null) { %>Nema podatka<% } else { %><%=udaljenost.icao()%><% } %></td>
-			        <td><% if (udaljenost.km() == 0) { %>Nema podatka<% } else { %><%=udaljenost.km()%><% } %></td>
-			    </tr>
+				<tr>
+				    <td><%=udaljenost.icao()%></td>
+				    <td><%=udaljenost.km()%></td>
+				</tr>
 			    <%
 			        }
 			    } else {
 				%>
 				<tr>
-					<td colspan="3" class="text-center">Nema podataka za prikaz</td>
+					<td colspan="2" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
 				}

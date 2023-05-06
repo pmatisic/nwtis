@@ -85,26 +85,31 @@ thead {
 				</tr>
 			</thead>
 			<tbody>
-				<%
-				List<Udaljenost> udaljenosti = (List<Udaljenost>) request.getAttribute("udaljenostiAerodroma");
-				double ukupnaUdaljenost = 0;
-				if (udaljenosti != null) {
-				  for (Udaljenost udaljenost : udaljenosti) {
-				    ukupnaUdaljenost += udaljenost.km();
-				%>
-
-				<tr>
-					<td><%=udaljenost.drzava()%></td>
-					<td><%=udaljenost.km()%></td>
-				</tr>
-				<%
-				}
-				}
-				%>
-	            <tr>
-	                <td><strong>Ukupna udaljenost:</strong></td>
-	                <td><strong><% if (ukupnaUdaljenost == 0) { %>Nema podatka<% } else { %><%=ukupnaUdaljenost%> km<% } %></strong></td>
-	            </tr>
+			    <%
+			    List<Udaljenost> udaljenosti = (List<Udaljenost>) request.getAttribute("udaljenostiAerodroma");
+			    double ukupnaUdaljenost = 0;
+			    if (udaljenosti != null && !udaljenosti.isEmpty()) {
+			        for (Udaljenost udaljenost : udaljenosti) {
+			            ukupnaUdaljenost += udaljenost.km();
+			    %>
+			    <tr>
+			        <td><%=udaljenost.drzava()%></td>
+			        <td><%=udaljenost.km()%></td>
+			    </tr>
+			    <%
+			        }
+			    } else {
+			    %>
+			    <tr>
+			        <td colspan="2"  class="text-center">Nema podataka za prikaz</td>
+			    </tr>
+			    <%
+			    }
+			    %>
+			    <tr>
+			        <td><strong>Ukupna udaljenost:</strong></td>
+			        <td><strong><% if (ukupnaUdaljenost == 0) { %>Nema podatka<% } else { %><%=ukupnaUdaljenost%> km<% } %></strong></td>
+			    </tr>
 			</tbody>
 		</table>
 		<div class="d-flex justify-content-between mb-3">
