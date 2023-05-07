@@ -76,27 +76,19 @@ thead {
 }
 </style>
 <script>
-function spremiLet(buttonElement) {
-  let letJson = buttonElement.getAttribute('data-let');
-  const xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState === 4) {
-      const poruka = document.getElementById("poruka");
-      if (this.status === 201) {
-        poruka.innerHTML = "Let uspješno spremljen!";
-        poruka.style.color = "green";
-      } else {
-        poruka.innerHTML = "Spremanje leta nije uspjelo!";
-        poruka.style.color = "red";
-      }
-      setTimeout(() => {
-        poruka.innerHTML = "";
-      }, 3000);
-    }
-  };
-  xhttp.open("POST", "<%=request.getContextPath()%>/mvc/letovi", true);
-  xhttp.setRequestHeader("Content-Type", "application/json");
-  xhttp.send(JSON.stringify({ let: letJson }));
+function spremiLet(let) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 201) {
+            alert("Let je uspješno spremljen.");
+            location.reload();
+        } else if (this.readyState == 4) {
+            alert("Došlo je do pogreške prilikom spremanja leta.");
+        }
+    };
+    xhttp.open("POST", "<%=request.getContextPath()%>/mvc/letovi", true);
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+    xhttp.send("let=" + encodeURIComponent(JSON.stringify(let)));
 }
 </script>
 </head>
@@ -152,7 +144,7 @@ function spremiLet(buttonElement) {
 				%>
 				<tr>
 					<td>
-						<button type="button" class="btn link-styled" data-let='<%=new Gson().toJson(let)%>' onclick="spremiLet(this)">Spremi</button>
+						<button type="button" class="btn link-styled" onclick='spremiLet(<%=new Gson().toJson(let).replace("\"", "&quot;")%>)'>Spremi</button>
 					</td>
 					<td><%=let.getIcao24()%></td>
 					<td><%=let.getFirstSeen()%></td>

@@ -17,6 +17,21 @@
 <body>
     <div class="container">
         <h1 class="mt-5 mb-4">Zadaća 2</h1>
+		<div class="author-info">
+		   <p>
+		       <strong>Autor:</strong>
+		       <%=request.getAttribute("ime")%>
+		       <%=request.getAttribute("prezime")%></p>
+		   <p>
+		       <strong>Predmet:</strong>
+		       <%=request.getAttribute("predmet")%></p>
+		   <p>
+		       <strong>Godina:</strong>
+		       <%=request.getAttribute("godina")%></p>
+		   <p>
+		       <strong>Verzija aplikacije:</strong>
+		       <%=request.getAttribute("verzija")%></p>
+		</div>
         <ul class="list-group">
             <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/aerodromi">Pregled svih aerodroma</a></li>
             <li class="list-group-item"><a href="#" onclick="openModalAerodrom()">Pregled jednog aerodroma</a></li>
@@ -157,16 +172,16 @@
 	            </div>
 	            <div class="modal-body">
 	                <div class="form-group">
-	                    <label for="icaoOd">ICAO polazni aerodrom:</label>
-	                    <input type="text" class="form-control" id="icaoOd" required>
+	                    <label for="icaoFrom">ICAO polazni aerodrom:</label>
+	                    <input type="text" class="form-control" id="icaoFrom" required>
 	                </div>
 	                <div class="form-group">
-	                    <label for="icaoDo">ICAO dolazni aerodrom:</label>
-	                    <input type="text" class="form-control" id="icaoDo" required>
+	                    <label for="icaoTo">ICAO dolazni aerodrom:</label>
+	                    <input type="text" class="form-control" id="icaoTo" required>
 	                </div>
 	                <div class="form-group">
 	                    <label for="dateDvaAerodroma">Datum:</label>
-	                    <input type="text" class="form-control" id="dateDvaAerodroma" placeholder="dd.MM.yyyy" required>
+	                    <input type="text" class="form-control" id="dateDvaAerodroma" pattern="\d{2}\.\d{2}\.\d{4}" placeholder="dd.MM.yyyy" required>
 	                </div>
 	            </div>
 	            <div class="modal-footer">
@@ -255,17 +270,21 @@
 	    }
 
 	    function submitFormLetoviDvaAerodroma() {
-	        var icaoOd = document.getElementById("icaoOd").value;
-	        var icaoDo = document.getElementById("icaoDo").value;
-	        var date = document.getElementById("dateDvaAerodroma").value;
+	        var icaoFrom = document.getElementById("icaoFrom").value;
+	        var icaoTo = document.getElementById("icaoTo").value;
+	        var dateDvaAerodroma = document.getElementById("dateDvaAerodroma").value;
 	        var datePattern = /^\d{2}\.\d{2}\.\d{4}$/;
+	        
+	        console.log("icaoFrom:", icaoFrom);
+	        console.log("icaoTo:", icaoTo);
+	        console.log("dateDvaAerodroma:", dateDvaAerodroma);
 
-	        if (icaoOd && icaoDo && date && datePattern.test(date)) {
+	        if (icaoFrom && icaoTo && dateDvaAerodroma && datePattern.test(dateDvaAerodroma)) {
 	            var contextPath = '<%=request.getContextPath()%>';
-	            var url = contextPath + "/mvc/letovi/" + icaoOd + "/" + icaoDo + "?dan=" + date;
+	            var url = contextPath + "/mvc/letovi/" + icaoFrom + "/" + icaoTo + "?dan=" + dateDvaAerodroma;
 	            window.location.href = url;
 	        } else {
-	            if (!datePattern.test(date)) {
+	            if (!datePattern.test(dateDvaAerodroma)) {
 	                alert("Unesite datum u formatu dd.MM.yyyy");
 	            }
 	        }

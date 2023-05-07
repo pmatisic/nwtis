@@ -10,7 +10,7 @@
 <meta name="subject" content="<%=request.getAttribute("predmet")%>">
 <meta name="year" content="<%=request.getAttribute("godina")%>">
 <meta name="version" content="<%=request.getAttribute("verzija")%>">
-<title>Pregled letova aerodroma</title>
+<title>Pregled letova</title>
 <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -75,30 +75,6 @@ thead {
 }
 }
 </style>
-<script>
-function spremiLet(buttonElement) {
-  let letJson = buttonElement.getAttribute('data-let');
-  const xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState === 4) {
-      const poruka = document.getElementById("poruka");
-      if (this.status === 201) {
-        poruka.innerHTML = "Let uspješno spremljen!";
-        poruka.style.color = "green";
-      } else {
-        poruka.innerHTML = "Spremanje leta nije uspjelo!";
-        poruka.style.color = "red";
-      }
-      setTimeout(() => {
-        poruka.innerHTML = "";
-      }, 3000);
-    }
-  };
-  xhttp.open("POST", "<%=request.getContextPath()%>/mvc/letovi", true);
-  xhttp.setRequestHeader("Content-Type", "application/json");
-  xhttp.send(JSON.stringify({ let: letJson }));
-}
-</script>
 </head>
 <body>
     <div class="container">
@@ -152,7 +128,10 @@ function spremiLet(buttonElement) {
                 %>
                 <tr>
                     <td>
-                        <button type="button" class="btn link-styled" data-let='<%=new Gson().toJson(let)%>' onclick="spremiLet(this)">Spremi</button>
+                        <form action="<%=request.getContextPath()%>/mvc/letovi" method="POST">
+							<input type="hidden" name="let" value='<%=new Gson().toJson(let)%>'>
+							<button type="submit" class="btn link-styled">Spremi</button>
+						</form>
                     </td>
                     <td><%=let.getIcao24()%></td>
                     <td><%=let.getFirstSeen()%></td>
@@ -179,11 +158,6 @@ function spremiLet(buttonElement) {
                 %>
             </tbody>
         </table>
-        <span id="poruka"></span>
-        <div class="d-flex justify-content-between mb-3">
-            <a href="<%=request.getContextPath()%>/mvc/letoviAerodroma/<%=icaoOd%>/<%=icaoDo%>?dan=<%=dan%>"
-                class="btn btn-primary">Pretraži ponovno</a>
-        </div>
     </div>
 </body>
 </html>

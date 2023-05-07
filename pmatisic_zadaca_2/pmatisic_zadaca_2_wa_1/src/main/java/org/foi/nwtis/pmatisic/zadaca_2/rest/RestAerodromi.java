@@ -22,6 +22,13 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * 
+ * Klasa RestAerodromi.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ *
+ */
 @Path("aerodromi")
 @RequestScoped
 public class RestAerodromi {
@@ -29,6 +36,14 @@ public class RestAerodromi {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Vraća sve aerodrome po stranicama uz zadane parametre 'odBroja' i 'broj'.
+   * Ako parametri nisu zadani, koriste se predefinirane vrijednosti.
+   *
+   * @param odBroja broj stranice koja se prikazuje
+   * @param broj broj aerodroma po stranici
+   * @return popis aerodroma u JSON formatu ili HTTP status kod u slučaju greške
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajSveAerodrome(@QueryParam("odBroja") String odBroja,
@@ -93,6 +108,13 @@ public class RestAerodromi {
     return odgovor;
   }
 
+  /**
+   * Provjerava jesu li zadani parametri ispravni brojevi.
+   *
+   * @param odBroja broj stranice koja se prikazuje
+   * @param broj broj aerodroma po stranici
+   * @return true ako su parametri ispravni brojevi, false inače
+   */
   private boolean jesuLiParametriBroj(String odBroja, String broj) {
     try {
       int parsedOdBroja = Integer.parseInt(odBroja);
@@ -106,10 +128,23 @@ public class RestAerodromi {
     return true;
   }
 
+  /**
+   * Provjerava jesu li zadani parametri prazni.
+   *
+   * @param odBroja broj stranice koja se prikazuje
+   * @param broj broj aerodroma po stranici
+   * @return true ako su oba parametra prazna, false inače
+   */
   private boolean jesuLiParametriPrazni(String odBroja, String broj) {
     return odBroja == null && broj == null;
   }
 
+  /**
+   * Vraća informacije o aerodromu za zadani ICAO kod.
+   *
+   * @param icao ICAO kod aerodroma
+   * @return informacije o aerodromu u JSON formatu ili HTTP status kod u slučaju greške
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}")
@@ -161,6 +196,12 @@ public class RestAerodromi {
     return odgovor;
   }
 
+  /**
+   * Provjerava jesu li zadani parametri ispravni.
+   *
+   * @param icao ICAO kod aerodroma
+   * @return true ako je parametar ispravan, false inače
+   */
   private boolean jesuLiParametriIspravni(String icao) {
     if (icao == null || icao.length() < 2) {
       return false;
@@ -168,6 +209,13 @@ public class RestAerodromi {
     return icao.chars().allMatch(c -> Character.isLetterOrDigit(c) || c == '-');
   }
 
+  /**
+   * Vraća udaljenosti između dva aerodroma, zadanih ICAO kodovima.
+   *
+   * @param icaoFrom ICAO kod polaznog aerodroma
+   * @param icaoTo ICAO kod odredišnog aerodroma
+   * @return udaljenosti u JSON formatu ili HTTP status kod u slučaju greške
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icaoOd}/{icaoDo}")
@@ -219,10 +267,25 @@ public class RestAerodromi {
     return odgovor;
   }
 
+  /**
+   * Provjerava jesu li zadani parametri ICAO kodovi ispravni.
+   *
+   * @param icaoFrom ICAO kod polaznog aerodroma
+   * @param icaoTo ICAO kod odredišnog aerodroma
+   * @return true ako su oba parametra ispravna, false inače
+   */
   private boolean jesuLiParametriIcao(String icaoFrom, String icaoTo) {
     return jesuLiParametriIspravni(icaoFrom) && jesuLiParametriIspravni(icaoTo);
   }
 
+  /**
+   * Dohvaća udaljenosti za aerodrome u odnosu na zadanog aerodroma.
+   *
+   * @param icao ICAO kod referentnog aerodroma
+   * @param odBroja početak raspona
+   * @param broj broj elemenata u rasponu
+   * @return Response koji sadrži informacije o udaljenostima za aerodrome u JSON formatu, ili odgovor s odgovarajućim statusom
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}/udaljenosti")
@@ -290,6 +353,12 @@ public class RestAerodromi {
     return odgovor;
   }
 
+  /**
+   * Dohvaća najduži put između zadanog aerodroma i aerodroma u istoj državi.
+   *
+   * @param icao ICAO kod referentnog aerodroma
+   * @return Response koji sadrži informacije o najdužem putu u JSON formatu, ili odgovor s odgovarajućim statusom
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}/najduljiPutDrzave")

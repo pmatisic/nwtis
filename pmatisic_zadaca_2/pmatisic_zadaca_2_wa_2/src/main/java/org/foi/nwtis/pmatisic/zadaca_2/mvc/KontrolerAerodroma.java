@@ -15,6 +15,13 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 
+/**
+ * 
+ * Klasa kontroler za upravljanje aerodromima u aplikaciji.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ *
+ */
 @Controller
 @Path("aerodromi")
 @RequestScoped
@@ -26,11 +33,37 @@ public class KontrolerAerodroma {
   @Inject
   private Models model;
 
+  /**
+   * Prikazuje početnu stranicu aplikacije s autorovim informacijama.
+   */
   @GET
   @Path("pocetak")
   @View("index.jsp")
-  public void pocetak() {}
+  public void pocetak() {
 
+    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
+    String ime = (konfiguracija.dajPostavku("autor.ime")).toString();
+    String prezime = (konfiguracija.dajPostavku("autor.prezime")).toString();
+    String predmet = (konfiguracija.dajPostavku("autor.predmet")).toString();
+    String godina = (konfiguracija.dajPostavku("aplikacija.godina")).toString();
+    String verzija = (konfiguracija.dajPostavku("aplikacija.verzija")).toString();
+
+    try {
+      model.put("ime", ime);
+      model.put("prezime", prezime);
+      model.put("predmet", predmet);
+      model.put("godina", godina);
+      model.put("verzija", verzija);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Dohvaća popis aerodroma i prikazuje ih na stranici.
+   *
+   * @param odBroja Broj reda od kojeg započinje prikaz aerodroma.
+   */
   @GET
   @View("aerodromi.jsp")
   public void getAerodromi(@QueryParam("odBroja") Integer odBroja) {
@@ -64,6 +97,11 @@ public class KontrolerAerodroma {
     }
   }
 
+  /**
+   * Dohvaća informacije o pojedinom aerodromu i prikazuje ih na stranici.
+   *
+   * @param icao ICAO kod aerodroma.
+   */
   @GET
   @Path("{icao}")
   @View("aerodrom.jsp")
@@ -90,6 +128,12 @@ public class KontrolerAerodroma {
     }
   }
 
+  /**
+   * Dohvaća udaljenosti između dva aerodroma i prikazuje ih na stranici.
+   *
+   * @param icaoFrom ICAO kod prvog aerodroma.
+   * @param icaoTo ICAO kod drugog aerodroma.
+   */
   @GET
   @Path("{icaoOd}/{icaoDo}")
   @View("udaljenostiAerodroma.jsp")
@@ -117,6 +161,12 @@ public class KontrolerAerodroma {
     }
   }
 
+  /**
+   * Dohvaća udaljenosti za aerodrome i prikazuje ih na stranici.
+   *
+   * @param icao ICAO kod aerodroma.
+   * @param odBroja Broj reda od kojeg započinje prikaz udaljenosti.
+   */
   @GET
   @Path("{icao}/udaljenosti")
   @View("udaljenosti.jsp")
@@ -153,6 +203,11 @@ public class KontrolerAerodroma {
     }
   }
 
+  /**
+   * Dohvaća najdulji put između aerodroma u državi i prikazuje ga na stranici.
+   *
+   * @param icao ICAO kod aerodroma.
+   */
   @GET
   @Path("{icao}/najduljiPutDrzave")
   @View("najduljiPutDrzave.jsp")

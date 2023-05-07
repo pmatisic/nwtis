@@ -19,14 +19,25 @@ import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * Klasa klijent za rad s REST API-em za aerodrome.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class RestKlijentAerodroma {
 
   private ServletContext konfig;
 
+  /**
+   * Konstruktor koji prima ServletContext objekt za konfiguraciju.
+   */
   public RestKlijentAerodroma(ServletContext konfig) {
     this.konfig = konfig;
   }
 
+  /**
+   * Dohvaća listu aerodroma počevši od zadanog broja i dohvaća zadanu količinu aerodroma.
+   */
   public List<Aerodrom> getAerodromi(int odBroja, int broj) {
     RestKKlijent rc = new RestKKlijent(konfig);
     Aerodrom[] jsonAerodromi = rc.getAerodromi(odBroja, broj);
@@ -40,10 +51,16 @@ public class RestKlijentAerodroma {
     return aerodromi;
   }
 
+  /**
+   * Dohvaća listu prvih 20 aerodroma.
+   */
   public List<Aerodrom> getAerodromi() {
     return this.getAerodromi(1, 20);
   }
 
+  /**
+   * Dohvaća aerodrom na temelju njegovog ICAO koda.
+   */
   public Aerodrom getAerodrom(String icao) {
     RestKKlijent rc = new RestKKlijent(konfig);
     Aerodrom a = rc.getAerodrom(icao);
@@ -51,6 +68,9 @@ public class RestKlijentAerodroma {
     return a;
   }
 
+  /**
+   * Dohvaća listu udaljenosti između dva aerodroma, zadanog ICAO koda.
+   */
   public List<Udaljenost> getUdaljenostiAerodroma(String icaoFrom, String icaoTo) {
     RestKKlijent rc = new RestKKlijent(konfig);
     List<Udaljenost> udaljenosti = rc.getUdaljenostiAerodroma(icaoFrom, icaoTo);
@@ -58,6 +78,10 @@ public class RestKlijentAerodroma {
     return udaljenosti;
   }
 
+  /**
+   * Dohvaća listu udaljenosti za aerodrome počevši od zadanog broja i dohvaća zadanu količinu
+   * udaljenosti.
+   */
   public List<UdaljenostAerodrom> getUdaljenostiZaAerodome(String icao, int odBroja, int broj) {
     RestKKlijent rc = new RestKKlijent(konfig);
     List<UdaljenostAerodrom> udaljenosti = rc.getUdaljenostiZaAerodome(icao, odBroja, broj);
@@ -65,10 +89,16 @@ public class RestKlijentAerodroma {
     return udaljenosti;
   }
 
+  /**
+   * Dohvaća listu prvih 20 udaljenosti za aerodrome.
+   */
   public List<UdaljenostAerodrom> getUdaljenostiZaAerodome(String icao) {
     return this.getUdaljenostiZaAerodome(icao, 1, 20);
   }
 
+  /**
+   * Dohvaća najdulji put za državu na temelju ICAO koda.
+   */
   public UdaljenostAerodromDrzava getNajduljiPutDrzave(String icao) {
     RestKKlijent rc = new RestKKlijent(konfig);
     UdaljenostAerodromDrzava najduljiPut = rc.getNajduljiPutDrzave(icao);
@@ -76,11 +106,17 @@ public class RestKlijentAerodroma {
     return najduljiPut;
   }
 
+  /**
+   * Unutarnja klasa za rad s REST API-em za aerodrome.
+   */
   static class RestKKlijent {
 
     private final WebTarget webTarget;
     private final Client client;
 
+    /**
+     * Konstruktor koji prima ServletContext objekt za konfiguraciju.
+     */
     public RestKKlijent(ServletContext konfig) {
       Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
       String uri = (konfiguracija.dajPostavku("adresa.wa_1")).toString();
@@ -88,6 +124,9 @@ public class RestKlijentAerodroma {
       webTarget = client.target(uri).path("aerodromi");
     }
 
+    /**
+     * Dohvaća polje aerodroma počevši od zadanog broja i dohvaća zadanu količinu aerodroma.
+     */
     public Aerodrom[] getAerodromi(int odBroja, int broj) throws ClientErrorException {
       WebTarget resource = webTarget;
       resource = resource.queryParam("odBroja", odBroja).queryParam("broj", broj);
@@ -102,7 +141,9 @@ public class RestKlijentAerodroma {
       return aerodromi;
     }
 
-
+    /**
+     * Dohvaća aerodrom na temelju njegovog ICAO koda.
+     */
     public Aerodrom getAerodrom(String icao) throws ClientErrorException {
       WebTarget resource = webTarget;
       resource = resource.path(java.text.MessageFormat.format("{0}", new Object[] {icao}));
@@ -117,6 +158,9 @@ public class RestKlijentAerodroma {
       return aerodrom;
     }
 
+    /**
+     * Dohvaća listu udaljenosti između dva aerodroma, zadanog ICAO koda.
+     */
     public List<Udaljenost> getUdaljenostiAerodroma(String icaoFrom, String icaoTo)
         throws ClientErrorException {
       WebTarget resource = webTarget;
@@ -134,6 +178,10 @@ public class RestKlijentAerodroma {
       return udaljenosti;
     }
 
+    /**
+     * Dohvaća listu udaljenosti za aerodrome počevši od zadanog broja i dohvaća zadanu količinu
+     * udaljenosti.
+     */
     public List<UdaljenostAerodrom> getUdaljenostiZaAerodome(String icao, int odBroja, int broj)
         throws ClientErrorException {
       WebTarget resource = webTarget;
@@ -152,6 +200,9 @@ public class RestKlijentAerodroma {
       return udaljenosti;
     }
 
+    /**
+     * Dohvaća najdulji put za državu na temelju ICAO koda.
+     */
     public UdaljenostAerodromDrzava getNajduljiPutDrzave(String icao) throws ClientErrorException {
       WebTarget resource = webTarget;
       resource = resource
@@ -168,6 +219,9 @@ public class RestKlijentAerodroma {
       return najduljiPut;
     }
 
+    /**
+     * Zatvara klijentsku vezu.
+     */
     public void close() {
       client.close();
     }

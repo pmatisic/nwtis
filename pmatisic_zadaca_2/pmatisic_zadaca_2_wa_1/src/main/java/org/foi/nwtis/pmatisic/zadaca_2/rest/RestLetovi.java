@@ -34,6 +34,13 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * 
+ * Klasa RestLetovi.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ *
+ */
 @Path("letovi")
 @RequestScoped
 public class RestLetovi {
@@ -44,6 +51,15 @@ public class RestLetovi {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Dohvaća sve letove koji polaze iz zračne luke s navedenim ICAO kodom.
+   *
+   * @param icao ICAO kod zračne luke
+   * @param dan datum leta u formatu "dd.MM.yyyy"
+   * @param odBrojaStr početni indeks rezultata
+   * @param brojStr maksimalan broj rezultata
+   * @return Response koji sadrži sve letove u JSON formatu, ili odgovor s odgovarajućim statusom
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}")
@@ -88,6 +104,15 @@ public class RestLetovi {
     }
   }
 
+  /**
+   * Provjerava jesu li parametri ispravni za dohvaćanje letova.
+   *
+   * @param icao ICAO kod zračne luke
+   * @param dan datum leta u formatu "dd.MM.yyyy"
+   * @param odBrojaStr početni indeks rezultata
+   * @param brojStr maksimalan broj rezultata
+   * @return true ako su parametri ispravni, inače false
+   */
   private boolean jesuLiParametriIspravni(String icao, String dan, String odBrojaStr,
       String brojStr) {
     if (icao == null || icao.length() < 2
@@ -126,6 +151,14 @@ public class RestLetovi {
     return true;
   }
 
+  /**
+   * Dohvaća sve letove koji polaze iz jedne zračne luke i slijeću u drugu zračnu luku.
+   *
+   * @param icaoOd ICAO kod polazne zračne luke
+   * @param icaoDo ICAO kod odredišne zračne luke
+   * @param dan datum leta u formatu "dd.MM.yyyy"
+   * @return Response koji sadrži sve letove u JSON formatu, ili odgovor s odgovarajućim statusom
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icaoOd}/{icaoDo}")
@@ -165,6 +198,13 @@ public class RestLetovi {
     }
   }
 
+  /**
+   * Provjerava jesu li parametri ispravni za ICAO kod aerodroma i datum.
+   * 
+   * @param icao ICAO kod aerodroma koji se provjerava, ne smije biti null niti kraći od 2 znaka.
+   * @param dan Datum u formatu "dd.MM.yyyy" koji se provjerava, ne smije biti null niti prazan.
+   * @return true ako su oba parametra ispravna, false u suprotnom.
+   */
   private boolean jesuLiParametriIspravni(String icao, String dan) {
     if (icao == null || icao.length() < 2
         || !icao.chars().allMatch(c -> Character.isLetterOrDigit(c) || c == '-')) {
@@ -182,9 +222,14 @@ public class RestLetovi {
     return true;
   }
 
+  /**
+   * Dodaje novi let u bazu podataka.
+   *
+   * @param let LetAviona objekt koji sadrži informacije o letu
+   * @return Response s odgovarajućim statusom koji predstavlja rezultat dodavanja leta
+   */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
   public Response dodajLet(LetAviona let) {
 
     String upit =
@@ -223,6 +268,12 @@ public class RestLetovi {
     }
   }
 
+  /**
+   * Dohvaća sve spremljene letove iz baze podataka.
+   *
+   * @return Response koji sadrži sve spremljene letove u JSON formatu, ili odgovor s odgovarajućim
+   *         statusom
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("spremljeni")
@@ -259,6 +310,12 @@ public class RestLetovi {
     }
   }
 
+  /**
+   * Briše let iz baze podataka prema navedenom ID-u.
+   *
+   * @param id ID leta koji treba izbrisati
+   * @return Response s odgovarajućim statusom koji predstavlja rezultat brisanja leta
+   */
   @DELETE
   @Path("{id}")
   public Response obrisiLet(@PathParam("id") int id) {
