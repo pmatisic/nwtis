@@ -1,16 +1,18 @@
 <%@page import="java.util.List"%>
 <%@page import="org.foi.nwtis.podaci.UdaljenostAerodrom"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="author" content="<%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%>">
+<meta name="subject" content="<%=request.getAttribute("predmet")%>">
+<meta name="year" content="<%=request.getAttribute("godina")%>">
+<meta name="version" content="<%=request.getAttribute("verzija")%>">
 <title>Pregled aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
-/* SCSS stilovi */
 body {
 	background-color: #f8f9fa;
 }
@@ -98,33 +100,35 @@ thead {
 				</tr>
 			</thead>
 			<tbody>
-			    <%
-			    List<UdaljenostAerodrom> udaljenosti = (List<UdaljenostAerodrom>) request.getAttribute("udaljenosti");
-			    Integer odBroja = (Integer) request.getAttribute("odBroja");
-			    Integer broj = (Integer) request.getAttribute("broj");
-			
-			    if (udaljenosti != null) {
-			        for (UdaljenostAerodrom udaljenost : udaljenosti) {
-			    %>
+				<%
+				List<UdaljenostAerodrom> udaljenosti =
+				    (List<UdaljenostAerodrom>) request.getAttribute("udaljenosti");
+				Integer odBroja = (Integer) request.getAttribute("odBroja");
+				Integer broj = (Integer) request.getAttribute("broj");
+
+				if (udaljenosti != null) {
+				  for (UdaljenostAerodrom udaljenost : udaljenosti) {
+				%>
 				<tr>
-				    <td><%=udaljenost.icao()%></td>
-				    <td><%=udaljenost.km()%></td>
+					<td><%=udaljenost.icao()%></td>
+					<td><%=udaljenost.km()%></td>
 				</tr>
-			    <%
-			        }
-			    } else {
+				<%
+				}
+				} else {
 				%>
 				<tr>
 					<td colspan="2" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
 				}
-			    %>
+				%>
 			</tbody>
 		</table>
 		<div class="pagination-container">
 			<div class="pagination-btns">
-				<a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti"
+				<a
+					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti"
 					class="btn btn-primary">Početak</a> <a
 					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
 					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna
@@ -135,7 +139,5 @@ thead {
 		</div>
 		<br>
 	</div>
-	<script
-		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 </body>
 </html>

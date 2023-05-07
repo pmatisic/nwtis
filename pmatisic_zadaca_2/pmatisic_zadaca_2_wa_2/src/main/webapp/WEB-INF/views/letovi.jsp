@@ -1,22 +1,25 @@
 <%@page import="java.util.List"%>
+<%@page import="com.google.gson.Gson"%>
 <%@page import="org.foi.nwtis.rest.podaci.LetAviona"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="author" content="<%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%>">
+<meta name="subject" content="<%=request.getAttribute("predmet")%>">
+<meta name="year" content="<%=request.getAttribute("godina")%>">
+<meta name="version" content="<%=request.getAttribute("verzija")%>">
 <title>Pregled letova</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
-/* SCSS stilovi */
 body {
 	background-color: #f8f9fa;
 }
 
 .container {
-	max-width: 960px;
+	max-width: 1500px;
 }
 
 h1 {
@@ -72,6 +75,30 @@ thead {
 }
 }
 </style>
+<script>
+function spremiLet(buttonElement) {
+  let letJson = buttonElement.getAttribute('data-let');
+  const xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState === 4) {
+      const poruka = document.getElementById("poruka");
+      if (this.status === 201) {
+        poruka.innerHTML = "Let uspješno spremljen!";
+        poruka.style.color = "green";
+      } else {
+        poruka.innerHTML = "Spremanje leta nije uspjelo!";
+        poruka.style.color = "red";
+      }
+      setTimeout(() => {
+        poruka.innerHTML = "";
+      }, 3000);
+    }
+  };
+  xhttp.open("POST", "<%=request.getContextPath()%>/mvc/letovi", true);
+  xhttp.setRequestHeader("Content-Type", "application/json");
+  xhttp.send(JSON.stringify({ let: letJson }));
+}
+</script>
 </head>
 <body>
 	<div class="container">
@@ -98,18 +125,19 @@ thead {
 		<table id="letoviTable" class="table table-striped">
 			<thead>
 				<tr>
+					<th>Spremi let</th>
 					<th>ICAO24</th>
-					<th>First Seen</th>
-					<th>Est. Departure Airport</th>
-					<th>Last Seen</th>
-					<th>Est. Arrival Airport</th>
-					<th>Callsign</th>
-					<th>Est. Departure Airport Horiz. Distance</th>
-					<th>Est. Departure Airport Vert. Distance</th>
-					<th>Est. Arrival Airport Horiz. Distance</th>
-					<th>Est. Arrival Airport Vert. Distance</th>
-					<th>Departure Airport Candidates Count</th>
-					<th>Arrival Airport Candidates Count</th>
+					<th>Prvi put viđen</th>
+					<th>Aerodrom polaska</th>
+					<th>Zadnji put viđen</th>
+					<th>Aerodrom dolaska</th>
+					<th>Pozivni znak</th>
+					<th>Horizontalna udaljenost aerodroma polaska</th>
+					<th>Vertikalna udaljenost aerodroma polaska</th>
+					<th>Horizontalna udaljenost aerodroma dolaska</th>
+					<th>Vertikalna udaljenost aerodroma dolaska</th>
+					<th>Broj kandidata za aerodrom polaska</th>
+					<th>Broj kandidata za aerodrom dolaska</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -119,9 +147,13 @@ thead {
 				Integer broj = (Integer) request.getAttribute("broj");
 
 				if (letovi != null) {
+				  int idx = 0;
 				  for (LetAviona let : letovi) {
 				%>
 				<tr>
+					<td>
+						<button type="button" class="btn link-styled" data-let='<%=new Gson().toJson(let)%>' onclick="spremiLet(this)">Spremi</button>
+					</td>
 					<td><%=let.getIcao24()%></td>
 					<td><%=let.getFirstSeen()%></td>
 					<td><%=let.getEstDepartureAirport()%></td>
@@ -140,13 +172,14 @@ thead {
 				} else {
 				%>
 				<tr>
-					<td colspan="12" class="text-center">Nema podataka za prikaz</td>
+					<td colspan="13" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
 				}
 				%>
 			</tbody>
 		</table>
+		<span id="poruka"></span>
 		<div class="pagination-container">
 			<div class="pagination-btns">
 				<a
@@ -159,10 +192,7 @@ thead {
 					class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>
+		<br>
 	</div>
-	<br>
-	</div>
-	<script
-		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 </body>
 </html>

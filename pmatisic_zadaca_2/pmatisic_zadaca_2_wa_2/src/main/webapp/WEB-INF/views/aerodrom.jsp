@@ -1,15 +1,17 @@
 <%@page import="org.foi.nwtis.podaci.Aerodrom"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="author" content="<%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%>">
+<meta name="subject" content="<%=request.getAttribute("predmet")%>">
+<meta name="year" content="<%=request.getAttribute("godina")%>">
+<meta name="version" content="<%=request.getAttribute("verzija")%>">
 <title>Pregled aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
-/* SCSS stilovi */
 body {
 	background-color: #f8f9fa;
 }
@@ -102,9 +104,12 @@ thead {
 			</tbody>
 		</table>
 		<div class="d-flex justify-content-center mb-3">
-		  <a href="<%=request.getContextPath()%>/mvc/aerodromi" class="btn btn-primary me-3">Povratak na popis aerodroma</a>
-		  <a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti" class="btn btn-primary me-3">Udaljenosti</a>
-		  <a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave" class="btn btn-primary me-3">Najdulji put države</a>
+			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
+				class="btn btn-primary me-3">Povratak na popis aerodroma</a> <a
+				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti"
+				class="btn btn-primary me-3">Udaljenosti</a> <a
+				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave"
+				class="btn btn-primary me-3">Najdulji put države</a>
 		</div>
 		<br>
 		<div class="mb-3">
@@ -118,16 +123,15 @@ thead {
 		</div>
 		<br>
 	</div>
-    <script>
+	<script>
         function submitForm() {
             var icaoDo = document.getElementById("icaoDo").value;
             var currentICAO = '<%=aerodrom.getIcao()%>';
             var contextPath = '<%=request.getContextPath()%>';
-            var url = contextPath + "/mvc/aerodromi/" + currentICAO + "/" + icaoDo;
-            window.location.href = url;
-        }
-    </script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+			var url = contextPath + "/mvc/aerodromi/" + currentICAO + "/"
+					+ icaoDo;
+			window.location.href = url;
+		}
+	</script>
 </body>
 </html>

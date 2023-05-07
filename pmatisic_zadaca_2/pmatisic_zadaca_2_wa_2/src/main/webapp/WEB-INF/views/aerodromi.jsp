@@ -1,16 +1,18 @@
 <%@page import="java.util.List"%>
 <%@page import="org.foi.nwtis.podaci.Aerodrom"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="author" content="<%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%>">
+<meta name="subject" content="<%=request.getAttribute("predmet")%>">
+<meta name="year" content="<%=request.getAttribute("godina")%>">
+<meta name="version" content="<%=request.getAttribute("verzija")%>">
 <title>Pregled aerodroma</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
-/* SCSS stilovi */
 body {
 	background-color: #f8f9fa;
 }
@@ -149,7 +151,5 @@ thead {
 		</div>
 		<br>
 	</div>
-	<script
-		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 </body>
 </html>

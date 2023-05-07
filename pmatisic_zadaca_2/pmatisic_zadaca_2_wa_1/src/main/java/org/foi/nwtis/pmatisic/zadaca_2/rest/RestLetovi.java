@@ -90,7 +90,8 @@ public class RestLetovi {
 
   private boolean jesuLiParametriIspravni(String icao, String dan, String odBrojaStr,
       String brojStr) {
-    if (icao == null || icao.isEmpty() || !icao.matches("^[A-Z]{4}$")) {
+    if (icao == null || icao.length() < 2
+        || !icao.chars().allMatch(c -> Character.isLetterOrDigit(c) || c == '-')) {
       return false;
     }
     if (dan == null || dan.isEmpty()) {
@@ -165,7 +166,8 @@ public class RestLetovi {
   }
 
   private boolean jesuLiParametriIspravni(String icao, String dan) {
-    if (icao == null || icao.isEmpty() || !icao.matches("^[A-Z]{4}$")) {
+    if (icao == null || icao.length() < 2
+        || !icao.chars().allMatch(c -> Character.isLetterOrDigit(c) || c == '-')) {
       return false;
     }
     if (dan == null || dan.isEmpty()) {
@@ -210,6 +212,7 @@ public class RestLetovi {
       } else {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
       }
+
     } catch (SQLIntegrityConstraintViolationException ex) {
       ex.printStackTrace();
       return Response.status(Response.Status.CONFLICT)
