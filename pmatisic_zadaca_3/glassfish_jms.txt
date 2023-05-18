@@ -1,0 +1,20 @@
+cd /opt/payara-full-6.2023.4/glassfish/bin
+
+./asadmin --host localhost --port 4848
+
+# ili
+
+./asadmin 
+
+list-jms-hosts
+
+create-jmsdest --desttype queue jms_nwtis_queue
+
+create-jms-resource --restype jakarta.jms.ConnectionFactory jms/nwtis_qf_dz3
+
+create-jms-resource --restype jakarta.jms.Queue jms/nwtis_queue_dz3
+
+### brisanje resursa ako već postoje
+delete-jms-resource jms/nwtis_queue_dz3
+delete-jms-resource jms/nwtis_qf_dz3
+delete-jmsdest jms_nwtis_queue

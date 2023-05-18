@@ -81,7 +81,7 @@ public class Vjezba_06_5 extends HttpServlet {
       stmt = con.prepareStatement(upit);
       stmt.setString(1, icaoFrom);
       stmt.setString(2, icaoTo);
-      float ukupno = 0;
+      // float ukupno = 0;
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
@@ -89,7 +89,7 @@ public class Vjezba_06_5 extends HttpServlet {
         float udaljenost = rs.getFloat("DIST_CTRY");
         var u = new Udaljenost(drzava, udaljenost);
         udaljenosti.add(u);
-        ukupno += udaljenost;
+        // ukupno += udaljenost;
       }
 
     } catch (SQLException | ClassNotFoundException e) {

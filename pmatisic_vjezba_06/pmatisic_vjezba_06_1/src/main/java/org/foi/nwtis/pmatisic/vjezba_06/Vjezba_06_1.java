@@ -16,9 +16,7 @@ public class Vjezba_06_1 extends HttpServlet {
   /**
    * Default constructor.
    */
-  public Vjezba_06_1() {
-    // TODO Auto-generated constructor stub
-  }
+  public Vjezba_06_1() {}
 
   /**
    * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
@@ -49,7 +47,6 @@ public class Vjezba_06_1 extends HttpServlet {
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    // TODO Auto-generated method stub
     doGet(request, response);
   }
 

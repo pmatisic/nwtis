@@ -43,7 +43,7 @@ public class Vjezba_05_2 {
     String korime = konfBP.getUserUsername();
     String lozinka = konfBP.getUserPassword();
     String server = konfBP.getServerDatabase();
-    String driver = konfBP.getDriverDatabase();
+    // String driver = konfBP.getDriverDatabase();
 
     String upit = "SELECT ICAO_FROM, ICAO_TO, COUNTRY, DIST_CTRY FROM "
         + "AIRPORTS_DISTANCE_MATRIX WHERE ICAO_FROM = ? AND ICAO_TO = ?";
