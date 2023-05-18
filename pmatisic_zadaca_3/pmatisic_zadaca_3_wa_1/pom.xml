@@ -241,11 +241,6 @@
 			<artifactId>pmatisic_zadaca_3_lib_2</artifactId>
 			<version>1.0.4</version>
 		</dependency>
-				<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.10.1</version>
-		</dependency>
 		<dependency>
 			<groupId>org.foi.nwtis</groupId>
 			<artifactId>nwtis_rest_lib</artifactId>
