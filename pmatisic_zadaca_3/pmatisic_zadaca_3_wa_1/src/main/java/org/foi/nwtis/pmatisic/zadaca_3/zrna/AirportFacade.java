@@ -2,7 +2,6 @@ package org.foi.nwtis.pmatisic.zadaca_3.zrna;
 
 import java.util.List;
 import org.foi.nwtis.pmatisic.zadaca_3.jpa.Airports;
-import org.foi.nwtis.pmatisic.zadaca_3.jpa.AirportsDistanceMatrix;
 import org.foi.nwtis.podaci.Airport;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
@@ -15,7 +14,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 /**
- * @author Petar Matišić (pmatisic@foi.hr)
  * @author Dragutin Kermek
  */
 @Stateless
@@ -71,31 +69,6 @@ public class AirportFacade {
     cq.select(cb.count(rt));
     Query q = em.createQuery(cq);
     return ((Long) q.getSingleResult()).intValue();
-  }
-
-  public Airports findAirportsByIcao(String icao) {
-    CriteriaQuery<Airports> cq = cb.createQuery(Airports.class);
-    Root<Airports> root = cq.from(Airports.class);
-    cq.where(cb.equal(root.get("icao"), icao));
-    TypedQuery<Airports> query = em.createQuery(cq);
-    return query.getSingleResult();
-  }
-
-  public List<AirportsDistanceMatrix> findDistancesFromAirport(String icao) {
-    CriteriaQuery<AirportsDistanceMatrix> cq = cb.createQuery(AirportsDistanceMatrix.class);
-    Root<AirportsDistanceMatrix> root = cq.from(AirportsDistanceMatrix.class);
-    cq.where(cb.equal(root.get("icao_from"), icao));
-    TypedQuery<AirportsDistanceMatrix> query = em.createQuery(cq);
-    return query.getResultList();
-  }
-
-  public List<AirportsDistanceMatrix> findDistancesWithinCountry(String icao) {
-    CriteriaQuery<AirportsDistanceMatrix> cq = cb.createQuery(AirportsDistanceMatrix.class);
-    Root<AirportsDistanceMatrix> root = cq.from(AirportsDistanceMatrix.class);
-    cq.where(cb.and(cb.equal(root.get("icao_from"), icao),
-        cb.equal(root.get("country"), findAirportsByIcao(icao).getIsoCountry())));
-    TypedQuery<AirportsDistanceMatrix> query = em.createQuery(cq);
-    return query.getResultList();
   }
 
 }
