@@ -4,13 +4,15 @@ import java.util.Properties;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
+import org.foi.nwtis.pmatisic.zadaca_3.dretve.SakupljacLetovaAviona;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
 /**
- * Klasa slušač aplikacije koji inicijalizira i uništava kontekst servleta.
+ * Klasa slušač aplikacije koji inicijalizira i uništava kontekst servleta. Pokreće i gasi dretvu
+ * programa.
  *
  * @author Petar Matišić
  * @author Dragutin Kermek
@@ -19,7 +21,9 @@ import jakarta.servlet.annotation.WebListener;
 @WebListener
 public final class SlusacAplikacije implements ServletContextListener {
 
+  private SakupljacLetovaAviona sakupljacLetovaAviona;
   private ServletContext context = null;
+  private Konfiguracija konfig;
 
   /**
    * Metoda koja se poziva pri inicijalizaciji konteksta servleta. Učitava konfiguraciju iz datoteke
@@ -33,7 +37,7 @@ public final class SlusacAplikacije implements ServletContextListener {
     String putanja = sce.getServletContext().getRealPath("/WEB-INF") + java.io.File.separator;
 
     try {
-      Konfiguracija konfig = KonfiguracijaApstraktna.preuzmiKonfiguraciju(putanja + datoteka);
+      konfig = KonfiguracijaApstraktna.preuzmiKonfiguraciju(putanja + datoteka);
       sce.getServletContext().setAttribute("konfiguracija", konfig);
       System.out
           .println("Aplikacija je uspješno pokrenuta s konfiguracijom: " + putanja + datoteka);
@@ -47,6 +51,10 @@ public final class SlusacAplikacije implements ServletContextListener {
     } catch (NeispravnaKonfiguracija ex) {
       System.err.println("Greška prilikom učitavanja konfiguracije: " + putanja + datoteka);
     }
+
+    sakupljacLetovaAviona = new SakupljacLetovaAviona(konfig);
+    sakupljacLetovaAviona.start();
+    System.out.println("Dretva je pokrenuta!");
   }
 
   /**
@@ -58,6 +66,8 @@ public final class SlusacAplikacije implements ServletContextListener {
   @Override
   public void contextDestroyed(ServletContextEvent event) {
     context = event.getServletContext();
+    sakupljacLetovaAviona.interrupt();
+    System.out.println("Dretva je ugašena!");
     System.out.println("Obrisan kontekst: " + context.getContextPath());
   }
 
