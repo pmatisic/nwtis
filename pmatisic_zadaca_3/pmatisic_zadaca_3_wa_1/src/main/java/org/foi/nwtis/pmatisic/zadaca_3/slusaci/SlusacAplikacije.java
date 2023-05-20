@@ -5,6 +5,11 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 import org.foi.nwtis.pmatisic.zadaca_3.dretve.SakupljacLetovaAviona;
+import org.foi.nwtis.pmatisic.zadaca_3.zrna.AirportFacade;
+import org.foi.nwtis.pmatisic.zadaca_3.zrna.JmsPosiljatelj;
+import org.foi.nwtis.pmatisic.zadaca_3.zrna.LetoviPolasciFacade;
+import jakarta.ejb.EJB;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -24,6 +29,12 @@ public final class SlusacAplikacije implements ServletContextListener {
   private SakupljacLetovaAviona sakupljacLetovaAviona;
   private ServletContext context = null;
   private Konfiguracija konfig;
+  @EJB
+  JmsPosiljatelj jmsPosiljatelj;
+  @Inject
+  LetoviPolasciFacade lpFacade;
+  @Inject
+  AirportFacade airportFacade;
 
   /**
    * Metoda koja se poziva pri inicijalizaciji konteksta servleta. Učitava konfiguraciju iz datoteke
@@ -52,7 +63,13 @@ public final class SlusacAplikacije implements ServletContextListener {
       System.err.println("Greška prilikom učitavanja konfiguracije: " + putanja + datoteka);
     }
 
-    sakupljacLetovaAviona = new SakupljacLetovaAviona(konfig);
+    startThread(sce);
+  }
+
+  private void startThread(ServletContextEvent event) {
+    context = event.getServletContext();
+    sakupljacLetovaAviona =
+        new SakupljacLetovaAviona(context, lpFacade, airportFacade, jmsPosiljatelj);
     sakupljacLetovaAviona.start();
     System.out.println("Dretva je pokrenuta!");
   }

@@ -5,6 +5,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.foi.nwtis.Konfiguracija;
+import org.foi.nwtis.pmatisic.zadaca_3.jpa.Airports;
+import org.foi.nwtis.pmatisic.zadaca_3.zrna.AirportFacade;
 import org.foi.nwtis.pmatisic.zadaca_3.zrna.JmsPosiljatelj;
 import org.foi.nwtis.pmatisic.zadaca_3.zrna.LetoviPolasciFacade;
 import org.foi.nwtis.rest.klijenti.OSKlijent;
@@ -14,26 +16,20 @@ import jakarta.servlet.ServletContext;
 
 public class SakupljacLetovaAviona extends Thread {
 
-  JmsPosiljatelj jmsPosiljatelj;
   private boolean radi = true;
   private LocalDate trenutniDan;
-
-  @Inject
-  LetoviPolasciFacade lpFacade;
-
   @Inject
   private ServletContext konfig;
+  JmsPosiljatelj jmsPosiljatelj;
+  LetoviPolasciFacade lpFacade;
+  AirportFacade airportFacade;
 
-  public SakupljacLetovaAviona(Konfiguracija konfig) {
-    this.konfig = konfig;
-    String pocetniDanString = konfig.dajPostavku("preuzimanje.od");
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    this.trenutniDan = LocalDate.parse(pocetniDanString, dtf);
-    LocalDate zadnjiDan = lpFacade.zadnjiZapis().getFirstSeen(); // Ažurirajte ovo prema vašoj bazi
-                                                                 // podataka
-    if (zadnjiDan.isAfter(trenutniDan)) {
-      trenutniDan = zadnjiDan.plusDays(1);
-    }
+  public SakupljacLetovaAviona(ServletContext context, LetoviPolasciFacade lpFacade,
+      AirportFacade airportFacade, JmsPosiljatelj jmsPosiljatelj) {
+    this.konfig = context;
+    this.lpFacade = lpFacade;
+    this.airportFacade = airportFacade;
+    this.jmsPosiljatelj = jmsPosiljatelj;
   }
 
   @Override
@@ -44,26 +40,46 @@ public class SakupljacLetovaAviona extends Thread {
 
   @Override
   public void run() {
-    while (radi) {
-      String korisnik = konfig.dajPostavku("OpenSkyNetwork.korisnik");
-      String lozinka = konfig.dajPostavku("OpenSkyNetwork.lozinka");
-      String icao = konfig.dajPostavku("aerodromi.sakupljanje");
+    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
+    String korisnik = konfiguracija.dajPostavku("OpenSkyNetwork.korisnik").toString();
+    String lozinka = konfiguracija.dajPostavku("OpenSkyNetwork.lozinka").toString();
+    String aerodromiString = konfiguracija.dajPostavku("aerodromi.sakupljanje").toString();
+    String[] aerodromi = aerodromiString.split(" ");
+    String pocetniDanString = konfiguracija.dajPostavku("preuzimanje.od").toString();
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    this.trenutniDan = LocalDate.parse(pocetniDanString, dtf);
+    LocalDate zadnjiDan = lpFacade.zadnjiDatumPolaska(konfig);
 
+    if (zadnjiDan.isAfter(trenutniDan)) {
+      trenutniDan = zadnjiDan.plusDays(1);
+    }
+
+    while (radi) {
       int odVremena = (int) trenutniDan.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
       int doVremena = (int) trenutniDan.plusDays(1).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
-
       OSKlijent osKlijent = new OSKlijent(korisnik, lozinka);
+      int brojLetova = 0;
       try {
-        List<LetAviona> avioniPolasci = osKlijent.getDepartures(icao, odVremena, doVremena);
-        for (LetAviona let : avioniPolasci) {
-          lpFacade.dodajLet(let);
+        for (String icao : aerodromi) {
+          List<LetAviona> avioniPolasci = osKlijent.getDepartures(icao, odVremena, doVremena);
+          for (LetAviona let : avioniPolasci) {
+            Airports aerodrom = airportFacade.find(let.getEstDepartureAirport());
+            lpFacade.dodajLet(let, aerodrom);
+            brojLetova++;
+          }
         }
       } catch (Exception e) {
         e.printStackTrace();
       }
 
+      String poruka = "Na dan: " + trenutniDan.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+          + " preuzeto ukupno " + brojLetova + " letova aviona.";
+      jmsPosiljatelj.saljiPoruku(poruka);
+      System.out.println("Poruka je poslana sa sadržajem:\n" + poruka);
+
       try {
-        int ciklusTrajanje = Integer.parseInt(konfig.dajPostavku("ciklus.trajanje"));
+        int ciklusTrajanje =
+            Integer.parseInt(konfiguracija.dajPostavku("ciklus.trajanje").toString());
         Thread.sleep(ciklusTrajanje * 1000);
       } catch (InterruptedException ex) {
         break;
@@ -71,5 +87,7 @@ public class SakupljacLetovaAviona extends Thread {
 
       trenutniDan = trenutniDan.plusDays(1);
     }
+
   }
+
 }

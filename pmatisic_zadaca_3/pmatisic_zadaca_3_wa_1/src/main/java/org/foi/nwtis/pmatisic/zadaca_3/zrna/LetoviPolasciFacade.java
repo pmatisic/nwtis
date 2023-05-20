@@ -1,16 +1,24 @@
 package org.foi.nwtis.pmatisic.zadaca_3.zrna;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import org.foi.nwtis.Konfiguracija;
+import org.foi.nwtis.pmatisic.zadaca_3.jpa.Airports;
+import org.foi.nwtis.pmatisic.zadaca_3.jpa.LetoviPolasci;
 import org.foi.nwtis.rest.podaci.LetAviona;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import jakarta.servlet.ServletContext;
 
 /**
  * @author Petar Matišić (pmatisic@foi.hr)
@@ -28,29 +36,59 @@ public class LetoviPolasciFacade {
     cb = em.getCriteriaBuilder();
   }
 
-  public void dodajLet(LetAviona let) {
-    em.persist(let);
+  public void dodajLet(LetAviona let, Airports airport) {
+    if (let.getEstArrivalAirport() == null) {
+      return;
+    }
+    LetoviPolasci noviLet = new LetoviPolasci();
+    noviLet.setIcao24(let.getIcao24());
+    noviLet.setCallsign(let.getCallsign());
+    noviLet.setFirstSeen(let.getFirstSeen());
+    noviLet.setLastSeen(let.getLastSeen());
+    noviLet.setEstArrivalAirport(let.getEstArrivalAirport());
+    noviLet.setArrivalAirportCandidatesCount(let.getArrivalAirportCandidatesCount());
+    noviLet.setDepartureAirportCandidatesCount(let.getDepartureAirportCandidatesCount());
+    noviLet.setEstArrivalAirportHorizDistance(let.getEstArrivalAirportHorizDistance());
+    noviLet.setEstArrivalAirportVertDistance(let.getEstArrivalAirportVertDistance());
+    noviLet.setEstDepartureAirportHorizDistance(let.getEstDepartureAirportHorizDistance());
+    noviLet.setEstDepartureAirportVertDistance(let.getEstDepartureAirportVertDistance());
+    noviLet.setAirport(airport);
+    noviLet.setStored(new Timestamp(System.currentTimeMillis()));
+    em.persist(noviLet);
   }
 
-  public LetAviona zadnjiZapis() {
-    CriteriaQuery<LetAviona> cq = cb.createQuery(LetAviona.class);
-    Root<LetAviona> root = cq.from(LetAviona.class);
+  public LetoviPolasci zadnjiZapis() {
+    CriteriaQuery<LetoviPolasci> cq = cb.createQuery(LetoviPolasci.class);
+    Root<LetoviPolasci> root = cq.from(LetoviPolasci.class);
     cq.select(root);
-    cq.orderBy(cb.desc(root.get("id"))); // Pretpostavljamo da je "id" primarni ključ LetAviona
-    TypedQuery<LetAviona> query = em.createQuery(cq);
+    cq.orderBy(cb.desc(root.get("id")));
+    TypedQuery<LetoviPolasci> query = em.createQuery(cq);
     query.setMaxResults(1);
     return query.getSingleResult();
   }
 
-  public LocalDate zadnjiDatumPolaska() {
-    CriteriaQuery<LetAviona> cq = cb.createQuery(LetAviona.class);
-    Root<LetAviona> root = cq.from(LetAviona.class);
-    cq.select(root.get("vrijeme_polaska")); // Pretpostavljamo da je "vrijeme_polaska" stupac za
-                                            // vrijeme polaska u bazi podataka
-    cq.orderBy(cb.desc(root.get("vrijeme_polaska")));
-    TypedQuery<LocalDate> query = em.createQuery(cq);
+  public LocalDate zadnjiDatumPolaska(ServletContext konfig) {
+    CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+    Root<LetoviPolasci> root = cq.from(LetoviPolasci.class);
+    cq.select(root.get("firstSeen"));
+    cq.orderBy(cb.desc(root.get("firstSeen")));
+    TypedQuery<Integer> query = em.createQuery(cq);
     query.setMaxResults(1);
-    return query.getSingleResult().atZone(ZoneOffset.UTC).toLocalDate();
+    Integer firstSeen = null;
+    try {
+      firstSeen = query.getSingleResult();
+    } catch (NoResultException e) {
+      System.out.println("Nema zapisa u bazi podataka!");
+    }
+    if (firstSeen != null) {
+      Instant instant = Instant.ofEpochSecond(firstSeen.longValue());
+      return instant.atZone(ZoneOffset.UTC).toLocalDate();
+    } else {
+      Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
+      String pocetniDanString = konfiguracija.dajPostavku("preuzimanje.od").toString();
+      DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+      return LocalDate.parse(pocetniDanString, dtf);
+    }
   }
 
 }

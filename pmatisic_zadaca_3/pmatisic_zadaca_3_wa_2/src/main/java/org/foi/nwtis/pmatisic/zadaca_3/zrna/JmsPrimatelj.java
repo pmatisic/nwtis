@@ -19,7 +19,7 @@ public class JmsPrimatelj implements MessageListener {
     if (message instanceof TextMessage) {
       try {
         var msg = (TextMessage) message;
-        System.out.println("Stigla poruka:" + msg.getText());
+        System.out.println("Stigla poruka: " + msg.getText());
       } catch (Exception ex) {
         ex.printStackTrace();
       }
