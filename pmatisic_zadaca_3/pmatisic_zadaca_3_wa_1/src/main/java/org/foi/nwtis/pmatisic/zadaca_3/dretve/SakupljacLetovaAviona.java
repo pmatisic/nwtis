@@ -18,6 +18,7 @@ public class SakupljacLetovaAviona extends Thread {
 
   private boolean radi = true;
   private LocalDate trenutniDan;
+  private LocalDate krajnjiDan;
   @Inject
   private ServletContext konfig;
   JmsPosiljatelj jmsPosiljatelj;
@@ -49,6 +50,8 @@ public class SakupljacLetovaAviona extends Thread {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     this.trenutniDan = LocalDate.parse(pocetniDanString, dtf);
     LocalDate zadnjiDan = lpFacade.zadnjiDatumPolaska(konfig);
+    String krajnjiDanString = konfiguracija.dajPostavku("preuzimanje.do").toString();
+    this.krajnjiDan = LocalDate.parse(krajnjiDanString, dtf);
 
     if (zadnjiDan.isAfter(trenutniDan)) {
       trenutniDan = zadnjiDan.plusDays(1);
@@ -86,6 +89,9 @@ public class SakupljacLetovaAviona extends Thread {
       }
 
       trenutniDan = trenutniDan.plusDays(1);
+      if (trenutniDan.isAfter(krajnjiDan)) {
+        radi = false;
+      }
     }
 
   }
