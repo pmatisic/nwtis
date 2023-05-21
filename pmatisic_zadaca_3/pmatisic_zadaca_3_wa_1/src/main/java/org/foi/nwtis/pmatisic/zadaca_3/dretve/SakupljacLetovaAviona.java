@@ -89,8 +89,9 @@ public class SakupljacLetovaAviona extends Thread {
       }
 
       trenutniDan = trenutniDan.plusDays(1);
-      if (trenutniDan.isAfter(krajnjiDan)) {
+      if (trenutniDan.isEqual(krajnjiDan)) {
         radi = false;
+        System.out.println("Dretva je prekinuta!");
       }
     }
 

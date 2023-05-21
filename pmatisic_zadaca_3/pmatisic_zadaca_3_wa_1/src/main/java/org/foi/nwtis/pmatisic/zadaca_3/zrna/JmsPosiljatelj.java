@@ -12,7 +12,6 @@ import jakarta.jms.TextMessage;
 
 @Stateless
 public class JmsPosiljatelj {
-  private static int brojPoruka = 0;
 
   @Resource(mappedName = "jms/nwtis_qf_dz3")
   private ConnectionFactory connectionFactory;
@@ -28,8 +27,7 @@ public class JmsPosiljatelj {
       MessageProducer messageProducer = session.createProducer(queue);
       TextMessage message = session.createTextMessage();
 
-      String poruka = "Ovo je poruka broj: " + brojPoruka;
-      brojPoruka++;
+      String poruka = tekstPoruke;
 
       message.setText(poruka);
       messageProducer.send(message);
