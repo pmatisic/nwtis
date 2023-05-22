@@ -1,4 +1,5 @@
-<%@page import="org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi.endpoint.Aerodrom"%>
+<%@page import="java.util.List"%>
+<%@page import="org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi.endpoint.UdaljenostAerodromDrzavaKlasa"%>
 <%@page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -59,7 +60,8 @@ thead {
 </head>
 <body>
 	<div class="container">
-		<h1>Pregled jednog aerodroma</h1>
+		<h1>Pregled najdužeg puta unutar države s pregledom aerodroma od
+			odabranog aerodroma</h1>
 		<div class="author-info">
 			<p>
 				<strong>Autor:</strong>
@@ -79,60 +81,41 @@ thead {
 			<a href="<%=request.getContextPath()%>/index.jsp"
 				class="btn btn-secondary">Početna stranica</a>
 		</div>
-		<table id="aerodromiTable" class="table table-striped">
+		<table id="najduljiPutTable" class="table table-striped">
 			<thead>
 				<tr>
 					<th>ICAO</th>
-					<th>Naziv</th>
 					<th>Država</th>
-					<th>Koordinate</th>
+					<th>Udaljenost (km)</th>
 				</tr>
 			</thead>
 			<tbody>
 				<%
-				Aerodrom aerodrom = (Aerodrom) request.getAttribute("aerodrom");
-
-				if (aerodrom != null) {
+				UdaljenostAerodromDrzavaKlasa najduljiPut =
+				    (UdaljenostAerodromDrzavaKlasa) request.getAttribute("najduljiPut");
+				if (najduljiPut != null) {
 				%>
 				<tr>
-					<td><%=aerodrom.getIcao()%></td>
-					<td><%=aerodrom.getNaziv()%></td>
-					<td><%=aerodrom.getDrzava()%></td>
-					<td><%=aerodrom.getLokacija().getLatitude() + ", " + aerodrom.getLokacija().getLongitude()%></td>
+					<td><%=najduljiPut.getIcao()%></td>
+					<td><%=najduljiPut.getDrzava()%></td>
+					<td><%=najduljiPut.getKm()%></td>
+				</tr>
+				<%
+				} else {
+				%>
+				<tr>
+					<td colspan="3" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
 				}
 				%>
 			</tbody>
 		</table>
-		<div class="d-flex justify-content-center mb-3">
+		<div class="d-flex justify-content-between mb-3">
 			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
-				class="btn btn-primary me-3">Povratak na popis aerodroma</a> <a
-				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti"
-				class="btn btn-primary me-3">Udaljenosti</a> <a
-				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave"
-				class="btn btn-primary me-3">Najdulji put države</a>
-		</div>
-		<br>
-		<div class="mb-3">
-			<h3>Pregled udaljenosti po državama između dva aerodroma i
-				ukupne udaljenosti</h3>
-			<div class="input-group">
-				<input type="text" class="form-control" id="icaoDo"
-					placeholder="Unesite odredišni ICAO" required>
-				<button type="button" class="btn btn-primary" onclick="submitForm()">Potvrdi</button>
-			</div>
+				class="btn btn-primary">Povratak na popis aerodroma</a>
 		</div>
 		<br>
 	</div>
-	<script>
-        function submitForm() {
-            var icaoDo = document.getElementById("icaoDo").value;
-            var currentICAO = '<%=aerodrom.getIcao()%>';
-            var contextPath = '<%=request.getContextPath()%>';
-			var url = contextPath + "/mvc/aerodromi/" + currentICAO + "/" + icaoDo;
-			window.location.href = url;
-		}
-	</script>
 </body>
 </html>

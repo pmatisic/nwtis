@@ -70,6 +70,21 @@
 							<packageName>org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi.endpoint</packageName>
 						</configuration>
 					</execution>
+					<execution>
+						<id>import meteo</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+						<configuration>
+							<wsdlDirectory>${basedir}/../pmatisic_zadaca_3_wa_1/target/generated-sources/wsdl</wsdlDirectory>
+							<wsdlFiles>
+								<wsdlFile>Meteo.wsdl</wsdlFile>
+							</wsdlFiles>
+							<wsdlLocation>http://localhost:8080/pmatisic_zadaca_3_wa_1/meteo?wsdl</wsdlLocation>
+							<packageName>org.foi.nwtis.pmatisic.zadaca_3.ws.WsMeteo.endpoint</packageName>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>			
 		</plugins>

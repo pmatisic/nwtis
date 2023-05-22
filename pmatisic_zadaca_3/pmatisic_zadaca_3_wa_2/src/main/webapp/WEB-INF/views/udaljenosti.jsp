@@ -1,4 +1,5 @@
-<%@page import="org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi.endpoint.Aerodrom"%>
+<%@page import="java.util.List"%>
+<%@page import="org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi.endpoint.UdaljenostAerodromKlasa"%>
 <%@page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -55,11 +56,23 @@ thead {
 	margin-top: 1rem;
 	margin-bottom: 1rem;
 }
+
+.pagination-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 1rem;
+}
+
+.pagination-btns {
+	display: flex;
+	justify-content: center;
+	gap: 0.5rem;
+}
 </style>
 </head>
 <body>
 	<div class="container">
-		<h1>Pregled jednog aerodroma</h1>
+		<h1>Pregled udaljenosti svih aerodroma od odabranog aerodroma</h1>
 		<div class="author-info">
 			<p>
 				<strong>Autor:</strong>
@@ -77,62 +90,56 @@ thead {
 		</div>
 		<div class="d-flex justify-content-between mb-3">
 			<a href="<%=request.getContextPath()%>/index.jsp"
-				class="btn btn-secondary">Početna stranica</a>
+				class="btn btn-secondary">Početna stranica</a> <a
+				href="<%=request.getContextPath()%>/mvc/aerodromi"
+				class="btn btn-secondary">Povratak na popis aerodroma</a>
 		</div>
-		<table id="aerodromiTable" class="table table-striped">
+		<table id="udaljenostiAerodromaTable" class="table table-striped">
 			<thead>
 				<tr>
 					<th>ICAO</th>
-					<th>Naziv</th>
-					<th>Država</th>
-					<th>Koordinate</th>
+					<th>Udaljenost (km)</th>
 				</tr>
 			</thead>
 			<tbody>
 				<%
-				Aerodrom aerodrom = (Aerodrom) request.getAttribute("aerodrom");
+				List<UdaljenostAerodromKlasa> udaljenosti =
+				    (List<UdaljenostAerodromKlasa>) request.getAttribute("udaljenosti");
+				Integer odBroja = (Integer) request.getAttribute("odBroja");
+				Integer broj = (Integer) request.getAttribute("broj");
 
-				if (aerodrom != null) {
+				if (udaljenosti != null) {
+				  for (UdaljenostAerodromKlasa udaljenost : udaljenosti) {
 				%>
 				<tr>
-					<td><%=aerodrom.getIcao()%></td>
-					<td><%=aerodrom.getNaziv()%></td>
-					<td><%=aerodrom.getDrzava()%></td>
-					<td><%=aerodrom.getLokacija().getLatitude() + ", " + aerodrom.getLokacija().getLongitude()%></td>
+					<td><%=udaljenost.getIcao()%></td>
+					<td><%=udaljenost.getKm()%></td>
+				</tr>
+				<%
+				}
+				} else {
+				%>
+				<tr>
+					<td colspan="2" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
 				}
 				%>
 			</tbody>
 		</table>
-		<div class="d-flex justify-content-center mb-3">
-			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
-				class="btn btn-primary me-3">Povratak na popis aerodroma</a> <a
-				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti"
-				class="btn btn-primary me-3">Udaljenosti</a> <a
-				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave"
-				class="btn btn-primary me-3">Najdulji put države</a>
-		</div>
-		<br>
-		<div class="mb-3">
-			<h3>Pregled udaljenosti po državama između dva aerodroma i
-				ukupne udaljenosti</h3>
-			<div class="input-group">
-				<input type="text" class="form-control" id="icaoDo"
-					placeholder="Unesite odredišni ICAO" required>
-				<button type="button" class="btn btn-primary" onclick="submitForm()">Potvrdi</button>
+		<div class="pagination-container">
+			<div class="pagination-btns">
+				<a
+					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti"
+					class="btn btn-primary">Početak</a> <a
+					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
+					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna
+					stranica</a> <a
+					href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=odBroja + 1%>"
+					class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>
 		<br>
 	</div>
-	<script>
-        function submitForm() {
-            var icaoDo = document.getElementById("icaoDo").value;
-            var currentICAO = '<%=aerodrom.getIcao()%>';
-            var contextPath = '<%=request.getContextPath()%>';
-			var url = contextPath + "/mvc/aerodromi/" + currentICAO + "/" + icaoDo;
-			window.location.href = url;
-		}
-	</script>
 </body>
 </html>

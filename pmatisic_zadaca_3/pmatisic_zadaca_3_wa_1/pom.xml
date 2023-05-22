@@ -146,13 +146,24 @@
 						<version>2.6</version>
 						<executions>
 							<execution>
-								<id>generate-wsdl</id>
+								<id>generate-wsdl-aerodromi</id>
 								<phase>process-classes</phase>
 								<goals>
 									<goal>wsgen</goal>
 								</goals>
 								<configuration>
 									<sei>org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi</sei>
+									<genWsdl>true</genWsdl>
+								</configuration>
+							</execution>
+							<execution>
+								<id>generate-wsdl-meteo</id>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>wsgen</goal>
+								</goals>
+								<configuration>
+									<sei>org.foi.nwtis.pmatisic.zadaca_3.ws.WsMeteo</sei>
 									<genWsdl>true</genWsdl>
 								</configuration>
 							</execution>
