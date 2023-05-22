@@ -53,9 +53,11 @@ public class WsAerodromi {
       return aerodrom;
     }
     Airports a = airportFacade.find(icao);
-    var koord = a.getCoordinates().split(",");
-    var lokacija = new Lokacija(koord[1], koord[0]);
-    aerodrom = new Aerodrom(a.getIcao(), a.getName(), a.getIsoCountry(), lokacija);
+    if (a != null) {
+      var koord = a.getCoordinates().split(",");
+      var lokacija = new Lokacija(koord[1], koord[0]);
+      aerodrom = new Aerodrom(a.getIcao(), a.getName(), a.getIsoCountry(), lokacija);
+    }
     return aerodrom;
   }
 

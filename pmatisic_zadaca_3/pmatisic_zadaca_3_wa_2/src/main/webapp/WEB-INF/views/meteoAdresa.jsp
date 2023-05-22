@@ -11,7 +11,7 @@
 <meta name="subject" content="<%=request.getAttribute("predmet")%>">
 <meta name="year" content="<%=request.getAttribute("godina")%>">
 <meta name="version" content="<%=request.getAttribute("verzija")%>">
-<title>Pregled aerodroma</title>
+<title>Meteorološki podatci</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -110,14 +110,16 @@ thead {
 					<td><%=meteoPodaci.getLastUpdate()%></td>
 				</tr>
 				<%
+				} else {
+				%>
+				<tr>
+					<td colspan="8" class="text-center">Nema podataka za prikaz</td>
+				</tr>
+				<%
 				}
 				%>
 			</tbody>
 		</table>
-		<div class="d-flex justify-content-center mb-3">
-			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
-				class="btn btn-primary me-3">Povratak na popis aerodroma</a>
-		</div>
 		<br>
 	</div>
 </body>

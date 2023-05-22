@@ -102,19 +102,34 @@ thead {
 					<td><%=aerodrom.getLokacija().getLatitude() + ", " + aerodrom.getLokacija().getLongitude()%></td>
 				</tr>
 				<%
+				} else {
+				%>
+				<tr>
+					<td colspan="4" class="text-center">Nema podataka za prikaz</td>
+				</tr>
+				<%
 				}
 				%>
 			</tbody>
 		</table>
+		<%
+		String trenutniIcao = "";
+		if (aerodrom != null) {
+		  trenutniIcao = aerodrom.getIcao();
+		}
+		%>
 		<div class="d-flex justify-content-center mb-3">
 			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
-				class="btn btn-primary me-3">Povratak na popis aerodroma</a> <a
-				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti"
+				class="btn btn-primary me-3">Povratak na popis aerodroma</a>
+			<% if (aerodrom != null) { %>
+			<a
+				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=trenutniIcao%>/udaljenosti"
 				class="btn btn-primary me-3">Udaljenosti</a> <a
-				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave"
+				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=trenutniIcao%>/najduljiPutDrzave"
 				class="btn btn-primary me-3">Najdulji put države</a> <a
-				href="<%=request.getContextPath()%>/mvc/meteo/<%=aerodrom.getIcao()%>"
+				href="<%=request.getContextPath()%>/mvc/meteo/<%=trenutniIcao%>"
 				class="btn btn-primary me-3">Meteo podatci</a>
+			<% } %>
 		</div>
 		<br>
 		<div class="mb-3">
@@ -129,13 +144,13 @@ thead {
 		<br>
 	</div>
 	<script>
-        function submitForm() {
-            var icaoDo = document.getElementById("icaoDo").value;
-            var currentICAO = '<%=aerodrom.getIcao()%>';
-            var contextPath = '<%=request.getContextPath()%>';
-			var url = contextPath + "/mvc/aerodromi/" + currentICAO + "/" + icaoDo;
-			window.location.href = url;
-		}
+	function submitForm() {
+	    var icaoDo = document.getElementById("icaoDo").value;
+	    var currentICAO = '<%=trenutniIcao%>';
+	    var contextPath = '<%=request.getContextPath()%>';
+	    var url = contextPath + "/mvc/aerodromi/" + currentICAO + "/" + icaoDo;
+	    window.location.href = url;
+	}
 	</script>
 </body>
 </html>

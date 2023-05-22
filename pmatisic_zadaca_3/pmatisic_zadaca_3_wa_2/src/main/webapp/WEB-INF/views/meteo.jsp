@@ -110,6 +110,12 @@ thead {
 					<td><%=meteoPodaci.getLastUpdate()%></td>
 				</tr>
 				<%
+				} else {
+				%>
+				<tr>
+					<td colspan="8" class="text-center">Nema podataka za prikaz</td>
+				</tr>
+				<%
 				}
 				%>
 			</tbody>

@@ -69,10 +69,13 @@ public class WsMeteo {
       e.printStackTrace();
     }
 
-    try {
-      meteoPodaci = owmKlijent.getRealTimeWeather(lokacija.getLatitude(), lokacija.getLongitude());
-    } catch (NwtisRestIznimka e) {
-      e.printStackTrace();
+    if (lokacija != null) {
+      try {
+        meteoPodaci =
+            owmKlijent.getRealTimeWeather(lokacija.getLatitude(), lokacija.getLongitude());
+      } catch (NwtisRestIznimka e) {
+        e.printStackTrace();
+      }
     }
 
     return meteoPodaci;

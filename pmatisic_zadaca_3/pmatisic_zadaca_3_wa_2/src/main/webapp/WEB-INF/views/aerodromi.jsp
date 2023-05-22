@@ -148,11 +148,10 @@ thead {
 		<div class="pagination-container">
 			<div class="pagination-btns">
 				<a href="<%=request.getContextPath()%>/mvc/aerodromi"
-					class="btn btn-primary">Početak</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja <= 0 ? 0 : odBroja - broj%>"
-					class="btn btn-primary <%=odBroja <= 0 ? "disabled" : ""%>">Prethodna
-					stranica</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja + broj%>"
+					class="btn btn-primary">Početak</a>
+				<a href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=Math.max(0, odBroja - broj)%>"
+					class="btn btn-primary <%=odBroja <= 0 ? "disabled" : ""%>">Prethodna stranica</a>
+				<a href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja + broj%>"
 					class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>

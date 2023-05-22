@@ -1,5 +1,6 @@
 package org.foi.nwtis.pmatisic.zadaca_3.zrna;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.foi.nwtis.pmatisic.zadaca_3.jpa.AirportsDistanceMatrix;
 import org.foi.nwtis.pmatisic.zadaca_3.jpa.AirportsDistanceMatrixPK;
@@ -49,7 +50,8 @@ public class AirportsDistanceMatrixFacade {
     TypedQuery<AirportsDistanceMatrix> query = em.createQuery(cq);
     query.setFirstResult(firstResult);
     query.setMaxResults(maxResults);
-    return query.getResultList();
+    List<AirportsDistanceMatrix> results = query.getResultList();
+    return results != null ? results : new ArrayList<>();
   }
 
   public UdaljenostAerodromDrzavaKlasa findMaxDistanceForCountry(String icao) {
@@ -61,7 +63,11 @@ public class AirportsDistanceMatrixFacade {
     cq.orderBy(cb.desc(root.get("distCtry")));
     TypedQuery<AirportsDistanceMatrix> queryMaxDist = em.createQuery(cq);
     queryMaxDist.setMaxResults(1);
-    AirportsDistanceMatrix maxDistResult = queryMaxDist.getSingleResult();
+    List<AirportsDistanceMatrix> results = queryMaxDist.getResultList();
+    if (results.isEmpty()) {
+      return null;
+    }
+    AirportsDistanceMatrix maxDistResult = results.get(0);
     String icaoTo = maxDistResult.getId().getIcaoTo();
     String country = maxDistResult.getId().getCountry();
     float maxDistCtry = maxDistResult.getDistCtry();
