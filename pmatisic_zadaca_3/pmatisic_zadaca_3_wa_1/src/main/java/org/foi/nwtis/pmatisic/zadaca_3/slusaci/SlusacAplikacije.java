@@ -21,7 +21,7 @@ import jakarta.servlet.annotation.WebListener;
  *
  * @author Petar Matišić
  * @author Dragutin Kermek
- * @version 1.1
+ * @version 1.2
  */
 @WebListener
 public final class SlusacAplikacije implements ServletContextListener {

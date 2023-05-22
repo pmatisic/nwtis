@@ -38,6 +38,9 @@
             <li class="list-group-item"><a href="#" onclick="openModalUdaljenost()">Pregled udaljenosti po državama između dva aerodroma i ukupne udaljenosti</a></li>
             <li class="list-group-item"><a href="#" onclick="openModalUdaljenostiSvihAerodroma()">Pregled udaljenosti svih aerodroma od odabranog aerodroma</a></li>
             <li class="list-group-item"><a href="#" onclick="openModalNajduziPutDrzave()">Pregled najdužeg puta unutar države s pregledom aerodroma od odabranog aerodroma</a></li>
+            <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/letovi/poruke">Pregled primljenih JMS poruka</a></li>
+            <li class="list-group-item"><a href="#" onclick="openModalMeteo()">Pregled meteoroloških podataka za odabrani aerodrom</a></li>
+            <li class="list-group-item"><a href="#" onclick="openModalMeteoAdresa()">Pregled meteoroloških podataka za upisanu adresu</a></li>
         </ul>
     </div>
 	<div class="modal" tabindex="-1" role="dialog" id="icaoModalAerodrom">
@@ -132,6 +135,50 @@
 	        </div>
 	    </div>
 	</div>
+	<div class="modal" tabindex="-1" role="dialog" id="icaoModalMeteo">
+	    <div class="modal-dialog" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">Unesite ICAO oznaku aerodroma</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+	                <div class="form-group">
+	                    <label for="icaoMeteo">ICAO:</label>
+	                    <input type="text" class="form-control" id="icaoMeteo" required>
+	                </div>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+	                <button type="button" class="btn btn-primary" onclick="submitFormMeteo()">Potvrdi</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<div class="modal" tabindex="-1" role="dialog" id="adresaModalMeteo">
+	    <div class="modal-dialog" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">Unesite adresu</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+	                <div class="form-group">
+	                    <label for="adresaMeteo">Adresa:</label>
+	                    <input type="text" class="form-control" id="adresaMeteo" required>
+	                </div>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+	                <button type="button" class="btn btn-primary" onclick="submitFormMeteoAdresa()">Potvrdi</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
     <script>
 	    function openModalAerodrom() {
 	        $("#icaoModalAerodrom").modal("show");
@@ -182,6 +229,32 @@
 	        if (icao) {
 	            var contextPath = '<%=request.getContextPath()%>';
 	            var url = contextPath + "/mvc/aerodromi/" + icao + "/najduljiPutDrzave";
+	            window.location.href = url;
+	        }
+	    }
+	    
+	    function openModalMeteo() {
+	        $("#icaoModalMeteo").modal("show");
+	    }
+
+	    function submitFormMeteo() {
+	        var icao = document.getElementById("icaoMeteo").value;
+	        if (icao) {
+	            var contextPath = '<%=request.getContextPath()%>';
+	            var url = contextPath + "/mvc/meteo/" + icao;
+	            window.location.href = url;
+	        }
+	    }
+
+	    function openModalMeteoAdresa() {
+	        $("#adresaModalMeteo").modal("show");
+	    }
+
+	    function submitFormMeteoAdresa() {
+	        var adresa = document.getElementById("adresaMeteo").value;
+	        if (adresa) {
+	            var contextPath = '<%=request.getContextPath()%>';
+	            var url = contextPath + "/mvc/meteo?adresa=" + encodeURIComponent(adresa);
 	            window.location.href = url;
 	        }
 	    }

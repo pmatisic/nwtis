@@ -1,4 +1,5 @@
-<%@page import="org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi.endpoint.Aerodrom"%>
+<%@page
+	import="org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi.endpoint.Aerodrom"%>
 <%@page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -111,7 +112,9 @@ thead {
 				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/udaljenosti"
 				class="btn btn-primary me-3">Udaljenosti</a> <a
 				href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave"
-				class="btn btn-primary me-3">Najdulji put države</a>
+				class="btn btn-primary me-3">Najdulji put države</a> <a
+				href="<%=request.getContextPath()%>/mvc/meteo/<%=aerodrom.getIcao()%>"
+				class="btn btn-primary me-3">Meteo podatci</a>
 		</div>
 		<br>
 		<div class="mb-3">

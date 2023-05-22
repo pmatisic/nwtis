@@ -60,7 +60,6 @@ public class KontrolerMeteo {
     } catch (Exception e) {
       e.printStackTrace();
     }
-
   }
 
   @GET
@@ -86,7 +85,6 @@ public class KontrolerMeteo {
     } catch (Exception e) {
       e.printStackTrace();
     }
-
   }
 
 }

@@ -1,5 +1,6 @@
 <%@page import="java.util.List"%>
-<%@page import="org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi.endpoint.Aerodrom"%>
+<%@page
+	import="org.foi.nwtis.pmatisic.zadaca_3.ws.WsAerodromi.endpoint.Aerodrom"%>
 <%@page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -108,6 +109,7 @@ thead {
 					<th>Koordinate</th>
 					<th>Udaljenosti</th>
 					<th>Najdulji put države</th>
+					<th>Meteo podatci</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -133,6 +135,9 @@ thead {
 					<td><a
 						href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>/najduljiPutDrzave"
 						class="link-styled">Prikaži</a></td>
+					<td><a
+						href="<%=request.getContextPath()%>/mvc/meteo/<%=aerodrom.getIcao()%>"
+						class="link-styled">Prikaži</a></td>
 				</tr>
 				<%
 				}
@@ -144,10 +149,10 @@ thead {
 			<div class="pagination-btns">
 				<a href="<%=request.getContextPath()%>/mvc/aerodromi"
 					class="btn btn-primary">Početak</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
-					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna
+					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja <= 0 ? 0 : odBroja - broj%>"
+					class="btn btn-primary <%=odBroja <= 0 ? "disabled" : ""%>">Prethodna
 					stranica</a> <a
-					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja + 1%>"
+					href="<%=request.getContextPath()%>/mvc/aerodromi?odBroja=<%=odBroja + broj%>"
 					class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>
