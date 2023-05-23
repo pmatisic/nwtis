@@ -57,6 +57,11 @@ public class SakupljacLetovaAviona extends Thread {
       trenutniDan = zadnjiDan.plusDays(1);
     }
 
+    if (trenutniDan.isEqual(krajnjiDan) || trenutniDan.isAfter(krajnjiDan)) {
+      radi = false;
+      System.out.println("Dretva je prekinuta!");
+    }
+
     while (radi) {
       int odVremena = (int) trenutniDan.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
       int doVremena = (int) trenutniDan.plusDays(1).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
@@ -89,7 +94,8 @@ public class SakupljacLetovaAviona extends Thread {
       }
 
       trenutniDan = trenutniDan.plusDays(1);
-      if (trenutniDan.isEqual(krajnjiDan)) {
+      System.out.println(trenutniDan);
+      if (trenutniDan.isEqual(krajnjiDan) || trenutniDan.isAfter(krajnjiDan)) {
         radi = false;
         System.out.println("Dretva je prekinuta!");
       }
