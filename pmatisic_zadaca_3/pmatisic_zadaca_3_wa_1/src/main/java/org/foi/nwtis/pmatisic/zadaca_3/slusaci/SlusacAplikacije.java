@@ -66,6 +66,11 @@ public final class SlusacAplikacije implements ServletContextListener {
     startThread(sce);
   }
 
+  /**
+   * Metoda koja pokreće dretvu za sakupljanje letova aviona.
+   * 
+   * @param event Događaj konteksta servleta koji pokreće ovu metodu.
+   */
   private void startThread(ServletContextEvent event) {
     context = event.getServletContext();
     sakupljacLetovaAviona =

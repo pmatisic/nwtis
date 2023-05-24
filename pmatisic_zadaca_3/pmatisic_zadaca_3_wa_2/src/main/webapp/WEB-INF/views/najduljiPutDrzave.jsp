@@ -111,9 +111,9 @@ thead {
 				%>
 			</tbody>
 		</table>
-		<div class="d-flex justify-content-between mb-3">
+		<div class="d-flex justify-content-center mb-3">
 			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
-				class="btn btn-primary">Povratak na popis aerodroma</a>
+				class="btn btn-primary me-3">Povratak na popis aerodroma</a>
 		</div>
 		<br>
 	</div>

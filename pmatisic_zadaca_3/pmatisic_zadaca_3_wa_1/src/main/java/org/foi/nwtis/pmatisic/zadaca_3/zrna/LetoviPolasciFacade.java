@@ -38,23 +38,28 @@ public class LetoviPolasciFacade {
 
   public void dodajLet(LetAviona let, Airports airport) {
     if (let.getEstArrivalAirport() == null) {
+      System.out.println("EstArrivalAirport je null. Let nije dodan.");
       return;
+    } else if (let.getEstDepartureAirport() == null) {
+      System.out.println("EstDepartureAirport je null. Let nije dodan.");
+      return;
+    } else {
+      LetoviPolasci noviLet = new LetoviPolasci();
+      noviLet.setIcao24(let.getIcao24());
+      noviLet.setCallsign(let.getCallsign());
+      noviLet.setFirstSeen(let.getFirstSeen());
+      noviLet.setLastSeen(let.getLastSeen());
+      noviLet.setEstArrivalAirport(let.getEstArrivalAirport());
+      noviLet.setArrivalAirportCandidatesCount(let.getArrivalAirportCandidatesCount());
+      noviLet.setDepartureAirportCandidatesCount(let.getDepartureAirportCandidatesCount());
+      noviLet.setEstArrivalAirportHorizDistance(let.getEstArrivalAirportHorizDistance());
+      noviLet.setEstArrivalAirportVertDistance(let.getEstArrivalAirportVertDistance());
+      noviLet.setEstDepartureAirportHorizDistance(let.getEstDepartureAirportHorizDistance());
+      noviLet.setEstDepartureAirportVertDistance(let.getEstDepartureAirportVertDistance());
+      noviLet.setAirport(airport);
+      noviLet.setStored(new Timestamp(System.currentTimeMillis()));
+      em.persist(noviLet);
     }
-    LetoviPolasci noviLet = new LetoviPolasci();
-    noviLet.setIcao24(let.getIcao24());
-    noviLet.setCallsign(let.getCallsign());
-    noviLet.setFirstSeen(let.getFirstSeen());
-    noviLet.setLastSeen(let.getLastSeen());
-    noviLet.setEstArrivalAirport(let.getEstArrivalAirport());
-    noviLet.setArrivalAirportCandidatesCount(let.getArrivalAirportCandidatesCount());
-    noviLet.setDepartureAirportCandidatesCount(let.getDepartureAirportCandidatesCount());
-    noviLet.setEstArrivalAirportHorizDistance(let.getEstArrivalAirportHorizDistance());
-    noviLet.setEstArrivalAirportVertDistance(let.getEstArrivalAirportVertDistance());
-    noviLet.setEstDepartureAirportHorizDistance(let.getEstDepartureAirportHorizDistance());
-    noviLet.setEstDepartureAirportVertDistance(let.getEstDepartureAirportVertDistance());
-    noviLet.setAirport(airport);
-    noviLet.setStored(new Timestamp(System.currentTimeMillis()));
-    em.persist(noviLet);
   }
 
   public LetoviPolasci zadnjiZapis() {

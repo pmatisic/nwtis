@@ -9,6 +9,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Servlet koji se koristi za slanje JMS poruka. JMS poruke se šalju putem JmsPosiljatelj zrna.
+ *
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 @WebServlet(name = "SaljeJmsPoruku", urlPatterns = {"/SaljeJmsPoruku"})
 public class SaljeJmsPoruku extends HttpServlet {
 
@@ -17,6 +22,15 @@ public class SaljeJmsPoruku extends HttpServlet {
   @EJB
   JmsPosiljatelj jmsPosiljatelj;
 
+  /**
+   * Metoda koja obrađuje GET zahtjeve. Iz URL-a dohvaća parametar "poruka" i, ako postoji i nije
+   * prazan, šalje JMS poruku.
+   *
+   * @param req HttpServletRequest
+   * @param resp HttpServletResponse
+   * @throws ServletException Ako dođe do greške tijekom obrade zahtjeva
+   * @throws IOException Ako dođe do greške tijekom obrade zahtjeva
+   */
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {

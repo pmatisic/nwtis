@@ -1,6 +1,10 @@
 package org.foi.nwtis.podaci;
 
+/**
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class UdaljenostKlasa {
+
   private String drzava;
   private float km;
 

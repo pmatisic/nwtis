@@ -10,6 +10,12 @@ import jakarta.jms.Queue;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 
+/**
+ * Bean bez stanja koji se koristi za slanje JMS poruka. Koristi JMS resurse definirane u
+ * aplikacijskom poslužitelju.
+ *
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 @Stateless
 public class JmsPosiljatelj {
 
@@ -18,6 +24,13 @@ public class JmsPosiljatelj {
   @Resource(mappedName = "jms/nwtis_queue_dz3")
   private Queue queue;
 
+  /**
+   * Šalje JMS poruku sa zadanim tekstom. Kreira vezu, sesiju i producera za slanje poruka, zatim
+   * šalje poruku i zatvara sve resurse.
+   *
+   * @param tekstPoruke Tekst JMS poruke koju želimo poslati.
+   * @return True ako je poruka uspješno poslana, false ako je došlo do iznimke.
+   */
   public boolean saljiPoruku(String tekstPoruke) {
     boolean status = true;
 

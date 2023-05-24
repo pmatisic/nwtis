@@ -14,11 +14,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 
 /**
- * 
- * Klasa kontroler za upravljanje aerodromima u aplikaciji.
+ * Klasa kontroler za upravljanje letovima u aplikaciji.
  * 
  * @author Petar Matišić (pmatisic@foi.hr)
- *
  */
 @Controller
 @Path("letovi")
@@ -34,6 +32,10 @@ public class KontrolerLetova {
   @Context
   private ServletContext konfig;
 
+  /**
+   * Dohvaća poruke za prikaz u sučelju aplikacije. Koristi sakupljač JMS poruka za dohvaćanje
+   * podataka.
+   */
   @GET
   @Path("poruke")
   @View("poruke.jsp")

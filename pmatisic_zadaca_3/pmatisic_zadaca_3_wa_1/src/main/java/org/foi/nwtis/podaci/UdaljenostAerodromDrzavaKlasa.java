@@ -1,5 +1,8 @@
 package org.foi.nwtis.podaci;
 
+/**
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class UdaljenostAerodromDrzavaKlasa {
 
   private String icao;

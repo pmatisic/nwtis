@@ -16,11 +16,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.xml.ws.WebServiceRef;
 
 /**
- * 
- * Klasa kontroler za upravljanje aerodromima u aplikaciji.
+ * Klasa kontroler za upravljanje meteorološkim podacima u aplikaciji.
  * 
  * @author Petar Matišić (pmatisic@foi.hr)
- *
  */
 @Controller
 @Path("meteo")
@@ -36,6 +34,11 @@ public class KontrolerMeteo {
   @Context
   private ServletContext konfig;
 
+  /**
+   * Dohvaća meteorološke podatke za odabrani ICAO aerodrom.
+   * 
+   * @param icao ICAO kod aerodroma
+   */
   @GET
   @Path("{icao}")
   @View("meteo.jsp")
@@ -62,6 +65,11 @@ public class KontrolerMeteo {
     }
   }
 
+  /**
+   * Dohvaća meteorološke podatke za odabranu adresu.
+   * 
+   * @param adresa Adresa za koju se dohvaćaju meteorološki podaci
+   */
   @GET
   @View("meteoAdresa.jsp")
   public void getMeteoAdresa(@QueryParam("adresa") String adresa) {

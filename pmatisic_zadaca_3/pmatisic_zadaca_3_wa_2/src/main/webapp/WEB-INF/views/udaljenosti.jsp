@@ -130,10 +130,10 @@ thead {
 		<div class="pagination-container">
 			<div class="pagination-btns">
 				<a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti"
-					class="btn btn-primary">Početak</a> 
-				<a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=Math.max(0, odBroja - broj)%>"
-					class="btn btn-primary <%=odBroja <= 0 ? "disabled" : ""%>">Prethodna stranica</a> 
-				<a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=odBroja + broj%>"
+					class="btn btn-primary">Početak</a>
+				<a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
+					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna stranica</a>
+				<a href="<%=request.getContextPath()%>/mvc/aerodromi/<%=request.getAttribute("icao")%>/udaljenosti?odBroja=<%=odBroja + 1%>"
 					class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>

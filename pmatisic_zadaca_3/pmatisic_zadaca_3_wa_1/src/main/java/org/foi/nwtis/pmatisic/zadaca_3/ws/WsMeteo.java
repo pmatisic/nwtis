@@ -15,6 +15,11 @@ import jakarta.jws.WebParam;
 import jakarta.jws.WebService;
 import jakarta.servlet.ServletContext;
 
+/**
+ * Web servis koji pruža meteo podatke za aerodrome i adrese.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 @WebService(serviceName = "meteo")
 public class WsMeteo {
 
@@ -27,6 +32,12 @@ public class WsMeteo {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Dohvaća trenutne meteo podatke za aerodrom na temelju ICAO koda.
+   *
+   * @param icao ICAO kod aerodroma.
+   * @return Trenutni meteo podaci za aerodrom.
+   */
   @WebMethod
   public MeteoPodaci dajMeteo(@WebParam String icao) {
     Airports airport = airportFacade.find(icao);
@@ -53,6 +64,12 @@ public class WsMeteo {
     return meteoPodaci;
   }
 
+  /**
+   * Dohvaća trenutne meteo podatke za adresu.
+   *
+   * @param adresa Adresa za koju se dohvaćaju meteo podaci.
+   * @return Trenutni meteo podaci za adresu.
+   */
   @WebMethod
   public MeteoPodaci dajMeteoAdresa(@WebParam String adresa) {
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");

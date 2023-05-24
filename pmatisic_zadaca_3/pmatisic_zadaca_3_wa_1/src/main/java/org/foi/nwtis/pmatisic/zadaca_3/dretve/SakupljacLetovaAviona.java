@@ -14,6 +14,11 @@ import org.foi.nwtis.rest.podaci.LetAviona;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletContext;
 
+/**
+ * Klasa koja se koristi za sakupljanje letova aviona. Ova klasa se izvršava kao dretva.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ */
 public class SakupljacLetovaAviona extends Thread {
 
   private boolean radi = true;
@@ -25,6 +30,14 @@ public class SakupljacLetovaAviona extends Thread {
   LetoviPolasciFacade lpFacade;
   AirportFacade airportFacade;
 
+  /**
+   * Konstruktor klase SakupljacLetovaAviona.
+   * 
+   * @param context Kontekst servleta.
+   * @param lpFacade Fasada za letove polazaka.
+   * @param airportFacade Fasada za aerodrome.
+   * @param jmsPosiljatelj Posiljatelj JMS poruka.
+   */
   public SakupljacLetovaAviona(ServletContext context, LetoviPolasciFacade lpFacade,
       AirportFacade airportFacade, JmsPosiljatelj jmsPosiljatelj) {
     this.konfig = context;
@@ -33,12 +46,19 @@ public class SakupljacLetovaAviona extends Thread {
     this.jmsPosiljatelj = jmsPosiljatelj;
   }
 
+  /**
+   * Metoda koja zaustavlja izvršavanje ove dretve.
+   */
   @Override
   public void interrupt() {
     radi = false;
     super.interrupt();
   }
 
+  /**
+   * Metoda koja se izvršava kada se pokrene dretva. U ovoj metodi se obavlja sakupljanje letova
+   * aviona.
+   */
   @Override
   public void run() {
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");

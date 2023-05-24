@@ -16,11 +16,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.xml.ws.WebServiceRef;
 
 /**
- * 
  * Klasa kontroler za upravljanje aerodromima u aplikaciji.
  * 
  * @author Petar Matišić (pmatisic@foi.hr)
- *
  */
 @Controller
 @Path("aerodromi")
@@ -74,7 +72,7 @@ public class KontrolerAerodroma {
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
 
     if (odBroja == null) {
-      odBroja = 0;
+      odBroja = 1;
     }
 
     int broj = Integer.parseInt(konfiguracija.dajPostavku("stranica.brojRedova"));
@@ -179,7 +177,7 @@ public class KontrolerAerodroma {
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
 
     if (odBroja == null) {
-      odBroja = 0;
+      odBroja = 1;
     }
 
     int broj = Integer.parseInt(konfiguracija.dajPostavku("stranica.brojRedova"));
