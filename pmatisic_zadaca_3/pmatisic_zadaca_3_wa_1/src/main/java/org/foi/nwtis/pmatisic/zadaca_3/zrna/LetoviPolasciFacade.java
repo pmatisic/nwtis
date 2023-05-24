@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.pmatisic.zadaca_3.jpa.Airports;
 import org.foi.nwtis.pmatisic.zadaca_3.jpa.LetoviPolasci;
@@ -17,6 +18,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.ServletContext;
 
@@ -43,22 +45,29 @@ public class LetoviPolasciFacade {
     } else if (let.getEstDepartureAirport() == null) {
       System.out.println("EstDepartureAirport je null. Let nije dodan.");
       return;
+    } else if (airport == null) {
+      System.out.println("Airport je null. Let nije dodan.");
+      return;
     } else {
-      LetoviPolasci noviLet = new LetoviPolasci();
-      noviLet.setIcao24(let.getIcao24());
-      noviLet.setCallsign(let.getCallsign());
-      noviLet.setFirstSeen(let.getFirstSeen());
-      noviLet.setLastSeen(let.getLastSeen());
-      noviLet.setEstArrivalAirport(let.getEstArrivalAirport());
-      noviLet.setArrivalAirportCandidatesCount(let.getArrivalAirportCandidatesCount());
-      noviLet.setDepartureAirportCandidatesCount(let.getDepartureAirportCandidatesCount());
-      noviLet.setEstArrivalAirportHorizDistance(let.getEstArrivalAirportHorizDistance());
-      noviLet.setEstArrivalAirportVertDistance(let.getEstArrivalAirportVertDistance());
-      noviLet.setEstDepartureAirportHorizDistance(let.getEstDepartureAirportHorizDistance());
-      noviLet.setEstDepartureAirportVertDistance(let.getEstDepartureAirportVertDistance());
-      noviLet.setAirport(airport);
-      noviLet.setStored(new Timestamp(System.currentTimeMillis()));
-      em.persist(noviLet);
+      if (!icao24Postoji(let.getIcao24(), let.getFirstSeen())) {
+        LetoviPolasci noviLet = new LetoviPolasci();
+        noviLet.setIcao24(let.getIcao24());
+        noviLet.setCallsign(let.getCallsign());
+        noviLet.setFirstSeen(let.getFirstSeen());
+        noviLet.setLastSeen(let.getLastSeen());
+        noviLet.setEstArrivalAirport(let.getEstArrivalAirport());
+        noviLet.setArrivalAirportCandidatesCount(let.getArrivalAirportCandidatesCount());
+        noviLet.setDepartureAirportCandidatesCount(let.getDepartureAirportCandidatesCount());
+        noviLet.setEstArrivalAirportHorizDistance(let.getEstArrivalAirportHorizDistance());
+        noviLet.setEstArrivalAirportVertDistance(let.getEstArrivalAirportVertDistance());
+        noviLet.setEstDepartureAirportHorizDistance(let.getEstDepartureAirportHorizDistance());
+        noviLet.setEstDepartureAirportVertDistance(let.getEstDepartureAirportVertDistance());
+        noviLet.setAirport(airport);
+        noviLet.setStored(new Timestamp(System.currentTimeMillis()));
+        em.persist(noviLet);
+      } else {
+        System.out.println("Let s istim 'icao24' i 'firstSeen' već postoji. Let nije dodan.");
+      }
     }
   }
 
@@ -94,6 +103,19 @@ public class LetoviPolasciFacade {
       DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
       return LocalDate.parse(pocetniDanString, dtf);
     }
+  }
+
+  public boolean icao24Postoji(String icao24, int firstSeen) {
+    cb = em.getCriteriaBuilder();
+    CriteriaQuery<LetoviPolasci> cq = cb.createQuery(LetoviPolasci.class);
+    Root<LetoviPolasci> root = cq.from(LetoviPolasci.class);
+    Predicate firstSeenPred = cb.equal(root.get("firstSeen"), firstSeen);
+    Predicate icao24Pred = cb.equal(root.get("icao24"), icao24);
+    cq.where(cb.and(firstSeenPred, icao24Pred));
+    TypedQuery<LetoviPolasci> q = em.createQuery(cq);
+    q.setMaxResults(1);
+    List<LetoviPolasci> zadnjiLet = q.getResultList();
+    return !zadnjiLet.isEmpty();
   }
 
 }

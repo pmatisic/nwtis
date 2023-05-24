@@ -73,7 +73,7 @@ public class SakupljacLetovaAviona extends Thread {
     String krajnjiDanString = konfiguracija.dajPostavku("preuzimanje.do").toString();
     this.krajnjiDan = LocalDate.parse(krajnjiDanString, dtf);
 
-    if (zadnjiDan.isAfter(trenutniDan)) {
+    if (zadnjiDan.isEqual(trenutniDan) || zadnjiDan.isAfter(trenutniDan)) {
       trenutniDan = zadnjiDan.plusDays(1);
     }
 
