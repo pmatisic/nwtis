@@ -25,10 +25,9 @@ public class PokretacPosluzitelja {
     if (!pokretac.provjeriArgumente(args)) {
       return;
     }
-
     try {
       var konf = pokretac.ucitajPostavke(args[0]);
-      var glavniPosluzitelj = new GlavniPosluzitelj(konf);
+      var glavniPosluzitelj = new Posluzitelj(konf);
       glavniPosluzitelj.pokreniPosluzitelja();
     } catch (NeispravnaKonfiguracija e) {
       Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
@@ -40,12 +39,12 @@ public class PokretacPosluzitelja {
    * Provjerava ispravnost unesenih argumenata.
    *
    * @param args argumenti
-   * @return istina, ako je unos ispravan
+   * @return istina, ako je unos ispravan, false inače
    */
   private boolean provjeriArgumente(String[] args) {
     if (args.length == 1) {
       var argument = args[0];
-      String provjeraUnosa = "NWTiS_[a-zA-Z0-9.]{1,255}_3.(txt|xml|bin|json|yaml)";
+      String provjeraUnosa = "^[a-zA-Z0-9._-]+(\\.txt|\\.xml|\\.bin|\\.json|\\.yaml)$";
       Pattern uzorak = Pattern.compile(provjeraUnosa);
       Matcher m = uzorak.matcher(argument);
       boolean status = m.matches();
@@ -65,7 +64,7 @@ public class PokretacPosluzitelja {
    * Učitava konfiguracijske postavke iz datoteke.
    *
    * @param nazivDatoteke naziv datoteke
-   * @return konfiguracija
+   * @return konfiguracija konfiguracija
    * @throws NeispravnaKonfiguracija neispravna konfiguracija
    */
   Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {

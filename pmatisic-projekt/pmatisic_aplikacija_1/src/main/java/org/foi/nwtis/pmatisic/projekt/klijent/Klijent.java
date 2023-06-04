@@ -9,17 +9,21 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.foi.nwtis.Konfiguracija;
+import org.foi.nwtis.KonfiguracijaApstraktna;
+import org.foi.nwtis.NeispravnaKonfiguracija;
 
 /**
- * Klasa za obradu komandi glavnog klijenta.
+ * Klasa klijenta.
  * 
  * @author Petar Matišić (pmatisic@foi.hr)
  */
-public class GlavniKlijent {
+public class Klijent {
 
   /**
    * Main metoda koja pokreće klijenta.
@@ -28,7 +32,6 @@ public class GlavniKlijent {
    */
   public static void main(String[] args) {
     StringBuilder sb = new StringBuilder();
-
     for (int i = 0; i < args.length; i++) {
       if (args[i].contains(" ")) {
         String trenutni = args[i];
@@ -36,21 +39,26 @@ public class GlavniKlijent {
       }
       sb.append(args[i]).append(" ");
     }
-
     String s = sb.toString().trim();
-    var gk = new GlavniKlijent();
-    Matcher unos = gk.provjeriArgumente(s);
+    var gk = new Klijent();
+    Matcher unos = gk.provjeriKomandu(s);
     String komanda = "";
-
     if (unos == null) {
       Logger.getGlobal().log(Level.SEVERE, "Greška u argumentima, provjerite unos!");
       return;
     } else {
       komanda = obradiKomandu(unos);
     }
-
-    gk.spojiSeNaGlavniPosluzitelj(unos.group("adresa"), Integer.parseInt(unos.group("port")),
-        komanda);
+    try {
+      String datoteka = "postavke.txt";
+      Konfiguracija konf;
+      konf = KonfiguracijaApstraktna.dajKonfiguraciju(datoteka);
+      String adresa = konf.dajPostavku("posluziteljGlavniAdresa").toString();
+      int port = Integer.parseInt(konf.dajPostavku("posluziteljGlavniVrata"));
+      gk.spojiSeNaGlavniPosluzitelj(adresa, port, komanda);
+    } catch (NeispravnaKonfiguracija e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -59,9 +67,9 @@ public class GlavniKlijent {
    * @param s ulazni string s argumentima
    * @return Matcher objekt ako su argumenti ispravni, inače null
    */
-  private Matcher provjeriArgumente(String s) {
+  private Matcher provjeriKomandu(String s) {
     String sintaksa =
-        "(-k) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (-l) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) (-a) (?<adresa>[0-9a-z.]+) (-v) (?<port>[0-9]{4}) (-t) (?<vrijeme>[0-9]+) ((((--meteo) (?<meteo>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--makstemp) (?<makstemp>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--maksvlaga) (?<maksvlaga>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--makstlak) (?<makstlak>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((--alarm) (?<alarm>[0-9a-zA-Z' ]+))|((--udaljenost) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((--udaljenost) (?<udaljenostspremi>spremi))|(?<kraj>--kraj)))";
+        "^(?<status>STATUS)|(?<kraj>KRAJ)|(?<init>INIT)|(?<pauza>PAUZA)|(?<info>INFO)|(?<udaljenost>(UDALJENOST \\d\\d.\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d))$";
     Pattern p = Pattern.compile(sintaksa);
     Matcher m = p.matcher(s);
     if (!m.matches()) {
@@ -72,7 +80,7 @@ public class GlavniKlijent {
   }
 
   /**
-   * Obrađuje komandu u razumljiv oblik za mrežnog radnika.
+   * Obrađuje komandu u razumljiv oblik za dretvu.
    * 
    * @param m Matcher objekt s grupama iz ulaznih argumenata
    * @return komanda u string formatu
@@ -84,22 +92,8 @@ public class GlavniKlijent {
     grupe.put("init", "INIT");
     grupe.put("pauza", "PAUZA");
     grupe.put("info", "INFO");
-    grupe.put("udaljenostnavodnici", "--udaljenost");
-    grupe.put("udaljenostspremi", "--udaljenost");
-    grupe.put("kraj", "--kraj");
-
-    Map<String, String> pomocnaGrupa = new HashMap<>();
-    for (String key : grupe.keySet()) {
-      if (m.group(key) != null) {
-        if (key == "udaljenostnavodnici" || key == "udaljenostspremi") {
-          pomocnaGrupa.put("UDALJENOST", m.group(key).toUpperCase());
-        } else {
-          pomocnaGrupa.put(key.toUpperCase(), m.group(key));
-        }
-      }
-    }
-
-    String komanda = pretvoriUKomandu(pomocnaGrupa);
+    grupe.put("udaljenost", m.group("udaljenost"));
+    String komanda = pretvoriUKomandu(grupe);
     return komanda;
   }
 
@@ -111,24 +105,32 @@ public class GlavniKlijent {
    * @return komanda u string formatu
    */
   private static String pretvoriUKomandu(Map<String, String> mapa) {
-    String naredba = "KORISNIK " + mapa.get("KORISNIK") + " LOZINKA " + mapa.get("LOZINKA");
-
-    if (mapa.containsKey("STATUS")) {
-      naredba += " STATUS";
-    } else if (mapa.containsKey("KRAJ")) {
-      naredba += " KRAJ";
-    } else if (mapa.containsKey("INIT")) {
-      naredba += " INIT";
-    } else if (mapa.containsKey("PAUZA")) {
-      naredba += " PAUZA";
-    } else if (mapa.containsKey("INFO")) {
-      naredba += " INFO " + mapa.get("INFO");
-    } else if (mapa.containsKey("UDALJENOST")) {
-      naredba += " UDALJENOST " + mapa.get("UDALJENOST");
-    } else if (mapa.containsKey("KRAJ")) {
-      naredba += " KRAJ";
+    String naredba = null;
+    Optional<String> komanda = mapa.keySet().stream().findFirst();
+    if (komanda.isPresent()) {
+      switch (komanda.get()) {
+        case "status":
+          naredba = "STATUS";
+          break;
+        case "kraj":
+          naredba = "KRAJ";
+          break;
+        case "init":
+          naredba = "INIT";
+          break;
+        case "pauza":
+          naredba = "PAUZA";
+          break;
+        case "info":
+          naredba = "INFO";
+          break;
+        case "udaljenost":
+          naredba = mapa.get("udaljenost");
+          break;
+        default:
+          Logger.getGlobal().log(Level.SEVERE, "Greška u pretvaranju komande!");
+      }
     }
-
     return naredba;
   }
 
@@ -146,28 +148,19 @@ public class GlavniKlijent {
           new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
       var pisac = new BufferedWriter(
           new OutputStreamWriter(mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
-
-      pisac.write(komanda);
+      pisac.write(komanda + "\n");
       pisac.flush();
-      mreznaUticnica.shutdownOutput();
-
       var poruka = new StringBuilder();
-
       while (true) {
         var red = citac.readLine();
         if (red == null)
           break;
-
         if (red.startsWith("OK")) {
           Logger.getGlobal().log(Level.INFO, "Odgovor od poslužitelja: " + red);
-        } else {
-          Logger.getGlobal().log(Level.SEVERE, "Greška u odgovoru poslužitelja: " + red);
         }
-
         poruka.append(red);
       }
-
-      Logger.getGlobal().log(Level.INFO, poruka.toString());
+      mreznaUticnica.shutdownOutput();
       mreznaUticnica.shutdownInput();
       mreznaUticnica.close();
     } catch (IOException e) {

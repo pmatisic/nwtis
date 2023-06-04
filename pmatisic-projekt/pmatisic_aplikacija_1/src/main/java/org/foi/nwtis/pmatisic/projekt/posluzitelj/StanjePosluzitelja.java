@@ -1,4 +1,4 @@
-package org.foi.nwtis.pmatisic.projekt.pomocnik;
+package org.foi.nwtis.pmatisic.projekt.posluzitelj;
 
 import org.foi.nwtis.pmatisic.projekt.podatak.Status;
 
