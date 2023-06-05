@@ -115,7 +115,7 @@ public class Dretva extends Thread {
     if (m.group("udaljenost") != null) {
       return m.group("udaljenost");
     }
-    Logger.getGlobal().log(Level.SEVERE, "Nijedna komanda nije pronađena u matcheru!");
+    Logger.getGlobal().log(Level.INFO, "Nijedna komanda nije pronađena u matcheru!");
     return null;
   }
 
@@ -123,7 +123,7 @@ public class Dretva extends Thread {
     String komanda = s;
     if (!komanda.equals("STATUS") && !komanda.equals("KRAJ") && !komanda.equals("INIT")
         && stanje.dajStatus() == Status.PAUZA) {
-      return "Posluzitelj je na pauzi i odbija komande osim STATUS, KRAJ i INIT.";
+      return "ERROR 01 Posluzitelj je na pauzi i odbija komande osim STATUS, KRAJ i INIT.";
     }
     switch (komanda) {
       case "STATUS":
@@ -132,8 +132,12 @@ public class Dretva extends Thread {
         p.ugasi();
         return "OK";
       case "INIT":
-        stanje.promijeniStatus(Status.AKTIVAN);
-        return "OK";
+        if (stanje.dajStatus() == Status.AKTIVAN) {
+          return "ERROR 02 Posluzitelj je vec aktivan.";
+        } else {
+          stanje.promijeniStatus(Status.AKTIVAN);
+          return "OK";
+        }
       case "PAUZA":
         if (stanje.dajStatus() != Status.PAUZA) {
           stanje.promijeniStatus(Status.PAUZA);
@@ -155,8 +159,8 @@ public class Dretva extends Thread {
         } else {
           return "ERROR 04 Ispis je vec onemogucen.";
         }
-      case "UDALJENOST":
-        if (stanje.dajStatus() == Status.AKTIVAN) {
+      default:
+        if (komanda.startsWith("UDALJENOST")) {
           String[] dijelovi = komanda.trim().split("\\s+");
           double gpsSirina1 = Double.parseDouble(dijelovi[1]);
           double gpsDuzina1 = Double.parseDouble(dijelovi[2]);
@@ -166,10 +170,8 @@ public class Dretva extends Thread {
           stanje.inkrementirajBrojacZahtjeva();
           return "OK " + String.format("%.2f", udaljenost);
         } else {
-          return "ERROR 02 Posluzitelj je na pauzi.";
+          return "ERROR 05 Nepoznata komanda.";
         }
-      default:
-        return "ERROR 05 Nepoznata komanda.";
     }
   }
 

@@ -2,7 +2,7 @@
 
 # Provjerava da li je proslijeđen jedan argument
 if [ $# -ne 1 ]; then
-    echo "Usage: $0 <filename>"
+    echo "Korištenje: $0 <ime datoteke> "
     exit 1
 fi
 
@@ -22,4 +22,3 @@ fi
 
 # Pokreće poslužitelj s datotekom postavki koja je proslijeđena kao argument
 java -cp target/pmatisic_aplikacija_1-1.0.0.jar org.foi.nwtis.pmatisic.projekt.posluzitelj.PokretacPosluzitelja $filename
-

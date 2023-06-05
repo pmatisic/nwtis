@@ -1,13 +1,12 @@
 #!/bin/bash
 
-# Provjerava da li su proslijeđena dva argumenta
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <filename> <command>"
+# Provjerava da li su proslijeđena najmanje dva argumenta
+if [ $# -lt 2 ]; then
+    echo "Korištenje: $0 <ime datoteke> <naredba>"
     exit 1
 fi
 
 filename=$1
-command=$2
 
 # Provjera format imena datoteke
 if [[ ! $filename =~ ^[a-zA-Z0-9._-]+(.txt|.xml|.bin|.json|.yaml)$ ]]; then
@@ -21,12 +20,5 @@ if [ ! -f $filename ]; then
     exit 1
 fi
 
-# Provjerava da li je drugi argument ispravne naredbe
-if [[ ! $command =~ ^(STATUS)|(KRAJ)|(INIT)|(PAUZA)|(INFO DA)|(INFO NE)|(UDALJENOST \d\d.\d\d\d\d\d \d\d.\d\d\d\d\d \d\d.\d\d\d\d\d \d\d.\d\d\d\d\d)$ ]]; then
-    echo "Neispravna naredba. Molimo unesite ispravnu naredbu."
-    exit 1
-fi
-
 # Pokreće klijenta s datotekom postavki i naredbom koje su proslijeđene kao argumenti
-java -cp target/pmatisic_aplikacija_1-1.0.0.jar org.foi.nwtis.pmatisic.projekt.klijent.Klijent $filename $command
-
+java -cp target/pmatisic_aplikacija_1-1.0.0.jar org.foi.nwtis.pmatisic.projekt.klijent.Klijent "$@"

@@ -20,7 +20,7 @@ public class Klijent {
   public static void main(String[] args) {
 
     if (args.length < 1) {
-      Logger.getGlobal().log(Level.SEVERE,
+      Logger.getGlobal().log(Level.WARNING,
           "Morate navesti putanju do datoteke s postavkama kao prvi argument!");
       return;
     }
@@ -99,7 +99,7 @@ public class Klijent {
     if (m.group("udaljenost") != null) {
       return m.group("udaljenost");
     }
-    Logger.getGlobal().log(Level.SEVERE, "Nijedna komanda nije pronađena u matcheru!");
+    Logger.getGlobal().log(Level.INFO, "Nijedna komanda nije pronađena u matcheru!");
     return null;
   }
 
