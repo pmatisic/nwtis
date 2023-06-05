@@ -3,4 +3,6 @@
 <properties>
 <entry key="OpenSkyNetwork.korisnik">petarmatisic</entry>
 <entry key="OpenSkyNetwork.lozinka">chelsea1003</entry>
+<entry key="adresa.posluzitelja">localhost</entry>
+<entry key="mreznaVrata.posluzitelja">8000</entry>
 </properties>

@@ -4,6 +4,8 @@ import java.util.Properties;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
+import org.foi.nwtis.pmatisic.projekt.podatak.Status;
+import org.foi.nwtis.pmatisic.projekt.posluzitelj.StanjePosluzitelja;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -14,7 +16,7 @@ import jakarta.servlet.annotation.WebListener;
  *
  * @author Petar Matišić
  * @author Dragutin Kermek
- * @version 1.1
+ * @version 1.2.1
  */
 @WebListener
 public final class SlusacAplikacije implements ServletContextListener {
@@ -44,6 +46,15 @@ public final class SlusacAplikacije implements ServletContextListener {
         String vrijednost = postavke.getProperty(kljuc);
         System.out.println("Ključ: " + kljuc + ", Vrijednost: " + vrijednost);
       }
+      // Provjera statusa poslužitelja nakon učitavanja konfiguracije
+      StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfig);
+      Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
+
+      if (status == Status.PAUZA) {
+        System.err.println("Poslužitelj nije aktivan. Prekidam rad.");
+        System.exit(1);
+      }
+
     } catch (NeispravnaKonfiguracija ex) {
       System.err.println("Greška prilikom učitavanja konfiguracije: " + putanja + datoteka);
     }
