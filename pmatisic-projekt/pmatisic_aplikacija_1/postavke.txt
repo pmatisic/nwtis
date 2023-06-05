@@ -1,7 +1,6 @@
-ispis=1
-maksCekanje=100
+maksCekanje=1000
 mreznaVrata=8000
 brojCekaca=10
 brojRadnika=10
-posluziteljGlavniAdresa=localhost
-posluziteljGlavniVrata=8000
+posluziteljVrata=8000
+posluziteljAdresa=localhost

@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -20,21 +18,21 @@ import org.foi.nwtis.pmatisic.projekt.posluzitelj.StanjePosluzitelja;
 
 public class Dretva extends Thread {
 
-  private Posluzitelj gp;
+  private Posluzitelj p;
   private Matcher m;
-  private StanjePosluzitelja stanjePosluzitelja;
-  private int ispis = 0;
+  private StanjePosluzitelja stanje;
+  private boolean ispis;
   protected Socket mreznaUticnica;
   protected Konfiguracija konf;
 
-  public Dretva(Socket mreznaUticnica, Konfiguracija konf, Posluzitelj gp,
-      StanjePosluzitelja stanjePosluzitelja) {
+  public Dretva(Socket mreznaUticnica, Konfiguracija konf, Posluzitelj p,
+      StanjePosluzitelja stanje) {
     super();
     this.mreznaUticnica = mreznaUticnica;
     this.konf = konf;
-    this.gp = gp;
-    this.stanjePosluzitelja = stanjePosluzitelja;
-    this.ispis = Integer.parseInt(this.konf.dajPostavku("ispis"));
+    this.p = p;
+    this.stanje = stanje;
+    this.ispis = stanje.dajIspisKomandi();
   }
 
   @Override
@@ -54,11 +52,11 @@ public class Dretva extends Thread {
         var red = citac.readLine();
         if (red == null)
           break;
-        if (this.ispis == 1)
+        if (this.ispis == true)
           Logger.getGlobal().log(Level.INFO, red);
         poruka.append(red);
       }
-      Map<String, String> obradenaPoruka = new HashMap<String, String>();
+      String obradenaPoruka = null;
       String neobradenaPoruka = poruka.toString();
       m = provjeriKomandu(neobradenaPoruka);
       if (m != null) {
@@ -67,10 +65,10 @@ public class Dretva extends Thread {
         Logger.getGlobal().log(Level.SEVERE, "Greška u komandi!");
         return;
       }
+      this.mreznaUticnica.shutdownInput();
       String odgovor = this.obradiZahtjev(obradenaPoruka);
       pisac.write(odgovor);
       pisac.flush();
-      this.mreznaUticnica.shutdownInput();
       this.mreznaUticnica.shutdownOutput();
       this.mreznaUticnica.close();
     } catch (IOException e) {
@@ -80,13 +78,12 @@ public class Dretva extends Thread {
 
   @Override
   public synchronized void interrupt() {
-    Logger.getLogger(Dretva.class.getName()).info("Dretva se gasi!");
     super.interrupt();
   }
 
   private Matcher provjeriKomandu(String s) {
     String sintaksa =
-        "(KORISNIK) (?<korisnik>[0-9a-zA-Z_-]{3,10}) (LOZINKA) (?<lozinka>[0-9a-zA-Z!#_-]{3,10}) ((((METEO) (?<meteo>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((MAKS TEMP) (?<makstemp>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((MAKS VLAGA) (?<maksvlaga>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((MAKS TLAK) (?<makstlak>[0-9a-zA-ZćĆčČžŽšŠđĐ-]+))|((ALARM) (?<alarm>[0-9a-zA-Z' ]+))|((UDALJENOST) (?<udaljenostnavodnici>'[0-9a-zA-Z ]+' '[0-9a-zA-Z ]+'))|((UDALJENOST) (?<udaljenostspremi>SPREMI))|(?<kraj>KRAJ)))";
+        "^(?<status>STATUS)|(?<kraj>KRAJ)|(?<init>INIT)|(?<pauza>PAUZA)|(?<infoda>(INFO DA))|(?<infone>(INFO NE))|(?<udaljenost>(UDALJENOST \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d))$";
     Pattern p = Pattern.compile(sintaksa);
     Matcher m = p.matcher(s);
     if (!m.matches()) {
@@ -96,102 +93,84 @@ public class Dretva extends Thread {
     }
   }
 
-  private static Map<String, String> obradiKomandu(Matcher m) {
-    Map<String, String> grupe = new HashMap<>();
-    grupe.put("METEO", m.group("meteo"));
-    grupe.put("MAKS TEMP", m.group("makstemp"));
-    grupe.put("MAKS VLAGA", m.group("maksvlaga"));
-    grupe.put("MAKS TLAK", m.group("makstlak"));
-    grupe.put("ALARM", m.group("alarm"));
-    grupe.put("UDALJENOST", m.group("udaljenostnavodnici"));
-    grupe.put("UDALJENOST SPREMI", m.group("udaljenostspremi"));
-    grupe.put("KRAJ", m.group("kraj"));
-    Map<String, String> pomocnaGrupa = new HashMap<>();
-    for (String key : grupe.keySet()) {
-      if (grupe.get(key) != null) {
-        if (key == "UDALJENOST" || key == "UDALJENOST SPREMI") {
-          pomocnaGrupa.put("UDALJENOST", grupe.get(key));
-        } else {
-          pomocnaGrupa.put(key, grupe.get(key));
-        }
-      }
+  private static String obradiKomandu(Matcher m) {
+    if (m.group("status") != null) {
+      return m.group("status");
     }
-    return pomocnaGrupa;
+    if (m.group("kraj") != null) {
+      return m.group("kraj");
+    }
+    if (m.group("init") != null) {
+      return m.group("init");
+    }
+    if (m.group("pauza") != null) {
+      return m.group("pauza");
+    }
+    if (m.group("infoda") != null) {
+      return m.group("infoda");
+    }
+    if (m.group("infone") != null) {
+      return m.group("infone");
+    }
+    if (m.group("udaljenost") != null) {
+      return m.group("udaljenost");
+    }
+    Logger.getGlobal().log(Level.SEVERE, "Nijedna komanda nije pronađena u matcheru!");
+    return null;
   }
 
-  private String obradiZahtjev(Map<String, String> mapa) {
-    String komanda = izvuciKomandu(mapa);
+  private String obradiZahtjev(String s) {
+    String komanda = s;
+    if (!komanda.equals("STATUS") && !komanda.equals("KRAJ") && !komanda.equals("INIT")
+        && stanje.dajStatus() == Status.PAUZA) {
+      return "Posluzitelj je na pauzi i odbija komande osim STATUS, KRAJ i INIT.";
+    }
     switch (komanda) {
       case "STATUS":
-        return "OK " + stanjePosluzitelja.dajStatus().ordinal();
+        return "OK " + stanje.dajStatus().ordinal();
       case "KRAJ":
-        gp.kraj = true;
-        for (Thread t : Thread.getAllStackTraces().keySet()) {
-          if (t instanceof Dretva && t.isAlive()) {
-            t.interrupt();
-          }
-        }
+        p.ugasi();
         return "OK";
       case "INIT":
-        stanjePosluzitelja.promijeniStatus(Status.AKTIVAN);
+        stanje.promijeniStatus(Status.AKTIVAN);
         return "OK";
       case "PAUZA":
-        if (stanjePosluzitelja.dajStatus() != Status.PAUZA) {
-          stanjePosluzitelja.promijeniStatus(Status.PAUZA);
-          return "OK " + stanjePosluzitelja.dajBrojacZahtjeva();
+        if (stanje.dajStatus() != Status.PAUZA) {
+          stanje.promijeniStatus(Status.PAUZA);
+          return "OK " + stanje.dajBrojacZahtjeva();
         } else {
           return "ERROR 01 Posluzitelj je vec na pauzi.";
         }
-      case "INFO":
-        if (mapa.get("INFO").equals("DA")) {
-          stanjePosluzitelja.postaviIspisKomandi(true);
-          if (this.ispis == 0) {
-            this.ispis = 1;
-            return "OK";
-          } else {
-            return "ERROR 03 Ispis je vec omogucen.";
-          }
-        } else if (mapa.get("INFO").equals("NE")) {
-          stanjePosluzitelja.postaviIspisKomandi(false);
-          if (this.ispis == 1) {
-            this.ispis = 0;
-            return "OK";
-          } else {
-            return "ERROR 04 Ispis je vec onemogucen.";
-          }
+      case "INFO DA":
+        if (this.ispis == false) {
+          stanje.postaviIspisKomandi(true);
+          return "OK";
+        } else {
+          return "ERROR 03 Ispis je vec omogucen.";
         }
-        return "ERROR 05 Nepoznata INFO komanda.";
+      case "INFO NE":
+        if (this.ispis == true) {
+          stanje.postaviIspisKomandi(false);
+          return "OK";
+        } else {
+          return "ERROR 04 Ispis je vec onemogucen.";
+        }
       case "UDALJENOST":
-        if (stanjePosluzitelja.dajStatus() == Status.AKTIVAN) {
-          double gpsSirina1 = Double.parseDouble(mapa.get("gpsSirina1"));
-          double gpsDuzina1 = Double.parseDouble(mapa.get("gpsDuzina1"));
-          double gpsSirina2 = Double.parseDouble(mapa.get("gpsSirina2"));
-          double gpsDuzina2 = Double.parseDouble(mapa.get("gpsDuzina2"));
+        if (stanje.dajStatus() == Status.AKTIVAN) {
+          String[] dijelovi = komanda.trim().split("\\s+");
+          double gpsSirina1 = Double.parseDouble(dijelovi[1]);
+          double gpsDuzina1 = Double.parseDouble(dijelovi[2]);
+          double gpsSirina2 = Double.parseDouble(dijelovi[3]);
+          double gpsDuzina2 = Double.parseDouble(dijelovi[4]);
           double udaljenost = izracunajUdaljenost(gpsSirina1, gpsDuzina1, gpsSirina2, gpsDuzina2);
-          stanjePosluzitelja.inkrementirajBrojacZahtjeva();
-          return "OK " + udaljenost;
+          stanje.inkrementirajBrojacZahtjeva();
+          return "OK " + String.format("%.2f", udaljenost);
         } else {
           return "ERROR 02 Posluzitelj je na pauzi.";
         }
       default:
         return "ERROR 05 Nepoznata komanda.";
     }
-  }
-
-  private String izvuciKomandu(Map<String, String> mapa) {
-    if (mapa.containsKey("STATUS"))
-      return "STATUS";
-    if (mapa.containsKey("KRAJ"))
-      return "KRAJ";
-    if (mapa.containsKey("INIT"))
-      return "INIT";
-    if (mapa.containsKey("PAUZA"))
-      return "PAUZA";
-    if (mapa.containsKey("INFO"))
-      return "INFO";
-    if (mapa.containsKey("UDALJENOST"))
-      return "UDALJENOST";
-    return "";
   }
 
   /**
