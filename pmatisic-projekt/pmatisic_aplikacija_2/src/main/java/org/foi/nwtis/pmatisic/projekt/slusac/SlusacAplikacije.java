@@ -46,17 +46,20 @@ public final class SlusacAplikacije implements ServletContextListener {
         String vrijednost = postavke.getProperty(kljuc);
         System.out.println("Ključ: " + kljuc + ", Vrijednost: " + vrijednost);
       }
+
       // Provjera statusa poslužitelja nakon učitavanja konfiguracije
       StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfig);
       Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
-
       if (status == Status.PAUZA) {
         System.err.println("Poslužitelj nije aktivan. Prekidam rad.");
-        System.exit(1);
+        sce.getServletContext().setAttribute("statusPosluzitelja", "PAUZA");
+        // Zatvaranje svih otvorenih veza baze podataka
+        // DBConnectionManager.closeAllConnections();
+        return;
       }
 
     } catch (NeispravnaKonfiguracija ex) {
-      System.err.println("Greška prilikom učitavanja konfiguracije: " + putanja + datoteka);
+      System.err.println("Pogreška u radu poslužitelja i/ili konfiguracije.");
     }
   }
 
