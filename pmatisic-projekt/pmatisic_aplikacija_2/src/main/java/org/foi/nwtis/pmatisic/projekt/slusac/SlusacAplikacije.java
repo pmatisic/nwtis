@@ -51,11 +51,7 @@ public final class SlusacAplikacije implements ServletContextListener {
       StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfig);
       Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
       if (status == Status.PAUZA) {
-        System.err.println("Poslužitelj nije aktivan. Prekidam rad.");
-        sce.getServletContext().setAttribute("statusPosluzitelja", "PAUZA");
-        // Zatvaranje svih otvorenih veza baze podataka
-        // DBConnectionManager.closeAllConnections();
-        return;
+        throw new RuntimeException("Poslužitelj nije aktivan. Prekidam rad.");
       }
 
     } catch (NeispravnaKonfiguracija ex) {

@@ -67,7 +67,7 @@ public class Klijent {
 
   private Matcher provjeriKomandu(String s) {
     String sintaksa =
-        "^(?<status>STATUS)|(?<kraj>KRAJ)|(?<init>INIT)|(?<pauza>PAUZA)|(?<infoda>(INFO DA))|(?<infone>(INFO NE))|(?<udaljenost>(UDALJENOST \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d \\d\\d.\\d\\d\\d\\d\\d))$";
+        "^(?<status>STATUS)|(?<kraj>KRAJ)|(?<init>INIT)|(?<pauza>PAUZA)|(?<infoda>(INFO DA))|(?<infone>(INFO NE))|(?<udaljenost>(UDALJENOST -?\\d+\\.\\d+ -?\\d+\\.\\d+ -?\\d+\\.\\d+ -?\\d+\\.\\d+))$";
     Pattern p = Pattern.compile(sintaksa);
     Matcher m = p.matcher(s);
     if (!m.matches()) {

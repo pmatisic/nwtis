@@ -18,4 +18,12 @@
     <param-name>konfiguracija</param-name>
     <param-value>NWTiS.db.config_2.xml</param-value>
   </context-param>
+  <filter>
+    <filter-name>FilterDnevnika</filter-name>
+    <filter-class>org.foi.nwtis.pmatisic.projekt.filter.FilterDnevnika</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>FilterDnevnika</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 </web-app>
