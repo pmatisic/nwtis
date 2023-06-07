@@ -353,7 +353,7 @@ public class RestAerodromi {
     String odgovor = spojiSeNaPosluzitelj(komanda);
 
     if (odgovor == null) {
-      return Response.status(500).entity("Greška prilikom komunikacije s aplikacijom.").build();
+      return Response.status(404).entity("Greška prilikom komunikacije s aplikacijom.").build();
     } else {
       Gson gson = new Gson();
       String podaci = gson.toJson(odgovor);
