@@ -34,6 +34,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+// TODO: Ovu klasu treba maknuti, s obzirom da se letovi tek obrađuju u aplikaciji 4.
 /**
  * 
  * Klasa RestLetovi.

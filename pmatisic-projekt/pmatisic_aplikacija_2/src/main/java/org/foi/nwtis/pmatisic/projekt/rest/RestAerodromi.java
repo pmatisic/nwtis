@@ -1,24 +1,36 @@
 package org.foi.nwtis.pmatisic.projekt.rest;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.pmatisic.projekt.podatak.Aerodrom;
 import org.foi.nwtis.pmatisic.projekt.podatak.Lokacija;
+import org.foi.nwtis.pmatisic.projekt.podatak.Status;
 import org.foi.nwtis.pmatisic.projekt.podatak.Udaljenost;
 import org.foi.nwtis.pmatisic.projekt.podatak.UdaljenostAerodrom;
 import org.foi.nwtis.pmatisic.projekt.podatak.UdaljenostAerodromDrzava;
+import org.foi.nwtis.rest.klijenti.OSKlijent;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -32,22 +44,19 @@ import jakarta.ws.rs.core.Response;
 @Path("aerodromi")
 @RequestScoped
 public class RestAerodromi {
+  
+  @Context
+  private ServletContext konfig;
 
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
-  /**
-   * Vraća sve aerodrome po stranicama uz zadane parametre 'odBroja' i 'broj'.
-   * Ako parametri nisu zadani, koriste se predefinirane vrijednosti.
-   *
-   * @param odBroja broj stranice koja se prikazuje
-   * @param broj broj aerodroma po stranici
-   * @return popis aerodroma u JSON formatu ili HTTP status kod u slučaju greške
-   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajSveAerodrome(@QueryParam("odBroja") String odBroja,
-      @QueryParam("broj") String broj) {
+      @QueryParam("broj") String broj,
+      @QueryParam("traziNaziv") String traziNaziv,
+      @QueryParam("traziDrzavu") String traziDrzavu) {
 
     if (jesuLiParametriPrazni(odBroja, broj)) {
       odBroja = "1";
@@ -62,18 +71,24 @@ public class RestAerodromi {
     int odBrojaInt = Integer.parseInt(odBroja);
     int brojInt = Integer.parseInt(broj);
     int offset = (odBrojaInt - 1) * brojInt;
-    String upit =
-        "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES "
-        + "FROM AIRPORTS "
-        + "ORDER BY ICAO " 
-        + "LIMIT ? "
-        + "OFFSET ?";
+
+    String upit = "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES " +
+                  "FROM AIRPORTS " +
+                  "WHERE (NAME LIKE ? OR ? IS NULL) " +
+                  "AND (ISO_COUNTRY = ? OR ? IS NULL) " +
+                  "ORDER BY ICAO " + 
+                  "LIMIT ? " +
+                  "OFFSET ?";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
       stmt = con.prepareStatement(upit);
-      stmt.setInt(1, brojInt);
-      stmt.setInt(2, offset);
+      stmt.setString(1, traziNaziv != null ? "%" + traziNaziv + "%" : null);
+      stmt.setString(2, traziNaziv);
+      stmt.setString(3, traziDrzavu);
+      stmt.setString(4, traziDrzavu);
+      stmt.setInt(5, brojInt);
+      stmt.setInt(6, offset);
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
@@ -108,13 +123,6 @@ public class RestAerodromi {
     return odgovor;
   }
 
-  /**
-   * Provjerava jesu li zadani parametri ispravni brojevi.
-   *
-   * @param odBroja broj stranice koja se prikazuje
-   * @param broj broj aerodroma po stranici
-   * @return true ako su parametri ispravni brojevi, false inače
-   */
   private boolean jesuLiParametriBroj(String odBroja, String broj) {
     try {
       int parsedOdBroja = Integer.parseInt(odBroja);
@@ -128,23 +136,10 @@ public class RestAerodromi {
     return true;
   }
 
-  /**
-   * Provjerava jesu li zadani parametri prazni.
-   *
-   * @param odBroja broj stranice koja se prikazuje
-   * @param broj broj aerodroma po stranici
-   * @return true ako su oba parametra prazna, false inače
-   */
   private boolean jesuLiParametriPrazni(String odBroja, String broj) {
     return odBroja == null && broj == null;
   }
 
-  /**
-   * Vraća informacije o aerodromu za zadani ICAO kod.
-   *
-   * @param icao ICAO kod aerodroma
-   * @return informacije o aerodromu u JSON formatu ili HTTP status kod u slučaju greške
-   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}")
@@ -172,7 +167,7 @@ public class RestAerodromi {
         aerodrom.setNaziv(rs.getString("NAME"));
         aerodrom.setDrzava(rs.getString("ISO_COUNTRY"));
         String koordinate[] = rs.getString("COORDINATES").split(",");
-        Lokacija lokacija = new Lokacija(koordinate[0], koordinate[1].trim());
+        Lokacija lokacija = new Lokacija(koordinate[1], koordinate[0].trim());
         aerodrom.setLokacija(lokacija);
       }
     } catch (SQLException e) {
@@ -196,12 +191,6 @@ public class RestAerodromi {
     return odgovor;
   }
 
-  /**
-   * Provjerava jesu li zadani parametri ispravni.
-   *
-   * @param icao ICAO kod aerodroma
-   * @return true ako je parametar ispravan, false inače
-   */
   private boolean jesuLiParametriIspravni(String icao) {
     if (icao == null || icao.length() < 2) {
       return false;
@@ -209,13 +198,6 @@ public class RestAerodromi {
     return icao.chars().allMatch(c -> Character.isLetterOrDigit(c) || c == '-');
   }
 
-  /**
-   * Vraća udaljenosti između dva aerodroma, zadanih ICAO kodovima.
-   *
-   * @param icaoFrom ICAO kod polaznog aerodroma
-   * @param icaoTo ICAO kod odredišnog aerodroma
-   * @return udaljenosti u JSON formatu ili HTTP status kod u slučaju greške
-   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icaoOd}/{icaoDo}")
@@ -267,25 +249,10 @@ public class RestAerodromi {
     return odgovor;
   }
 
-  /**
-   * Provjerava jesu li zadani parametri ICAO kodovi ispravni.
-   *
-   * @param icaoFrom ICAO kod polaznog aerodroma
-   * @param icaoTo ICAO kod odredišnog aerodroma
-   * @return true ako su oba parametra ispravna, false inače
-   */
   private boolean jesuLiParametriIcao(String icaoFrom, String icaoTo) {
     return jesuLiParametriIspravni(icaoFrom) && jesuLiParametriIspravni(icaoTo);
   }
 
-  /**
-   * Dohvaća udaljenosti za aerodrome u odnosu na zadanog aerodroma.
-   *
-   * @param icao ICAO kod referentnog aerodroma
-   * @param odBroja početak raspona
-   * @param broj broj elemenata u rasponu
-   * @return Response koji sadrži informacije o udaljenostima za aerodrome u JSON formatu, ili odgovor s odgovarajućim statusom
-   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}/udaljenosti")
@@ -351,6 +318,91 @@ public class RestAerodromi {
     String podaci = gson.toJson(udaljenosti);
     Response odgovor = Response.ok().entity(podaci).build();
     return odgovor;
+  }
+  
+  @GET
+  @Path("{icaoOd}/izracunaj/{icaoDo}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response izracunajUdaljenost(@PathParam("icaoOd") String icaoOd, @PathParam("icaoDo") String icaoDo) {
+    
+    if (!jesuLiParametriIcao(icaoOd, icaoDo)) {
+      return Response.status(400).build();
+    }
+
+    String gpsSirina1, gpsDuzina1, gpsSirina2, gpsDuzina2;
+    
+    try (Connection con = ds.getConnection()) {
+      String upit = "SELECT COORDINATES FROM AIRPORTS WHERE ICAO = ?";
+      
+      PreparedStatement stmt = con.prepareStatement(upit);
+      stmt.setString(1, icaoOd);
+      ResultSet rs = stmt.executeQuery();
+      
+      if(rs.next()) {
+        String[] koordinate = rs.getString("COORDINATES").split(",");
+        gpsSirina1 = koordinate[1];
+        gpsDuzina1 = koordinate[0];
+      } else {
+        return Response.status(404).entity("Aerodrom sa ICAO kodom " + icaoOd + " nije pronađen.").build();
+      }
+      
+      stmt.setString(1, icaoDo);
+      rs = stmt.executeQuery();
+      
+      if(rs.next()) {
+        String[] koordinate = rs.getString("COORDINATES").split(",");
+        gpsSirina2 = koordinate[1];
+        gpsDuzina2 = koordinate[0];
+      } else {
+        return Response.status(404).entity("Aerodrom sa ICAO kodom " + icaoDo + " nije pronađen.").build();
+      }
+      
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return Response.status(500).build();
+    }
+
+    String komanda = "UDALJENOST" + gpsSirina1 + " " + gpsDuzina1 + gpsSirina2 + " " + gpsDuzina2;
+    String odgovor = spojiSeNaPosluzitelj(komanda);
+    
+    if(odgovor == null) {
+      return Response.status(500).entity("Greška prilikom komunikacije s aplikacijom.").build();
+    } else {
+      Gson gson = new Gson();
+      String podaci = gson.toJson(odgovor);
+      Response r = Response.ok().entity(podaci).build();
+      return r;
+    }
+  }
+  
+  public String spojiSeNaPosluzitelj(String s) {
+    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
+    String adresaPosluzitelja = (konfiguracija.dajPostavku("adresa.posluzitelja")).toString();
+    Integer mreznaVrataPosluzitelja =
+        Integer.parseInt(konfiguracija.dajPostavku("mreznaVrata.posluzitelja"));
+
+    try (var socket = new Socket(adresaPosluzitelja, mreznaVrataPosluzitelja);
+        var citac = new BufferedReader(
+            new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")));
+        var pisac = new BufferedWriter(
+            new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8")));) {
+
+      String komanda = s;
+      pisac.write(komanda);
+      pisac.flush();
+      socket.shutdownOutput();
+      String response = citac.readLine();
+      socket.shutdownInput();
+      if(response.startsWith("OK ")) {
+        return response;
+      } else {
+        throw new RuntimeException("Neočekivani odgovor od poslužitelja: " + response);
+      }
+
+    } catch (IOException e) {
+      throw new RuntimeException("Pogreška pri provjeri statusa poslužitelja", e);
+    }
+
   }
 
   /**
