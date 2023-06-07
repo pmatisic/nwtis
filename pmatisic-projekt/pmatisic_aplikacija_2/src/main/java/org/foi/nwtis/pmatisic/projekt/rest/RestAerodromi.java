@@ -16,11 +16,9 @@ import java.util.List;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.pmatisic.projekt.podatak.Aerodrom;
 import org.foi.nwtis.pmatisic.projekt.podatak.Lokacija;
-import org.foi.nwtis.pmatisic.projekt.podatak.Status;
 import org.foi.nwtis.pmatisic.projekt.podatak.Udaljenost;
 import org.foi.nwtis.pmatisic.projekt.podatak.UdaljenostAerodrom;
 import org.foi.nwtis.pmatisic.projekt.podatak.UdaljenostAerodromDrzava;
-import org.foi.nwtis.rest.klijenti.OSKlijent;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
@@ -44,7 +42,7 @@ import jakarta.ws.rs.core.Response;
 @Path("aerodromi")
 @RequestScoped
 public class RestAerodromi {
-  
+
   @Context
   private ServletContext konfig;
 
@@ -54,8 +52,7 @@ public class RestAerodromi {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajSveAerodrome(@QueryParam("odBroja") String odBroja,
-      @QueryParam("broj") String broj,
-      @QueryParam("traziNaziv") String traziNaziv,
+      @QueryParam("broj") String broj, @QueryParam("traziNaziv") String traziNaziv,
       @QueryParam("traziDrzavu") String traziDrzavu) {
 
     if (jesuLiParametriPrazni(odBroja, broj)) {
@@ -72,13 +69,9 @@ public class RestAerodromi {
     int brojInt = Integer.parseInt(broj);
     int offset = (odBrojaInt - 1) * brojInt;
 
-    String upit = "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES " +
-                  "FROM AIRPORTS " +
-                  "WHERE (NAME LIKE ? OR ? IS NULL) " +
-                  "AND (ISO_COUNTRY = ? OR ? IS NULL) " +
-                  "ORDER BY ICAO " + 
-                  "LIMIT ? " +
-                  "OFFSET ?";
+    String upit = "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES " + "FROM AIRPORTS "
+        + "WHERE (NAME LIKE ? OR ? IS NULL) " + "AND (ISO_COUNTRY = ? OR ? IS NULL) "
+        + "ORDER BY ICAO " + "LIMIT ? " + "OFFSET ?";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
@@ -112,7 +105,7 @@ public class RestAerodromi {
         e.printStackTrace();
       }
     }
-    
+
     if (aerodromi.isEmpty()) {
       return Response.status(404).build();
     }
@@ -151,9 +144,7 @@ public class RestAerodromi {
 
     Aerodrom aerodrom = null;
     String upit =
-        "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES "
-        + "FROM AIRPORTS "
-        + "WHERE ICAO = ?";
+        "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES " + "FROM AIRPORTS " + "WHERE ICAO = ?";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
@@ -184,7 +175,7 @@ public class RestAerodromi {
     if (aerodrom == null) {
       return Response.status(404).build();
     }
-    
+
     Gson gson = new Gson();
     String podaci = gson.toJson(aerodrom);
     Response odgovor = Response.ok().entity(podaci).build();
@@ -209,10 +200,8 @@ public class RestAerodromi {
     }
 
     var udaljenosti = new ArrayList<Udaljenost>();
-    String upit = 
-        "SELECT ICAO_FROM, ICAO_TO, COUNTRY, DIST_CTRY "
-        + "FROM AIRPORTS_DISTANCE_MATRIX " 
-        + "WHERE ICAO_FROM = ? AND ICAO_TO = ?";
+    String upit = "SELECT ICAO_FROM, ICAO_TO, COUNTRY, DIST_CTRY "
+        + "FROM AIRPORTS_DISTANCE_MATRIX " + "WHERE ICAO_FROM = ? AND ICAO_TO = ?";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
@@ -238,7 +227,7 @@ public class RestAerodromi {
         e.printStackTrace();
       }
     }
-    
+
     if (udaljenosti.isEmpty()) {
       return Response.status(404).build();
     }
@@ -276,13 +265,8 @@ public class RestAerodromi {
     int brojInt = Integer.parseInt(broj);
     int offset = (odBrojaInt - 1) * brojInt;
     var udaljenosti = new ArrayList<UdaljenostAerodrom>();
-    String upit = 
-        "SELECT DISTINCT ICAO_TO, DIST_TOT " 
-        + "FROM AIRPORTS_DISTANCE_MATRIX "
-        + "WHERE ICAO_FROM = ? " 
-        + "ORDER BY DIST_TOT " 
-        + "LIMIT ? " 
-        + "OFFSET ?";
+    String upit = "SELECT DISTINCT ICAO_TO, DIST_TOT " + "FROM AIRPORTS_DISTANCE_MATRIX "
+        + "WHERE ICAO_FROM = ? " + "ORDER BY DIST_TOT " + "LIMIT ? " + "OFFSET ?";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
@@ -309,54 +293,57 @@ public class RestAerodromi {
         e.printStackTrace();
       }
     }
-    
+
     if (udaljenosti.isEmpty()) {
       return Response.status(404).build();
     }
-    
+
     Gson gson = new Gson();
     String podaci = gson.toJson(udaljenosti);
     Response odgovor = Response.ok().entity(podaci).build();
     return odgovor;
   }
-  
+
   @GET
   @Path("{icaoOd}/izracunaj/{icaoDo}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response izracunajUdaljenost(@PathParam("icaoOd") String icaoOd, @PathParam("icaoDo") String icaoDo) {
-    
+  public Response izracunajUdaljenost(@PathParam("icaoOd") String icaoOd,
+      @PathParam("icaoDo") String icaoDo) {
+
     if (!jesuLiParametriIcao(icaoOd, icaoDo)) {
       return Response.status(400).build();
     }
 
     String gpsSirina1, gpsDuzina1, gpsSirina2, gpsDuzina2;
-    
+
     try (Connection con = ds.getConnection()) {
-      String upit = "SELECT COORDINATES FROM AIRPORTS WHERE ICAO = ?";
-      
+      String upit = "SELECT COORDINATES " + "FROM AIRPORTS " + "WHERE ICAO = ?";
+
       PreparedStatement stmt = con.prepareStatement(upit);
       stmt.setString(1, icaoOd);
       ResultSet rs = stmt.executeQuery();
-      
-      if(rs.next()) {
+
+      if (rs.next()) {
         String[] koordinate = rs.getString("COORDINATES").split(",");
         gpsSirina1 = koordinate[1];
         gpsDuzina1 = koordinate[0];
       } else {
-        return Response.status(404).entity("Aerodrom sa ICAO kodom " + icaoOd + " nije pronađen.").build();
+        return Response.status(404).entity("Aerodrom sa ICAO kodom " + icaoOd + " nije pronađen.")
+            .build();
       }
-      
+
       stmt.setString(1, icaoDo);
       rs = stmt.executeQuery();
-      
-      if(rs.next()) {
+
+      if (rs.next()) {
         String[] koordinate = rs.getString("COORDINATES").split(",");
         gpsSirina2 = koordinate[1];
         gpsDuzina2 = koordinate[0];
       } else {
-        return Response.status(404).entity("Aerodrom sa ICAO kodom " + icaoDo + " nije pronađen.").build();
+        return Response.status(404).entity("Aerodrom sa ICAO kodom " + icaoDo + " nije pronađen.")
+            .build();
       }
-      
+
     } catch (SQLException e) {
       e.printStackTrace();
       return Response.status(500).build();
@@ -364,8 +351,8 @@ public class RestAerodromi {
 
     String komanda = "UDALJENOST" + gpsSirina1 + " " + gpsDuzina1 + gpsSirina2 + " " + gpsDuzina2;
     String odgovor = spojiSeNaPosluzitelj(komanda);
-    
-    if(odgovor == null) {
+
+    if (odgovor == null) {
       return Response.status(500).entity("Greška prilikom komunikacije s aplikacijom.").build();
     } else {
       Gson gson = new Gson();
@@ -374,7 +361,7 @@ public class RestAerodromi {
       return r;
     }
   }
-  
+
   public String spojiSeNaPosluzitelj(String s) {
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
     String adresaPosluzitelja = (konfiguracija.dajPostavku("adresa.posluzitelja")).toString();
@@ -393,7 +380,7 @@ public class RestAerodromi {
       socket.shutdownOutput();
       String response = citac.readLine();
       socket.shutdownInput();
-      if(response.startsWith("OK ")) {
+      if (response.startsWith("OK ")) {
         return response;
       } else {
         throw new RuntimeException("Neočekivani odgovor od poslužitelja: " + response);
@@ -405,12 +392,6 @@ public class RestAerodromi {
 
   }
 
-  /**
-   * Dohvaća najduži put između zadanog aerodroma i aerodroma u istoj državi.
-   *
-   * @param icao ICAO kod referentnog aerodroma
-   * @return Response koji sadrži informacije o najdužem putu u JSON formatu, ili odgovor s odgovarajućim statusom
-   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}/najduljiPutDrzave")
@@ -421,18 +402,13 @@ public class RestAerodromi {
     }
 
     UdaljenostAerodromDrzava najduziPut = null;
-    String upit = 
-        "SELECT ADM1.ICAO_TO, ADM1.COUNTRY, ADM1.DIST_CTRY AS MAX_DIST_CTRY "
-        + "FROM AIRPORTS_DISTANCE_MATRIX ADM1 "
-        + "JOIN ("
+    String upit = "SELECT ADM1.ICAO_TO, ADM1.COUNTRY, ADM1.DIST_CTRY AS MAX_DIST_CTRY "
+        + "FROM AIRPORTS_DISTANCE_MATRIX ADM1 " + "JOIN ("
         + "SELECT ADM2.COUNTRY, MAX(ADM2.DIST_CTRY) AS MAX_DIST "
-        + "FROM AIRPORTS_DISTANCE_MATRIX ADM2 "
-        + "WHERE ADM2.ICAO_FROM = ? "
+        + "FROM AIRPORTS_DISTANCE_MATRIX ADM2 " + "WHERE ADM2.ICAO_FROM = ? "
         + "GROUP BY ADM2.COUNTRY"
         + ") AS SUBQUERY ON ADM1.COUNTRY = SUBQUERY.COUNTRY AND ADM1.DIST_CTRY = SUBQUERY.MAX_DIST "
-        + "WHERE ADM1.ICAO_FROM = ? "
-        + "ORDER BY MAX_DIST_CTRY DESC "
-        + "LIMIT 1";
+        + "WHERE ADM1.ICAO_FROM = ? " + "ORDER BY MAX_DIST_CTRY DESC " + "LIMIT 1";
 
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
