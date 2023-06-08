@@ -12,18 +12,17 @@ import lombok.Setter;
 @AllArgsConstructor()
 public class Lokacija {
 
-    @Getter
-    @Setter
-    private String latitude;
-    @Getter
-    @Setter    
-    private String longitude;
+  @Getter
+  @Setter
+  private String latitude;
+  @Getter
+  @Setter
+  private String longitude;
 
-    public Lokacija() {
-    }
+  public Lokacija() {}
 
-    public void postavi(String latitude, String longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+  public void postavi(String latitude, String longitude) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+  }
 }

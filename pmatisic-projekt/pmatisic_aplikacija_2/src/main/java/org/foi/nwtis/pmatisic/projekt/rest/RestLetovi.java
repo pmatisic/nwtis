@@ -35,13 +35,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 // TODO: Ovu klasu treba maknuti, s obzirom da se letovi tek obrađuju u aplikaciji 4.
-/**
- * 
- * Klasa RestLetovi.
- * 
- * @author Petar Matišić (pmatisic@foi.hr)
- *
- */
 @Path("letovi")
 @RequestScoped
 public class RestLetovi {
@@ -287,14 +280,21 @@ public class RestLetovi {
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
-        LetAvionaID let = new LetAvionaID(rs.getLong("id"), rs.getString("icao24"),
-            rs.getInt("firstSeen"), rs.getString("estDepartureAirport"), rs.getInt("lastSeen"),
-            rs.getString("estArrivalAirport"), rs.getString("callsign"),
+        LetAvionaID let = new LetAvionaID(
+            rs.getLong("id"), 
+            rs.getString("icao24"),
+            rs.getInt("firstSeen"), 
+            rs.getString("estDepartureAirport"), 
+            rs.getInt("lastSeen"),
+            rs.getString("estArrivalAirport"), 
+            rs.getString("callsign"),
             rs.getInt("estDepartureAirportHorizDistance"),
             rs.getInt("estDepartureAirportVertDistance"),
-            rs.getInt("estArrivalAirportHorizDistance"), rs.getInt("estArrivalAirportVertDistance"),
+            rs.getInt("estArrivalAirportHorizDistance"), 
+            rs.getInt("estArrivalAirportVertDistance"),
             rs.getInt("departureAirportCandidatesCount"),
-            rs.getInt("arrivalAirportCandidatesCount"));
+            rs.getInt("arrivalAirportCandidatesCount")
+            );
         spremljeniLetovi.add(let);
       }
     } catch (SQLException ex) {

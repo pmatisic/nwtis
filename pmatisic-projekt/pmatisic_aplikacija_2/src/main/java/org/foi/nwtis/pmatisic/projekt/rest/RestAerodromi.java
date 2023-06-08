@@ -32,13 +32,6 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-/**
- * 
- * Klasa RestAerodromi.
- * 
- * @author Petar Matišić (pmatisic@foi.hr)
- *
- */
 @Path("aerodromi")
 @RequestScoped
 public class RestAerodromi {
@@ -116,23 +109,6 @@ public class RestAerodromi {
     return odgovor;
   }
 
-  private boolean jesuLiParametriBroj(String odBroja, String broj) {
-    try {
-      int parsedOdBroja = Integer.parseInt(odBroja);
-      int parsedBroj = Integer.parseInt(broj);
-      if (parsedOdBroja <= 0 || parsedBroj <= 0) {
-        return false;
-      }
-    } catch (NumberFormatException e) {
-      return false;
-    }
-    return true;
-  }
-
-  private boolean jesuLiParametriPrazni(String odBroja, String broj) {
-    return odBroja == null && broj == null;
-  }
-
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}")
@@ -182,20 +158,13 @@ public class RestAerodromi {
     return odgovor;
   }
 
-  private boolean jesuLiParametriIspravni(String icao) {
-    if (icao == null || icao.length() < 2) {
-      return false;
-    }
-    return icao.chars().allMatch(c -> Character.isLetterOrDigit(c) || c == '-');
-  }
-
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icaoOd}/{icaoDo}")
-  public Response dajUdaljenostiAerodoma(@PathParam("icaoOd") String icaoFrom,
-      @PathParam("icaoDo") String icaoTo) {
+  public Response dajUdaljenostiZaAerodom(@PathParam("icaoOd") String icaoOd,
+      @PathParam("icaoDo") String icaoDo) {
 
-    if (!jesuLiParametriIcao(icaoFrom, icaoTo)) {
+    if (!jesuLiParametriIcao(icaoOd, icaoDo)) {
       return Response.status(400).build();
     }
 
@@ -206,8 +175,8 @@ public class RestAerodromi {
     PreparedStatement stmt = null;
     try (Connection con = ds.getConnection()) {
       stmt = con.prepareStatement(upit);
-      stmt.setString(1, icaoFrom);
-      stmt.setString(2, icaoTo);
+      stmt.setString(1, icaoOd);
+      stmt.setString(2, icaoDo);
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
@@ -238,14 +207,10 @@ public class RestAerodromi {
     return odgovor;
   }
 
-  private boolean jesuLiParametriIcao(String icaoFrom, String icaoTo) {
-    return jesuLiParametriIspravni(icaoFrom) && jesuLiParametriIspravni(icaoTo);
-  }
-
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{icao}/udaljenosti")
-  public Response dajUdaljenostiZaAerodome(@PathParam("icao") String icao,
+  public Response dajUdaljenostiZaSveAerodome(@PathParam("icao") String icao,
       @QueryParam("odBroja") String odBroja, @QueryParam("broj") String broj) {
 
     if (!jesuLiParametriIspravni(icao)) {
@@ -314,82 +279,179 @@ public class RestAerodromi {
       return Response.status(400).build();
     }
 
-    String gpsSirina1, gpsDuzina1, gpsSirina2, gpsDuzina2;
-
     try (Connection con = ds.getConnection()) {
-      String upit = "SELECT COORDINATES " + "FROM AIRPORTS " + "WHERE ICAO = ?";
-
+      String upit = "SELECT ICAO, COORDINATES FROM AIRPORTS WHERE ICAO IN (?, ?)";
       PreparedStatement stmt = con.prepareStatement(upit);
       stmt.setString(1, icaoOd);
+      stmt.setString(2, icaoDo);
       ResultSet rs = stmt.executeQuery();
+      String gpsSirina1 = null, gpsDuzina1 = null, gpsSirina2 = null, gpsDuzina2 = null;
 
-      if (rs.next()) {
+      while (rs.next()) {
+        String icao = rs.getString("ICAO");
         String[] koordinate = rs.getString("COORDINATES").split(",");
-        gpsSirina1 = koordinate[1];
-        gpsDuzina1 = koordinate[0];
-      } else {
-        return Response.status(404).entity("Aerodrom sa ICAO kodom " + icaoOd + " nije pronađen.")
-            .build();
+        if (icao.equals(icaoOd)) {
+          gpsSirina1 = koordinate[1];
+          gpsDuzina1 = koordinate[0];
+        } else {
+          gpsSirina2 = koordinate[1];
+          gpsDuzina2 = koordinate[0];
+        }
       }
 
-      stmt.setString(1, icaoDo);
-      rs = stmt.executeQuery();
+      if (gpsSirina1 == null || gpsDuzina1 == null || gpsSirina2 == null || gpsDuzina2 == null) {
+        return Response.status(404).entity("Nisu pronađeni svi potrebni aerodromi.").build();
+      }
 
-      if (rs.next()) {
-        String[] koordinate = rs.getString("COORDINATES").split(",");
-        gpsSirina2 = koordinate[1];
-        gpsDuzina2 = koordinate[0];
+      String komanda = "UDALJENOST" + gpsSirina1 + " " + gpsDuzina1 + gpsSirina2 + " " + gpsDuzina2;
+      String odgovor = spojiSeNaPosluzitelj(komanda);
+
+      if (odgovor == null) {
+        return Response.status(404).entity("Greška prilikom komunikacije s aplikacijom.").build();
       } else {
-        return Response.status(404).entity("Aerodrom sa ICAO kodom " + icaoDo + " nije pronađen.")
-            .build();
+        Gson gson = new Gson();
+        String podaci = gson.toJson(parseUdaljenost(odgovor));
+        return Response.ok().entity(podaci).build();
       }
 
     } catch (SQLException e) {
       e.printStackTrace();
       return Response.status(500).build();
     }
+  }
 
-    String komanda = "UDALJENOST" + gpsSirina1 + " " + gpsDuzina1 + gpsSirina2 + " " + gpsDuzina2;
-    String odgovor = spojiSeNaPosluzitelj(komanda);
+  @GET
+  @Path("{icaoOd}/udaljenost1/{icaoDo}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response dajUdaljenost1(@PathParam("icaoOd") String icaoOd,
+      @PathParam("icaoDo") String icaoDo) {
 
-    if (odgovor == null) {
-      return Response.status(404).entity("Greška prilikom komunikacije s aplikacijom.").build();
-    } else {
+    if (!jesuLiParametriIcao(icaoOd, icaoDo)) {
+      return Response.status(400).build();
+    }
+
+    try (Connection con = ds.getConnection()) {
+      String upit = "SELECT ICAO, COORDINATES, ISO_COUNTRY FROM AIRPORTS WHERE ICAO IN (?, ?)";
+      PreparedStatement stmt = con.prepareStatement(upit);
+      stmt.setString(1, icaoOd);
+      stmt.setString(2, icaoDo);
+      ResultSet rs = stmt.executeQuery();
+      String gpsSirina1 = null, gpsDuzina1 = null, gpsSirina2 = null, gpsDuzina2 = null,
+          isoCountry2 = null;
+
+      while (rs.next()) {
+        String icao = rs.getString("ICAO");
+        String[] koordinate = rs.getString("COORDINATES").split(",");
+        if (icao.equals(icaoOd)) {
+          gpsSirina1 = koordinate[1];
+          gpsDuzina1 = koordinate[0];
+        } else {
+          gpsSirina2 = koordinate[1];
+          gpsDuzina2 = koordinate[0];
+          isoCountry2 = rs.getString("ISO_COUNTRY");
+        }
+      }
+
+      if (gpsSirina1 == null || gpsDuzina1 == null || gpsSirina2 == null || gpsDuzina2 == null) {
+        return Response.status(404).entity("Nisu pronađeni svi potrebni aerodromi.").build();
+      }
+
+      String komanda = "UDALJENOST" + gpsSirina1 + " " + gpsDuzina1 + gpsSirina2 + " " + gpsDuzina2;
+      String odgovor = spojiSeNaPosluzitelj(komanda);
+      double udaljenost = parseUdaljenost(odgovor);
+      upit = "SELECT ICAO, COORDINATES FROM AIRPORTS WHERE ISO_COUNTRY = ?";
+      stmt = con.prepareStatement(upit);
+      stmt.setString(1, isoCountry2);
+      rs = stmt.executeQuery();
+      List<UdaljenostAerodrom> manjiAerodromi = new ArrayList<>();
+
+      while (rs.next()) {
+        String icao = rs.getString("ICAO");
+        String[] koordinate = rs.getString("COORDINATES").split(",");
+        String gpsSirina = koordinate[1];
+        String gpsDuzina = koordinate[0];
+        komanda = "UDALJENOST" + gpsSirina1 + " " + gpsDuzina1 + gpsSirina + " " + gpsDuzina;
+        odgovor = spojiSeNaPosluzitelj(komanda);
+        double udaljenostAerodroma = parseUdaljenost(odgovor);
+        if (udaljenostAerodroma < udaljenost) {
+          manjiAerodromi.add(new UdaljenostAerodrom(icao, (float) udaljenostAerodroma));
+        }
+      }
+
+      if (manjiAerodromi.isEmpty()) {
+        return Response.status(404).build();
+      }
+
       Gson gson = new Gson();
-      String podaci = gson.toJson(odgovor);
-      Response r = Response.ok().entity(podaci).build();
-      return r;
+      String podaci = gson.toJson(manjiAerodromi);
+      return Response.ok().entity(podaci).build();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return Response.status(500).build();
     }
   }
 
-  public String spojiSeNaPosluzitelj(String s) {
-    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
-    String adresaPosluzitelja = (konfiguracija.dajPostavku("adresa.posluzitelja")).toString();
-    Integer mreznaVrataPosluzitelja =
-        Integer.parseInt(konfiguracija.dajPostavku("mreznaVrata.posluzitelja"));
+  @GET
+  @Path("{icaoOd}/udaljenost2")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response dajUdaljenost2(@PathParam("icaoOd") String icaoOd,
+      @QueryParam("drzava") String drzava, @QueryParam("km") String km) {
 
-    try (var socket = new Socket(adresaPosluzitelja, mreznaVrataPosluzitelja);
-        var citac = new BufferedReader(
-            new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")));
-        var pisac = new BufferedWriter(
-            new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8")));) {
-
-      String komanda = s;
-      pisac.write(komanda);
-      pisac.flush();
-      socket.shutdownOutput();
-      String response = citac.readLine();
-      socket.shutdownInput();
-      if (response.startsWith("OK ")) {
-        return response;
-      } else {
-        throw new RuntimeException("Neočekivani odgovor od poslužitelja: " + response);
-      }
-
-    } catch (IOException e) {
-      throw new RuntimeException("Pogreška pri provjeri statusa poslužitelja", e);
+    if (!jesuLiParametriIspravni(icaoOd)) {
+      return Response.status(400).build();
     }
 
+    if (drzava == null || drzava.isEmpty() || km == null || km.isEmpty()) {
+      return Response.status(400).entity("Parametri drzava i km su obavezni.").build();
+    }
+
+    try (Connection con = ds.getConnection()) {
+      String upit = "SELECT COORDINATES FROM AIRPORTS WHERE ICAO = ?";
+      PreparedStatement stmt = con.prepareStatement(upit);
+      stmt.setString(1, icaoOd);
+      ResultSet rs = stmt.executeQuery();
+
+      if (!rs.next()) {
+        return Response.status(404).entity("Aerodrom nije pronađen.").build();
+      }
+
+      String[] koordinate1 = rs.getString("COORDINATES").split(",");
+      String gpsSirina1 = koordinate1[1];
+      String gpsDuzina1 = koordinate1[0];
+      upit = "SELECT ICAO, COORDINATES FROM AIRPORTS WHERE ISO_COUNTRY = ?";
+      stmt = con.prepareStatement(upit);
+      stmt.setString(1, drzava);
+      rs = stmt.executeQuery();
+      double maxUdaljenost = Double.parseDouble(km);
+      List<UdaljenostAerodrom> aerodromi = new ArrayList<>();
+
+      while (rs.next()) {
+        String[] koordinate2 = rs.getString("COORDINATES").split(",");
+        String gpsSirina2 = koordinate2[1];
+        String gpsDuzina2 = koordinate2[0];
+        String komanda =
+            "UDALJENOST" + gpsSirina1 + " " + gpsDuzina1 + gpsSirina2 + " " + gpsDuzina2;
+        String odgovor = spojiSeNaPosluzitelj(komanda);
+        double udaljenost = parseUdaljenost(odgovor);
+
+        if (udaljenost < maxUdaljenost) {
+          aerodromi.add(new UdaljenostAerodrom(rs.getString("ICAO"), (float) udaljenost));
+        }
+      }
+
+      if (aerodromi.isEmpty()) {
+        return Response.status(404).build();
+      }
+
+      Gson gson = new Gson();
+      String podaci = gson.toJson(aerodromi);
+      return Response.ok().entity(podaci).build();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return Response.status(500).build();
+    }
   }
 
   @GET
@@ -443,6 +505,67 @@ public class RestAerodromi {
     String podaci = gson.toJson(najduziPut);
     Response odgovor = Response.ok().entity(podaci).build();
     return odgovor;
+  }
+
+  public String spojiSeNaPosluzitelj(String s) {
+    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
+    String adresaPosluzitelja = (konfiguracija.dajPostavku("adresa.posluzitelja")).toString();
+    Integer mreznaVrataPosluzitelja =
+        Integer.parseInt(konfiguracija.dajPostavku("mreznaVrata.posluzitelja"));
+    try (var socket = new Socket(adresaPosluzitelja, mreznaVrataPosluzitelja);
+        var citac = new BufferedReader(
+            new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")));
+        var pisac = new BufferedWriter(
+            new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8")));) {
+      String komanda = s;
+      pisac.write(komanda);
+      pisac.flush();
+      socket.shutdownOutput();
+      String response = citac.readLine();
+      socket.shutdownInput();
+      if (response.startsWith("OK ")) {
+        return response;
+      } else {
+        throw new RuntimeException("Neočekivani odgovor od poslužitelja: " + response);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException("Pogreška pri provjeri statusa poslužitelja", e);
+    }
+  }
+
+  private double parseUdaljenost(String odgovor) {
+    if (odgovor != null && odgovor.startsWith("OK ")) {
+      return Double.parseDouble(odgovor.substring(3).trim());
+    }
+    return -1;
+  }
+
+  private boolean jesuLiParametriBroj(String odBroja, String broj) {
+    try {
+      int parsedOdBroja = Integer.parseInt(odBroja);
+      int parsedBroj = Integer.parseInt(broj);
+      if (parsedOdBroja <= 0 || parsedBroj <= 0) {
+        return false;
+      }
+    } catch (NumberFormatException e) {
+      return false;
+    }
+    return true;
+  }
+
+  private boolean jesuLiParametriPrazni(String odBroja, String broj) {
+    return odBroja == null && broj == null;
+  }
+
+  private boolean jesuLiParametriIspravni(String icao) {
+    if (icao == null || icao.length() < 2) {
+      return false;
+    }
+    return icao.chars().allMatch(c -> Character.isLetterOrDigit(c) || c == '-');
+  }
+
+  private boolean jesuLiParametriIcao(String icaoFrom, String icaoTo) {
+    return jesuLiParametriIspravni(icaoFrom) && jesuLiParametriIspravni(icaoTo);
   }
 
 }

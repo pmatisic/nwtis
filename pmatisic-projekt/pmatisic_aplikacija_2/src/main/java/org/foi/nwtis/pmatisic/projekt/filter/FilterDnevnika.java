@@ -24,14 +24,12 @@ public class FilterDnevnika implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String requestURI = httpRequest.getRequestURI();
     String clientIP = request.getRemoteAddr();
-    // TODO: Dohvaćati vrstu aplikacijskog filtera
     String vrsta = httpRequest.getHeader("X-Application-Type");
 
     if (vrsta == null) {
       vrsta = "AP2";
     }
 
-    // TODO: Dohvaćati korisnikov ID
     String korisnikStr = httpRequest.getHeader("X-User-ID");
     Integer korisnikId = null;
     if (korisnikStr != null) {
