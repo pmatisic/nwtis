@@ -1,5 +1,7 @@
 package org.foi.nwtis.pmatisic.projekt.slusac;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Properties;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
@@ -48,10 +50,19 @@ public final class SlusacAplikacije implements ServletContextListener {
       }
 
       // Provjera statusa poslužitelja nakon učitavanja konfiguracije
-      StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfig);
-      Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
-      if (status == Status.PAUZA) {
-        throw new RuntimeException("Poslužitelj nije aktivan. Prekidam rad.");
+      String adresaPosluzitelja = (konfig.dajPostavku("adresa.posluzitelja")).toString();
+      Integer mreznaVrataPosluzitelja =
+          Integer.parseInt(konfig.dajPostavku("mreznaVrata.posluzitelja"));
+      try (var socket = new Socket(adresaPosluzitelja, mreznaVrataPosluzitelja);) {
+        StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfig);
+        Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
+        if (status == Status.PAUZA) {
+          throw new RuntimeException("Poslužitelj nije aktivan. Prekidam rad.");
+        } else {
+          return;
+        }
+      } catch (IOException e) {
+        return;
       }
 
     } catch (NeispravnaKonfiguracija ex) {

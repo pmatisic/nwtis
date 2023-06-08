@@ -35,6 +35,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 // TODO: Ovu klasu treba maknuti, s obzirom da se letovi tek obrađuju u aplikaciji 4.
+/**
+ * 
+ * Klasa RestLetovi.
+ * 
+ * @author Petar Matišić (pmatisic@foi.hr)
+ *
+ */
 @Path("letovi")
 @RequestScoped
 public class RestLetovi {
