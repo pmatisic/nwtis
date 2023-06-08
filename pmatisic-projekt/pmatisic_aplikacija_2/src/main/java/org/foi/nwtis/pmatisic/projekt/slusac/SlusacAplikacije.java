@@ -55,7 +55,7 @@ public final class SlusacAplikacije implements ServletContextListener {
       }
 
     } catch (NeispravnaKonfiguracija ex) {
-      System.err.println("Pogreška u radu poslužitelja i/ili konfiguracije.");
+      System.err.println("Pogreška u dohvaćanju konfiguracije.");
     }
   }
 
