@@ -22,7 +22,6 @@ public class FilterStanja implements Filter {
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
-    // Dohvaćanje konfiguracije iz konteksta servleta
     ServletContext context = filterConfig.getServletContext();
     konfiguracija = (Konfiguracija) context.getAttribute("konfiguracija");
   }
@@ -34,15 +33,11 @@ public class FilterStanja implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-    // Provjera statusa poslužitelja koristeći vašu klasu StanjePosluzitelja
     StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfiguracija);
     Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
 
-    // Dohvaćanje putanje zahtjeva
     String requestPath = httpRequest.getRequestURI();
 
-    // Ako je poslužitelj u stanju pauze, dopustiti pristup samo putanjama koje počinju s
-    // "/pmatisic_aplikacija_2/api/nadzor"
     if (status == Status.PAUZA && !requestPath.startsWith("/pmatisic_aplikacija_2/api/nadzor")) {
       httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Poslužitelj je u stanju pauze.");
       return;
@@ -52,7 +47,5 @@ public class FilterStanja implements Filter {
   }
 
   @Override
-  public void destroy() {
-    // Očistite resurse ako je potrebno
-  }
+  public void destroy() {}
 }

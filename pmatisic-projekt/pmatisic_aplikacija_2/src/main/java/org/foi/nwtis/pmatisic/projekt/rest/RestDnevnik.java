@@ -3,11 +3,13 @@ package org.foi.nwtis.pmatisic.projekt.rest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import org.foi.nwtis.pmatisic.projekt.podatak.Dnevnik;
+import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.Consumes;
@@ -31,12 +33,10 @@ public class RestDnevnik {
   public Response dohvatiZapise(@QueryParam("vrsta") String vrsta,
       @QueryParam("odBroja") Integer odBroja, @QueryParam("broj") Integer broj) {
 
-    if (odBroja == null) {
+    if (odBroja == null)
       odBroja = 1;
-    }
-    if (broj == null) {
+    if (broj == null)
       broj = 20;
-    }
 
     int offset = (odBroja - 1) * broj;
 
@@ -47,9 +47,14 @@ public class RestDnevnik {
       stmt.setObject(2, vrsta);
       stmt.setInt(3, broj);
       stmt.setInt(4, offset);
-
       ResultSet rs = stmt.executeQuery();
+
+      if (!rs.next()) {
+        return Response.status(404).entity("Zapisi nisu pronađeni.").build();
+      }
+
       List<Dnevnik> zapisi = new ArrayList<>();
+
       while (rs.next()) {
         String vrstaZapisa = rs.getString("vrsta");
         Timestamp vrijemePristupa = rs.getTimestamp("vrijeme_pristupa");
@@ -58,7 +63,14 @@ public class RestDnevnik {
 
         zapisi.add(new Dnevnik(vrstaZapisa, vrijemePristupa, putanja, korisnik));
       }
-      return Response.ok(zapisi).build();
+
+      if (zapisi.isEmpty()) {
+        return Response.status(404).build();
+      }
+
+      Gson gson = new Gson();
+      String podaci = gson.toJson(zapisi);
+      return Response.ok().entity(podaci).build();
 
     } catch (Exception ex) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
@@ -77,9 +89,17 @@ public class RestDnevnik {
       stmt.setString(3, zapis.putanja());
       stmt.setInt(4, zapis.korisnik());
 
-      stmt.executeUpdate();
-      return Response.status(Response.Status.CREATED).build();
+      int brojAzuriranihRedova = stmt.executeUpdate();
 
+      if (brojAzuriranihRedova > 0) {
+        return Response.status(Response.Status.CREATED).build();
+      } else {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      }
+
+    } catch (SQLIntegrityConstraintViolationException ex) {
+      return Response.status(Response.Status.CONFLICT)
+          .entity("Kršenje ograničenja integriteta: " + ex.getMessage()).build();
     } catch (Exception ex) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
     }

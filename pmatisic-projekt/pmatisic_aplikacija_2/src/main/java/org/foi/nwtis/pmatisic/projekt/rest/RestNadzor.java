@@ -8,12 +8,15 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import org.foi.nwtis.Konfiguracija;
+import com.google.gson.Gson;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("nadzor")
@@ -24,46 +27,73 @@ public class RestNadzor {
   private ServletContext konfig;
 
   @GET
+  @Produces(MediaType.APPLICATION_JSON)
   public Response provjeriStatus() {
     String komanda = "STATUS";
     try {
       String odgovor = spojiSeNaPosluzitelj(komanda);
-      return Response.status(Response.Status.OK).entity("{status: 200, opis: \"" + odgovor + "\"}")
-          .build();
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(new Rezultat(200, odgovor));
+      return Response.status(Response.Status.OK).entity(jsonOdgovor).build();
     } catch (Exception e) {
-      return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(new Rezultat(400, e.getMessage()));
+      return Response.status(Response.Status.BAD_REQUEST).entity(jsonOdgovor).build();
     }
   }
 
   @GET
   @Path("{komanda}")
+  @Produces(MediaType.APPLICATION_JSON)
   public Response posaljiKomandu(@PathParam("komanda") String komanda) {
+    if (!komanda.equals("KRAJ") && !komanda.equals("INIT") && !komanda.equals("PAUZA")) {
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(
+          new Rezultat(400, "Neispravna komanda. Komanda mora biti unesena velikim slovima."));
+      return Response.status(Response.Status.BAD_REQUEST).entity(jsonOdgovor).build();
+    }
     if (!komanda.equalsIgnoreCase("KRAJ") && !komanda.equalsIgnoreCase("INIT")
         && !komanda.equalsIgnoreCase("PAUZA")) {
-      return Response.status(Response.Status.BAD_REQUEST).entity("Neispravna komanda.").build();
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(new Rezultat(400, "Neispravna komanda."));
+      return Response.status(Response.Status.BAD_REQUEST).entity(jsonOdgovor).build();
     }
     try {
       String odgovor = spojiSeNaPosluzitelj(komanda.toUpperCase());
-      return Response.status(Response.Status.OK).entity("{status: 200, opis: \"" + odgovor + "\"}")
-          .build();
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(new Rezultat(200, odgovor));
+      return Response.status(Response.Status.OK).entity(jsonOdgovor).build();
     } catch (Exception e) {
-      return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(new Rezultat(400, e.getMessage()));
+      return Response.status(Response.Status.BAD_REQUEST).entity(jsonOdgovor).build();
     }
   }
 
   @GET
   @Path("INFO/{vrsta}")
+  @Produces(MediaType.APPLICATION_JSON)
   public Response posaljiInfoKomandu(@PathParam("vrsta") String vrsta) {
+    if (!vrsta.equals("DA") && !vrsta.equals("NE")) {
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(new Rezultat(400,
+          "Neispravna vrsta za INFO komandu. Mora biti unesena velikim slovima."));
+      return Response.status(Response.Status.BAD_REQUEST).entity(jsonOdgovor).build();
+    }
     if (!vrsta.equalsIgnoreCase("DA") && !vrsta.equalsIgnoreCase("NE")) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Neispravna vrsta za INFO komandu.").build();
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(new Rezultat(400, "Neispravna vrsta za INFO komandu."));
+      return Response.status(Response.Status.BAD_REQUEST).entity(jsonOdgovor).build();
     }
     try {
       String odgovor = spojiSeNaPosluzitelj("INFO " + vrsta.toUpperCase());
-      return Response.status(Response.Status.OK).entity("{status: 200, opis: \"" + odgovor + "\"}")
-          .build();
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(new Rezultat(200, odgovor));
+      return Response.status(Response.Status.OK).entity(jsonOdgovor).build();
     } catch (Exception e) {
-      return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+      Gson gson = new Gson();
+      String jsonOdgovor = gson.toJson(new Rezultat(400, e.getMessage()));
+      return Response.status(Response.Status.BAD_REQUEST).entity(jsonOdgovor).build();
     }
   }
 
@@ -83,13 +113,26 @@ public class RestNadzor {
       socket.shutdownOutput();
       String odgovor = citac.readLine();
       socket.shutdownInput();
-      if (odgovor.startsWith("OK ")) {
-        return odgovor.substring(3);
+      if (odgovor.startsWith("OK")) {
+        return odgovor;
       } else {
-        throw new RuntimeException("Neočekivani odgovor od poslužitelja: " + odgovor);
+        throw new RuntimeException(odgovor);
       }
     } catch (IOException e) {
       throw new RuntimeException("Pogreška pri komunikaciji s poslužiteljem", e);
     }
   }
+
+  private static class Rezultat {
+    @SuppressWarnings("unused")
+    private final int status;
+    @SuppressWarnings("unused")
+    private final String opis;
+
+    public Rezultat(int status, String opis) {
+      this.status = status;
+      this.opis = opis;
+    }
+  }
+
 }
