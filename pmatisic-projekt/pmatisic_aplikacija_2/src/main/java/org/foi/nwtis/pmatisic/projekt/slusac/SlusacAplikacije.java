@@ -1,6 +1,5 @@
 package org.foi.nwtis.pmatisic.projekt.slusac;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.util.Properties;
 import org.foi.nwtis.Konfiguracija;
@@ -42,7 +41,6 @@ public final class SlusacAplikacije implements ServletContextListener {
       sce.getServletContext().setAttribute("konfiguracija", konfig);
       System.out
           .println("Aplikacija je uspješno pokrenuta s konfiguracijom: " + putanja + datoteka);
-      // Ispisivanje ključeva i vrijednosti konfiguracije kao test
       Properties postavke = konfig.dajSvePostavke();
       for (String kljuc : postavke.stringPropertyNames()) {
         String vrijednost = postavke.getProperty(kljuc);
@@ -52,11 +50,10 @@ public final class SlusacAplikacije implements ServletContextListener {
       System.err.println("Greška prilikom učitavanja konfiguracije: " + putanja + datoteka);
     }
 
-    // Provjera statusa poslužitelja nakon učitavanja konfiguracije
-    String adresaPosluzitelja = (konfig.dajPostavku("adresa.posluzitelja")).toString();
+    String adresaPosluzitelja = konfig.dajPostavku("adresa.posluzitelja");
     Integer mreznaVrataPosluzitelja =
         Integer.parseInt(konfig.dajPostavku("mreznaVrata.posluzitelja"));
-    try (var socket = new Socket(adresaPosluzitelja, mreznaVrataPosluzitelja);) {
+    try (Socket socket = new Socket(adresaPosluzitelja, mreznaVrataPosluzitelja)) {
       StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfig);
       Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
       if (status == Status.PAUZA) {
@@ -64,8 +61,8 @@ public final class SlusacAplikacije implements ServletContextListener {
       } else {
         return;
       }
-    } catch (IOException e) {
-      return;
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 

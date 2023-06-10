@@ -25,5 +25,12 @@
   <filter-mapping>
     <filter-name>FilterDnevnika</filter-name>
     <url-pattern>/*</url-pattern>
+  </filter-mapping>  <filter>
+    <filter-name>FilterStanja</filter-name>
+    <filter-class>org.foi.nwtis.pmatisic.projekt.filter.FilterStanja</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>FilterStanja</filter-name>
+    <url-pattern>/*</url-pattern>
   </filter-mapping>
 </web-app>

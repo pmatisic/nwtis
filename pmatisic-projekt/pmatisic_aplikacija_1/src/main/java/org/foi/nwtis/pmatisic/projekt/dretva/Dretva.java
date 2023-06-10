@@ -44,9 +44,9 @@ public class Dretva extends Thread {
   public synchronized void run() {
     try {
       var citac = new BufferedReader(
-          new InputStreamReader(this.mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
+          new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
       var pisac = new BufferedWriter(
-          new OutputStreamWriter(this.mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
+          new OutputStreamWriter(mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
       var poruka = new StringBuilder();
       while (true) {
         var red = citac.readLine();
@@ -65,12 +65,12 @@ public class Dretva extends Thread {
         Logger.getGlobal().log(Level.SEVERE, "Greška u komandi!");
         return;
       }
-      this.mreznaUticnica.shutdownInput();
+      mreznaUticnica.shutdownInput();
       String odgovor = this.obradiZahtjev(obradenaPoruka);
       pisac.write(odgovor);
       pisac.flush();
-      this.mreznaUticnica.shutdownOutput();
-      this.mreznaUticnica.close();
+      mreznaUticnica.shutdownOutput();
+      mreznaUticnica.close();
     } catch (IOException e) {
       Logger.getGlobal().log(Level.SEVERE, "Greška u radu dretve! " + e.getMessage());
     }

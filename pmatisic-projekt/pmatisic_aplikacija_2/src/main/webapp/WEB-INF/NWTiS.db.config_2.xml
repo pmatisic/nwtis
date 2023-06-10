@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<entry key="adresa.posluzitelja">localhost</entry>
+<entry key="adresa.posluzitelja">200.20.0.1</entry>
 <entry key="mreznaVrata.posluzitelja">8000</entry>
 </properties>
