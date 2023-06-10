@@ -9,9 +9,6 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-/**
- * The persistent class for the AIRPORTS database table.
- */
 @Entity
 @Table(name = "AIRPORTS")
 @NamedQuery(name = "Airports.findAll", query = "SELECT a FROM Airports a")
@@ -55,15 +52,12 @@ public class Airports implements Serializable {
   @Column(name = "TYPE", nullable = false, length = 30)
   private String type;
 
-  // bi-directional many-to-one association to AirportsDistanceMatrix
   @OneToMany(mappedBy = "airport1")
   private List<AirportsDistanceMatrix> airportsDistanceMatrixs1;
 
-  // bi-directional many-to-one association to AirportsDistanceMatrix
   @OneToMany(mappedBy = "airport2")
   private List<AirportsDistanceMatrix> airportsDistanceMatrixs2;
 
-  // bi-directional many-to-one association to LetoviPolasci
   @OneToMany(mappedBy = "airport")
   private List<LetoviPolasci> letoviPolascis;
 

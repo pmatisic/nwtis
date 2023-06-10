@@ -13,9 +13,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
-/**
- * @author Dragutin Kermek
- */
 @Stateless
 public class AirportFacade {
 
@@ -25,7 +22,7 @@ public class AirportFacade {
 
   @PostConstruct
   private void init() {
-    System.out.println("AirportFacade- init");
+    System.out.println("AirportFacade - init");
     cb = em.getCriteriaBuilder();
   }
 

@@ -24,6 +24,7 @@ import jakarta.servlet.annotation.WebListener;
 public final class SlusacAplikacije implements ServletContextListener {
 
   private ServletContext context = null;
+  private Konfiguracija konfig;
 
   /**
    * Metoda koja se poziva pri inicijalizaciji konteksta servleta. Učitava konfiguraciju iz datoteke
@@ -37,36 +38,34 @@ public final class SlusacAplikacije implements ServletContextListener {
     String putanja = sce.getServletContext().getRealPath("/WEB-INF") + java.io.File.separator;
 
     try {
-      Konfiguracija konfig = KonfiguracijaApstraktna.preuzmiKonfiguraciju(putanja + datoteka);
+      konfig = KonfiguracijaApstraktna.preuzmiKonfiguraciju(putanja + datoteka);
       sce.getServletContext().setAttribute("konfiguracija", konfig);
       System.out
           .println("Aplikacija je uspješno pokrenuta s konfiguracijom: " + putanja + datoteka);
-
       // Ispisivanje ključeva i vrijednosti konfiguracije kao test
       Properties postavke = konfig.dajSvePostavke();
       for (String kljuc : postavke.stringPropertyNames()) {
         String vrijednost = postavke.getProperty(kljuc);
         System.out.println("Ključ: " + kljuc + ", Vrijednost: " + vrijednost);
       }
-
-      // Provjera statusa poslužitelja nakon učitavanja konfiguracije
-      String adresaPosluzitelja = (konfig.dajPostavku("adresa.posluzitelja")).toString();
-      Integer mreznaVrataPosluzitelja =
-          Integer.parseInt(konfig.dajPostavku("mreznaVrata.posluzitelja"));
-      try (var socket = new Socket(adresaPosluzitelja, mreznaVrataPosluzitelja);) {
-        StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfig);
-        Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
-        if (status == Status.PAUZA) {
-          throw new RuntimeException("Poslužitelj nije aktivan. Prekidam rad.");
-        } else {
-          return;
-        }
-      } catch (IOException e) {
-        return;
-      }
-
     } catch (NeispravnaKonfiguracija ex) {
       System.err.println("Greška prilikom učitavanja konfiguracije: " + putanja + datoteka);
+    }
+
+    // Provjera statusa poslužitelja nakon učitavanja konfiguracije
+    String adresaPosluzitelja = (konfig.dajPostavku("adresa.posluzitelja")).toString();
+    Integer mreznaVrataPosluzitelja =
+        Integer.parseInt(konfig.dajPostavku("mreznaVrata.posluzitelja"));
+    try (var socket = new Socket(adresaPosluzitelja, mreznaVrataPosluzitelja);) {
+      StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfig);
+      Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
+      if (status == Status.PAUZA) {
+        throw new RuntimeException("Poslužitelj nije aktivan. Prekidam rad.");
+      } else {
+        return;
+      }
+    } catch (IOException e) {
+      return;
     }
   }
 

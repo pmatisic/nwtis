@@ -34,7 +34,7 @@ public class LetoviPolasciFacade {
 
   @PostConstruct
   private void init() {
-    System.out.println("LetoviPolasciFacade- init");
+    System.out.println("LetoviPolasciFacade - init");
     cb = em.getCriteriaBuilder();
   }
 

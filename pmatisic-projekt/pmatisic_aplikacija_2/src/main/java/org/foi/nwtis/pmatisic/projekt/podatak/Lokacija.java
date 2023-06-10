@@ -4,11 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * @author Dragutin Kermek
- * @author Matija Novak
- * @version 2.3.0
- */
 @AllArgsConstructor()
 public class Lokacija {
 

@@ -21,7 +21,7 @@ public class JmsPosiljatelj {
 
   @Resource(mappedName = "jms/nwtis_qf_dz3")
   private ConnectionFactory connectionFactory;
-  @Resource(mappedName = "jms/nwtis_queue_dz3")
+  @Resource(mappedName = "jms/NWTiS_pmatisic")
   private Queue queue;
 
   /**

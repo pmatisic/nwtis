@@ -7,6 +7,7 @@ import org.foi.nwtis.NeispravnaKonfiguracija;
 import org.foi.nwtis.pmatisic.projekt.dretva.SakupljacLetovaAviona;
 import org.foi.nwtis.pmatisic.projekt.podatak.Status;
 import org.foi.nwtis.pmatisic.projekt.posluzitelj.StanjePosluzitelja;
+import org.foi.nwtis.pmatisic.projekt.zrno.AerodromiLetoviFacade;
 import org.foi.nwtis.pmatisic.projekt.zrno.AirportFacade;
 import org.foi.nwtis.pmatisic.projekt.zrno.JmsPosiljatelj;
 import org.foi.nwtis.pmatisic.projekt.zrno.LetoviPolasciFacade;
@@ -37,6 +38,8 @@ public final class SlusacAplikacije implements ServletContextListener {
   LetoviPolasciFacade lpFacade;
   @Inject
   AirportFacade airportFacade;
+  @Inject
+  AerodromiLetoviFacade alFacade;
 
   /**
    * Metoda koja se poziva pri inicijalizaciji konteksta servleta. Učitava konfiguraciju iz datoteke
@@ -83,7 +86,7 @@ public final class SlusacAplikacije implements ServletContextListener {
   private void startThread(ServletContextEvent event) {
     context = event.getServletContext();
     sakupljacLetovaAviona =
-        new SakupljacLetovaAviona(context, lpFacade, airportFacade, jmsPosiljatelj);
+        new SakupljacLetovaAviona(context, lpFacade, alFacade, airportFacade, jmsPosiljatelj);
     sakupljacLetovaAviona.start();
     System.out.println("Dretva je pokrenuta!");
   }

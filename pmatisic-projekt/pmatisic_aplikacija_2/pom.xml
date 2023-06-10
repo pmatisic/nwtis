@@ -20,8 +20,8 @@
 		<ServerEE.glassfish.home>/opt/glassfish-full-7.0.1/</ServerEE.glassfish.home>
 		<ServerEE.glassfish.Web.home>/opt/glassfish-web-7.0.1/</ServerEE.glassfish.Web.home>
 		<ServerEE.glassfish.containerName>glassfish7x</ServerEE.glassfish.containerName>
-		<ServerEE.payara.home>/opt/payara-full-6.2023.1/</ServerEE.payara.home>
-		<ServerEE.payara.Web.home>/opt/payara-web-6.2023.1/</ServerEE.payara.Web.home>
+		<ServerEE.payara.home>/opt/payara-full-6.2023.4/</ServerEE.payara.home>
+		<ServerEE.payara.Web.home>/opt/payara-web-6.2023.4/</ServerEE.payara.Web.home>
 		<ServerEE.payara.containerName>payara</ServerEE.payara.containerName>
 		<ServerEE.home>${ServerEE.payara.Web.home}</ServerEE.home>
 		<ServerEE.domainDir>${ServerEE.home}glassfish/domains</ServerEE.domainDir>
