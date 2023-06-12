@@ -1,4 +1,4 @@
-package org.foi.nwtis.pmatisic.projekt.jms;
+package org.foi.nwtis.pmatisic.projekt.web;
 
 import java.io.IOException;
 import org.foi.nwtis.pmatisic.projekt.zrno.JmsPosiljatelj;
