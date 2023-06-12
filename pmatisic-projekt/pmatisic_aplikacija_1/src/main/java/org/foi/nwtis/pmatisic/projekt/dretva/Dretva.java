@@ -175,27 +175,6 @@ public class Dretva extends Thread {
     }
   }
 
-  /**
-   * Funkcija <i>izracunajUdaljenost</i> je temeljena na Haversineovoj formuli, koja se često
-   * koristi za izračunavanje udaljenosti između dvije točke na Zemljinoj površini pomoću njihovih
-   * geografskih koordinata (širina i dužina). Haversineova formula je posebno korisna za male
-   * udaljenosti, gdje se uzima u obzir zakrivljenost Zemlje.
-   *
-   * @param lat1 Geografska širina prve točke (u stupnjevima). Geografska širina je kutna udaljenost
-   *        neke točke sjeverno ili južno od ekvatora. Vrijednost varira od -90° (južni pol) do 90°
-   *        (sjeverni pol).
-   * @param lon1 Geografska dužina prve točke (u stupnjevima). Geografska dužina je kutna udaljenost
-   *        neke točke istočno ili zapadno od početnog meridijana (Greenwich meridijan). Vrijednost
-   *        varira od -180° (zapadno) do 180° (istočno).
-   * @param lat2 Geografska širina druge točke (u stupnjevima).
-   * @param lon2 Geografska dužina druge točke (u stupnjevima).
-   * @return Funkcija vraća udaljenost između dvije točke u kilometrima kao rezultat tipa double.
-   * @see - Wikipedia članak o Haversineovoj formuli:
-   *      <a href="https://en.wikipedia.org/wiki/Haversine_formula">Haversine formula</a>
-   * @see - StackOverflow odgovor s implementacijom u Javi: <a href=
-   *      "https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula">Calculate
-   *      distance between two latitude-longitude points? (Haversine formula)</a>
-   */
   public static double izracunajUdaljenost(double lat1, double lon1, double lat2, double lon2) {
     final int R = 6371;
     double latDistance = Math.toRadians(lat2 - lat1);

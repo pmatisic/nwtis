@@ -12,25 +12,12 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
-/**
- * Klasa slušač aplikacije koji inicijalizira i uništava kontekst servleta.
- *
- * @author Petar Matišić
- * @author Dragutin Kermek
- * @version 1.2.1
- */
 @WebListener
 public final class SlusacAplikacije implements ServletContextListener {
 
   private ServletContext context = null;
   private Konfiguracija konfig;
 
-  /**
-   * Metoda koja se poziva pri inicijalizaciji konteksta servleta. Učitava konfiguraciju iz datoteke
-   * i sprema je u atribut konteksta.
-   *
-   * @param sce ServletContextEvent koji sadrži informacije o kontekstu.
-   */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     String datoteka = sce.getServletContext().getInitParameter("konfiguracija");
@@ -66,12 +53,6 @@ public final class SlusacAplikacije implements ServletContextListener {
     }
   }
 
-  /**
-   * Metoda koja se poziva pri uništavanju konteksta servleta. Ispisuje poruku o uništavanju
-   * konteksta.
-   *
-   * @param event ServletContextEvent koji sadrži informacije o kontekstu.
-   */
   @Override
   public void contextDestroyed(ServletContextEvent event) {
     context = event.getServletContext();

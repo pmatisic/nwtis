@@ -22,9 +22,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.ServletContext;
 
-/**
- * @author Petar Matišić (pmatisic@foi.hr)
- */
 @Stateless
 public class LetoviPolasciFacade {
 

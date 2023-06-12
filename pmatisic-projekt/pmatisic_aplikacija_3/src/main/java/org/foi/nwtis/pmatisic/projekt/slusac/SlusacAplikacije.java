@@ -18,14 +18,6 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
-/**
- * Klasa slušač aplikacije koji inicijalizira i uništava kontekst servleta. Pokreće i gasi dretvu
- * programa.
- *
- * @author Petar Matišić
- * @author Dragutin Kermek
- * @version 1.2.2
- */
 @WebListener
 public final class SlusacAplikacije implements ServletContextListener {
 
@@ -41,12 +33,6 @@ public final class SlusacAplikacije implements ServletContextListener {
   @Inject
   AerodromiLetoviFacade alFacade;
 
-  /**
-   * Metoda koja se poziva pri inicijalizaciji konteksta servleta. Učitava konfiguraciju iz datoteke
-   * i sprema je u atribut konteksta.
-   *
-   * @param sce ServletContextEvent koji sadrži informacije o kontekstu.
-   */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     String datoteka = sce.getServletContext().getInitParameter("konfiguracija");
@@ -57,8 +43,6 @@ public final class SlusacAplikacije implements ServletContextListener {
       sce.getServletContext().setAttribute("konfiguracija", konfig);
       System.out
           .println("Aplikacija je uspješno pokrenuta s konfiguracijom: " + putanja + datoteka);
-
-      // Ispisivanje ključeva i vrijednosti konfiguracije kao test
       Properties postavke = konfig.dajSvePostavke();
       for (String kljuc : postavke.stringPropertyNames()) {
         String vrijednost = postavke.getProperty(kljuc);
@@ -68,7 +52,6 @@ public final class SlusacAplikacije implements ServletContextListener {
       System.err.println("Greška prilikom učitavanja konfiguracije: " + putanja + datoteka);
     }
 
-    // Provjera statusa poslužitelja nakon učitavanja konfiguracije
     StanjePosluzitelja stanjePosluzitelja = new StanjePosluzitelja(konfig);
     Status status = stanjePosluzitelja.provjeriStatusPosluzitelja();
     if (status == Status.PAUZA) {
@@ -78,11 +61,6 @@ public final class SlusacAplikacije implements ServletContextListener {
     startThread(sce);
   }
 
-  /**
-   * Metoda koja pokreće dretvu za sakupljanje letova aviona.
-   * 
-   * @param event Događaj konteksta servleta koji pokreće ovu metodu.
-   */
   private void startThread(ServletContextEvent event) {
     context = event.getServletContext();
     sakupljacLetovaAviona =
@@ -91,12 +69,6 @@ public final class SlusacAplikacije implements ServletContextListener {
     System.out.println("Dretva je pokrenuta!");
   }
 
-  /**
-   * Metoda koja se poziva pri uništavanju konteksta servleta. Ispisuje poruku o uništavanju
-   * konteksta.
-   *
-   * @param event ServletContextEvent koji sadrži informacije o kontekstu.
-   */
   @Override
   public void contextDestroyed(ServletContextEvent event) {
     context = event.getServletContext();
