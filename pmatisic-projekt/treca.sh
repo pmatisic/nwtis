@@ -4,9 +4,6 @@
 export JAVA_HOME=/usr/lib/jvm/jdk-17.0.2
 export PATH=/usr/lib/jvm/jdk-17.0.2/bin:$PATH
 
-# Pokretanje baze podataka
-./scripts/baza.sh
-
 # Funkcija za pokretanje Payara Full servera
 pokreni_payara_full_server() {
     echo "Pokrećem Payara Full server..."
