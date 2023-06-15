@@ -28,10 +28,15 @@
 		<ServerEE.containerName>${ServerEE.payara.containerName}</ServerEE.containerName>
 	</properties>
 	<repositories>
+		<!--		<repository>-->
+		<!--			<id>NWTiS</id>-->
+		<!--			<name>NWTiS</name>-->
+		<!--			<url>http://nwtis.foi.hr:8088/repository/nwtis_2023/</url>-->
+		<!--		</repository>-->
 		<repository>
 			<id>NWTiS</id>
 			<name>NWTiS</name>
-			<url>http://nwtis.foi.hr:8088/repository/nwtis_2023/</url>
+			<url>http://watss.foi.hr:8088/repository/nwtis_2023/</url>
 		</repository>
 	</repositories>
 	<build>
@@ -200,6 +205,11 @@
 			<groupId>org.foi.nwtis</groupId>
 			<artifactId>nwtis_rest_lib</artifactId>
 			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.foi.nwtis</groupId>
+			<artifactId>nwtis_rest_bp_lib</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 </project>
