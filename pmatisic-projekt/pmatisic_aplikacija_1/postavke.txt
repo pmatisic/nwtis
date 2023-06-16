@@ -1,6 +1,0 @@
-maksCekanje=1000
-mreznaVrata=8000
-brojCekaca=10
-brojRadnika=10
-posluziteljVrata=8000
-posluziteljAdresa=localhost

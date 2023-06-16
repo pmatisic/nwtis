@@ -23,8 +23,14 @@ public class FilterDnevnika implements Filter {
       throws IOException, ServletException {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String requestURI = httpRequest.getRequestURI();
+    String queryString = httpRequest.getQueryString();
     String clientIP = request.getRemoteAddr();
     String vrsta = httpRequest.getHeader("X-Application-Type");
+    String fullPath = requestURI;
+
+    if (queryString != null) {
+      fullPath += "?" + queryString;
+    }
 
     if (vrsta == null) {
       vrsta = "AP2";
@@ -46,7 +52,7 @@ public class FilterDnevnika implements Filter {
       try (PreparedStatement s = con.prepareStatement(upit)) {
         s.setString(1, vrsta);
         s.setTimestamp(2, new java.sql.Timestamp(new java.util.Date().getTime()));
-        s.setString(3, requestURI);
+        s.setString(3, fullPath);
         s.setString(4, clientIP);
         if (korisnikId == null) {
           s.setNull(5, Types.INTEGER);

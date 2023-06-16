@@ -55,6 +55,7 @@ public class SakupljacLetovaAviona extends Thread {
     LocalDate zadnjiDan = lpFacade.zadnjiDatumPolaska(konfig);
     String krajnjiDanString = konfiguracija.dajPostavku("preuzimanje.do").toString();
     this.krajnjiDan = LocalDate.parse(krajnjiDanString, dtf);
+    int ciklusTrajanje = Integer.parseInt(konfiguracija.dajPostavku("ciklus.trajanje")) * 1000;
 
     if (zadnjiDan.isEqual(trenutniDan) || zadnjiDan.isAfter(trenutniDan)) {
       trenutniDan = zadnjiDan.plusDays(1);
@@ -66,8 +67,14 @@ public class SakupljacLetovaAviona extends Thread {
     }
 
     while (radi) {
+      long pocetakCiklusa = System.currentTimeMillis();
+      // ZoneId zoneId = ZoneId.of("CET");
+      // ZoneId zoneId = ZoneId.systemDefault();
+      // int odVremena = (int) trenutniDan.atStartOfDay(zoneId).toEpochSecond();
       int odVremena = (int) trenutniDan.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
-      int doVremena = (int) trenutniDan.plusDays(1).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+      // int doVremena = (int) trenutniDan.plusDays(1).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+      int doVremena = (int) trenutniDan.plusDays(1).atStartOfDay().minusSeconds(1)
+          .toEpochSecond(ZoneOffset.UTC);
       List<AerodromiLetovi> aktivniAerodromi = alFacade.dohvatiAktivneAerodrome();
       // OSKlijent osKlijent = new OSKlijent(korisnik, lozinka);
       OSKlijentBP osKlijent = new OSKlijentBP(ldap, korisnik);
@@ -91,12 +98,16 @@ public class SakupljacLetovaAviona extends Thread {
       jmsPosiljatelj.saljiPoruku(poruka);
       System.out.println("Poruka je poslana sa sadržajem:\n" + poruka);
 
-      try {
-        int ciklusTrajanje =
-            Integer.parseInt(konfiguracija.dajPostavku("ciklus.trajanje").toString());
-        Thread.sleep(ciklusTrajanje * 1000);
-      } catch (InterruptedException ex) {
-        break;
+      long krajRadnogDijela = System.currentTimeMillis();
+      long trajanjeRadnogDijela = krajRadnogDijela - pocetakCiklusa;
+      long vrijemeSpavanja = ciklusTrajanje - trajanjeRadnogDijela;
+
+      if (vrijemeSpavanja > 0) {
+        try {
+          Thread.sleep(vrijemeSpavanja);
+        } catch (InterruptedException ex) {
+          break;
+        }
       }
 
       trenutniDan = trenutniDan.plusDays(1);

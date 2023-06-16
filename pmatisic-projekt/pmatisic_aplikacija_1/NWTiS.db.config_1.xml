@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="maksCekanje">1000</entry>
+<entry key="mreznaVrata">8000</entry>
+<entry key="brojCekaca">10</entry>
+<entry key="brojRadnika">10</entry>
+<entry key="posluziteljAdresa">localhost</entry>
+<entry key="posluziteljVrata">8000</entry>
+</properties>

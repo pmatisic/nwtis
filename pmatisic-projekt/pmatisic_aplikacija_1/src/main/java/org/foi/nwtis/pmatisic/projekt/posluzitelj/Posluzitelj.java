@@ -3,6 +3,9 @@ package org.foi.nwtis.pmatisic.projekt.posluzitelj;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
@@ -13,10 +16,9 @@ public class Posluzitelj {
   private StanjePosluzitelja stanje;
   public boolean kraj = false;
   private int brojCekaca = 0;
+  private int brojRadnika = 0;
   private int mreznaVrata = 0;
   protected Konfiguracija konf;
-  protected int brojRadnika;
-  protected int maksVrijemeNeaktivnosti;
 
   public Posluzitelj(Konfiguracija konf) {
     this.konf = konf;
@@ -42,14 +44,24 @@ public class Posluzitelj {
   }
 
   public void pripremiPosluzitelja() {
+    ExecutorService executor = Executors.newFixedThreadPool(this.brojRadnika);
     try (ServerSocket ss = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       while (!this.kraj) {
         Socket veza = ss.accept();
         Dretva d = new Dretva(veza, konf, this, stanje);
-        d.start();
+        executor.execute(d);
       }
     } catch (IOException e) {
       Logger.getGlobal().log(Level.SEVERE, "Greška u stvaranju veze! " + e.getMessage());
+    } finally {
+      executor.shutdown();
+      try {
+        if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+          executor.shutdownNow();
+        }
+      } catch (InterruptedException ex) {
+        executor.shutdownNow();
+      }
     }
   }
 

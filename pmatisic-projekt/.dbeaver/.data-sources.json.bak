@@ -1,0 +1,31 @@
+{
+	"folders": {},
+	"connections": {
+		"hsqldb_server-188c1436a93-48c8723a6f92416f": {
+			"provider": "generic",
+			"driver": "hsqldb_server",
+			"name": "localhost nwtis_4",
+			"save-password": true,
+			"configuration": {
+				"host": "localhost",
+				"port": "9001",
+				"database": "nwtis_4",
+				"url": "jdbc:hsqldb:hsql://localhost:9001/nwtis_4",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"auth-model": "native"
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Development",
+			"color": "255,255,255",
+			"description": "Regular development database",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false,
+			"auto-close-transactions": false
+		}
+	}
+}
