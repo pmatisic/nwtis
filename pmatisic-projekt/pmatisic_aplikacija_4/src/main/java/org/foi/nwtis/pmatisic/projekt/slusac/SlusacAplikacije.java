@@ -6,10 +6,6 @@ import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 import org.foi.nwtis.pmatisic.projekt.podatak.Status;
 import org.foi.nwtis.pmatisic.projekt.posluzitelj.StanjePosluzitelja;
-import org.foi.nwtis.pmatisic.projekt.zrno.AerodromiLetoviFacade;
-import org.foi.nwtis.pmatisic.projekt.zrno.AirportFacade;
-import org.foi.nwtis.pmatisic.projekt.zrno.LetoviPolasciFacade;
-import jakarta.inject.Inject;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -20,12 +16,6 @@ public final class SlusacAplikacije implements ServletContextListener {
 
   private ServletContext context = null;
   private Konfiguracija konfig;
-  @Inject
-  LetoviPolasciFacade lpFacade;
-  @Inject
-  AirportFacade airportFacade;
-  @Inject
-  AerodromiLetoviFacade alFacade;
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {

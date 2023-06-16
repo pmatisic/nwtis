@@ -12,10 +12,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
-/**
- * The persistent class for the LETOVI_POLASCI database table.
- * 
- */
 @Entity
 @Table(name = "LETOVI_POLASCI")
 @NamedQuery(name = "LetoviPolasci.findAll", query = "SELECT l FROM LetoviPolasci l")
@@ -63,7 +59,6 @@ public class LetoviPolasci implements Serializable {
   @Column(nullable = false)
   private Timestamp stored;
 
-  // bi-directional many-to-one association to Airport
   @ManyToOne
   @JoinColumn(name = "estDepartureAirport", nullable = false)
   private Airports airport;

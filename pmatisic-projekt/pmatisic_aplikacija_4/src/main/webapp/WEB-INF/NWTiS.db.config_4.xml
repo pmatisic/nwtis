@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<entry key="aerodromi.sakupljanje">LDZA LOWW EDDF EDDM MMUN LTFJ RPLL KMSP KFLL KATL RKSS KDTW LEMD OTHH KBOS KIAH LEBL KSFO KEWR KLAS</entry>
-<entry key="ciklus.trajanje">300</entry>
-<entry key="preuzimanje.od">01.01.2023</entry>
-<entry key="preuzimanje.do">01.05.2023</entry>
 <entry key="OpenSkyNetwork.korisnik">petarmatisic</entry>
 <entry key="OpenSkyNetwork.lozinka">chelsea1003</entry>
+<entry key="aai.ldap">pmatisic@student.foi.hr</entry>
 <entry key="OpenWeatherMap.apikey">c109885dbd5bf5de330c17df72166777</entry>
 <entry key="LocationIQ.apikey">pk.1d5e047331d971eb32568a39f1795d28</entry>
+<entry key="adresa.posluzitelja">localhost</entry>
+<entry key="mreznaVrata.posluzitelja">8000</entry>
 </properties>

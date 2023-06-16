@@ -4,13 +4,8 @@ import java.io.Serializable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
-/**
- * The primary key class for the AIRPORTS_DISTANCE_MATRIX database table.
- * 
- */
 @Embeddable
 public class AirportsDistanceMatrixPK implements Serializable {
-  // default serial version id, required for serializable classes.
   private static final long serialVersionUID = 1L;
 
   @Column(name = "ICAO_FROM", insertable = false, updatable = false, unique = true,

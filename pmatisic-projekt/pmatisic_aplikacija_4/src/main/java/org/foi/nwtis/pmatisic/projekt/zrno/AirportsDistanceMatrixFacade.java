@@ -15,9 +15,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 
-/**
- * @author Petar Matišić (pmatisic@foi.hr)
- */
 @Stateless
 public class AirportsDistanceMatrixFacade {
 

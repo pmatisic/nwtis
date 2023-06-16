@@ -177,6 +177,30 @@
 									<genWsdl>true</genWsdl>
 								</configuration>
 							</execution>
+							<execution>
+								<id>generate-wsdl-korisnici</id>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>wsgen</goal>
+								</goals>
+								<configuration>
+									<sei>
+										org.foi.nwtis.pmatisic.projekt.servis.WsKorisnici</sei>
+									<genWsdl>true</genWsdl>
+								</configuration>
+							</execution>
+							<execution>
+								<id>generate-wsdl-letovi</id>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>wsgen</goal>
+								</goals>
+								<configuration>
+									<sei>
+										org.foi.nwtis.pmatisic.projekt.servis.WsLetovi</sei>
+									<genWsdl>true</genWsdl>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>

@@ -98,6 +98,42 @@
 								org.foi.nwtis.pmatisic.projekt.ws.WsMeteo.endpoint</packageName>
 						</configuration>
 					</execution>
+					<execution>
+						<id>import korisnici</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+						<configuration>
+							<wsdlDirectory>
+								${basedir}/../pmatisic_aplikacija_4/target/generated-sources/wsdl</wsdlDirectory>
+							<wsdlFiles>
+								<wsdlFile>Korisnici.wsdl</wsdlFile>
+							</wsdlFiles>
+							<wsdlLocation>
+								http://localhost:8080/pmatisic_aplikacija_4/korisnici?wsdl</wsdlLocation>
+							<packageName>
+								org.foi.nwtis.pmatisic.projekt.ws.WsKorisnici.endpoint</packageName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>import letovi</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+						<configuration>
+							<wsdlDirectory>
+								${basedir}/../pmatisic_aplikacija_4/target/generated-sources/wsdl</wsdlDirectory>
+							<wsdlFiles>
+								<wsdlFile>Letovi.wsdl</wsdlFile>
+							</wsdlFiles>
+							<wsdlLocation>
+								http://localhost:8080/pmatisic_aplikacija_4/letovi?wsdl</wsdlLocation>
+							<packageName>
+								org.foi.nwtis.pmatisic.projekt.ws.WsLetovi.endpoint</packageName>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
