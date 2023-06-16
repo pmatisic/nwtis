@@ -161,7 +161,7 @@
 								</goals>
 								<configuration>
 									<sei>
-										org.foi.nwtis.pmatisic.projekt.ws.WsAerodromi</sei>
+										org.foi.nwtis.pmatisic.projekt.servis.WsAerodromi</sei>
 									<genWsdl>true</genWsdl>
 								</configuration>
 							</execution>
@@ -173,7 +173,7 @@
 								</goals>
 								<configuration>
 									<sei>
-										org.foi.nwtis.pmatisic.projekt.ws.WsMeteo</sei>
+										org.foi.nwtis.pmatisic.projekt.servis.WsMeteo</sei>
 									<genWsdl>true</genWsdl>
 								</configuration>
 							</execution>
