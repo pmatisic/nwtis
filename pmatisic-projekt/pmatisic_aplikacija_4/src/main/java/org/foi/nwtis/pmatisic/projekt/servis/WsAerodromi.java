@@ -3,14 +3,10 @@ package org.foi.nwtis.pmatisic.projekt.servis;
 import java.util.ArrayList;
 import java.util.List;
 import org.foi.nwtis.pmatisic.projekt.entitet.Airports;
-import org.foi.nwtis.pmatisic.projekt.entitet.AirportsDistanceMatrix;
 import org.foi.nwtis.pmatisic.projekt.podatak.Aerodrom;
 import org.foi.nwtis.pmatisic.projekt.podatak.Lokacija;
-import org.foi.nwtis.pmatisic.projekt.podatak.UdaljenostAerodromDrzavaKlasa;
-import org.foi.nwtis.pmatisic.projekt.podatak.UdaljenostAerodromKlasa;
-import org.foi.nwtis.pmatisic.projekt.podatak.UdaljenostKlasa;
-import org.foi.nwtis.pmatisic.projekt.zrno.AirportFacade;
-import org.foi.nwtis.pmatisic.projekt.zrno.AirportsDistanceMatrixFacade;
+import org.foi.nwtis.pmatisic.projekt.zrno.AerodromiLetoviFacade;
+import org.foi.nwtis.pmatisic.projekt.zrno.KorisniciFacade;
 import jakarta.annotation.Resource;
 import jakarta.inject.Inject;
 import jakarta.jws.WebMethod;
@@ -23,10 +19,10 @@ import jakarta.ws.rs.core.Context;
 public class WsAerodromi {
 
   @Inject
-  AirportFacade airportFacade;
+  AerodromiLetoviFacade alFacade;
 
   @Inject
-  AirportsDistanceMatrixFacade admFacade;
+  KorisniciFacade korisniciFacade;
 
   @Context
   private ServletContext konfig;
@@ -35,74 +31,59 @@ public class WsAerodromi {
   javax.sql.DataSource ds;
 
   @WebMethod
-  public List<Aerodrom> dajSveAerodrome(@WebParam int odBroja, @WebParam int broj) {
-    if (odBroja < 1 || broj < 1) {
-      odBroja = 1;
-      broj = 20;
+  public List<Aerodrom> dajAerodromeZaLetove(@WebParam String korisnik, @WebParam String lozinka) {
+    if (korisniciFacade.autenticiraj(korisnik, lozinka)) {
+      List<Airports> airports = alFacade.dajAerodromeZaLetove();
+      List<Aerodrom> aerodromi = new ArrayList<>();
+      for (Airports a : airports) {
+        var koord = a.getCoordinates().split(",");
+        var lokacija = new Lokacija(koord[1], koord[0]);
+        aerodromi.add(new Aerodrom(a.getIcao(), a.getName(), a.getIsoCountry(), lokacija));
+      }
+      return aerodromi;
     }
-    int offset = (odBroja - 1) * broj;
-    List<Airports> airports = airportFacade.findAll(offset, broj);
-    List<Aerodrom> aerodromi = new ArrayList<>();
-    for (Airports a : airports) {
-      var koord = a.getCoordinates().split(",");
-      var lokacija = new Lokacija(koord[1], koord[0]);
-      aerodromi.add(new Aerodrom(a.getIcao(), a.getName(), a.getIsoCountry(), lokacija));
-    }
-    return aerodromi;
+    return null;
   }
 
   @WebMethod
-  public Aerodrom dajAerodrom(@WebParam String icao) {
-    Aerodrom aerodrom = null;
-    if (icao == null || icao.trim().length() == 0) {
-      return aerodrom;
+  public boolean dodajAerodromZaLetove(@WebParam String korisnik, @WebParam String lozinka,
+      @WebParam String icao) {
+    if (korisniciFacade.autenticiraj(korisnik, lozinka)) {
+      Airports aerodrom = alFacade.dajAerodromPremaIcao(icao);
+      if (aerodrom != null) {
+        // Možete dodati logiku za postavljanje statusa i slanje obavijesti putem WebSocket-a
+        return alFacade.dodajAerodromZaLetove(aerodrom);
+      }
     }
-    Airports a = airportFacade.find(icao);
-    if (a != null) {
-      var koord = a.getCoordinates().split(",");
-      var lokacija = new Lokacija(koord[1], koord[0]);
-      aerodrom = new Aerodrom(a.getIcao(), a.getName(), a.getIsoCountry(), lokacija);
-    }
-    return aerodrom;
+    return false;
   }
 
   @WebMethod
-  public List<UdaljenostKlasa> dajUdaljenostiAerodroma(@WebParam String icaoOd,
-      @WebParam String icaoDo) {
-    List<AirportsDistanceMatrix> udaljenosti =
-        admFacade.findDistancesBetweenAirports(icaoOd, icaoDo);
-    List<UdaljenostKlasa> podaci = new ArrayList<>();
-    for (AirportsDistanceMatrix udaljenost : udaljenosti) {
-      String drzava = udaljenost.getId().getCountry();
-      float km = udaljenost.getDistCtry();
-      podaci.add(new UdaljenostKlasa(drzava, km));
+  public boolean pauzirajAerodromZaLetove(@WebParam String korisnik, @WebParam String lozinka,
+      @WebParam String icao) {
+    if (korisniciFacade.autenticiraj(korisnik, lozinka)) {
+      Airports aerodrom = alFacade.dajAerodromPremaIcao(icao);
+      if (aerodrom != null) {
+        // Ovdje postavite logiku za postavljanje statusa aerodroma na pauzu
+        // Na primjer, aerodrom.setPauza(true);
+        return alFacade.urediAerodromZaLetove(aerodrom);
+      }
     }
-    return podaci;
+    return false;
   }
 
   @WebMethod
-  public List<UdaljenostAerodromKlasa> dajSveUdaljenostiAerodroma(@WebParam String icao,
-      @WebParam int odBroja, @WebParam int broj) {
-    if (odBroja < 1 || broj < 1) {
-      odBroja = 1;
-      broj = 20;
+  public boolean aktivirajAerodromZaLetove(@WebParam String korisnik, @WebParam String lozinka,
+      @WebParam String icao) {
+    if (korisniciFacade.autenticiraj(korisnik, lozinka)) {
+      Airports aerodrom = alFacade.dajAerodromPremaIcao(icao);
+      if (aerodrom != null) {
+        // Ovdje postavite logiku za postavljanje statusa aerodroma na aktivan
+        // Na primjer, aerodrom.setAktivan(true);
+        return alFacade.urediAerodromZaLetove(aerodrom);
+      }
     }
-    int offset = (odBroja - 1) * broj;
-    List<AirportsDistanceMatrix> udaljenosti =
-        admFacade.findAllDistancesBetweenAirports(icao, offset, broj);
-    List<UdaljenostAerodromKlasa> podaci = new ArrayList<>();
-    for (AirportsDistanceMatrix udaljenost : udaljenosti) {
-      String icaoTo = udaljenost.getId().getIcaoTo();
-      float km = udaljenost.getDistTot();
-      podaci.add(new UdaljenostAerodromKlasa(icaoTo, km));
-    }
-    return podaci;
-  }
-
-  @WebMethod
-  public UdaljenostAerodromDrzavaKlasa dajNajduljiPutDrzave(@WebParam String icao) {
-    UdaljenostAerodromDrzavaKlasa najduziPut = admFacade.findMaxDistanceForCountry(icao);
-    return najduziPut;
+    return false;
   }
 
 }

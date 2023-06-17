@@ -59,9 +59,10 @@ public class RestDnevnik {
         String vrstaZapisa = rs.getString("vrsta");
         Timestamp vrijemePristupa = rs.getTimestamp("vrijeme_pristupa");
         String putanja = rs.getString("putanja");
+        String ipAdresa = rs.getString("ip_adresa");
         int korisnik = rs.getInt("korisnik");
 
-        zapisi.add(new Dnevnik(vrstaZapisa, vrijemePristupa, putanja, korisnik));
+        zapisi.add(new Dnevnik(vrstaZapisa, vrijemePristupa, putanja, ipAdresa, korisnik));
       }
 
       if (zapisi.isEmpty()) {
@@ -82,12 +83,13 @@ public class RestDnevnik {
   public Response dodajZapis(Dnevnik zapis) {
     try (Connection con = ds.getConnection()) {
       String query =
-          "INSERT INTO DNEVNIK (vrsta, vrijeme_pristupa, putanja, korisnik) VALUES (?, ?, ?, ?)";
+          "INSERT INTO DNEVNIK (vrsta, vrijeme_pristupa, putanja, ip_adresa, korisnik) VALUES (?, ?, ?, ?, ?)";
       PreparedStatement stmt = con.prepareStatement(query);
       stmt.setString(1, zapis.vrsta());
       stmt.setTimestamp(2, zapis.vrijemePristupa());
       stmt.setString(3, zapis.putanja());
-      stmt.setInt(4, zapis.korisnik());
+      stmt.setString(4, zapis.ipAdresa());
+      stmt.setInt(5, zapis.korisnik());
 
       int brojAzuriranihRedova = stmt.executeUpdate();
 

@@ -2,8 +2,10 @@ package org.foi.nwtis.pmatisic.projekt.zrno;
 
 import java.util.List;
 import org.foi.nwtis.pmatisic.projekt.entitet.AerodromiLetovi;
+import org.foi.nwtis.pmatisic.projekt.entitet.Airports;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -18,6 +20,9 @@ public class AerodromiLetoviFacade {
   @PersistenceContext(unitName = "nwtis_dz3_pu")
   private EntityManager em;
   private CriteriaBuilder cb;
+
+  @Inject
+  private AirportFacade airportFacade;
 
   @PostConstruct
   private void init() {
@@ -74,4 +79,31 @@ public class AerodromiLetoviFacade {
     cq.select(root).where(cb.equal(root.get("aktivan"), true));
     return em.createQuery(cq).getResultList();
   }
+
+  public List<Airports> dajAerodromeZaLetove() {
+    return airportFacade.findAll();
+  }
+
+  public boolean dodajAerodromZaLetove(Airports aerodrom) {
+    try {
+      airportFacade.create(aerodrom);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public boolean urediAerodromZaLetove(Airports aerodrom) {
+    try {
+      airportFacade.edit(aerodrom);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public Airports dajAerodromPremaIcao(String icao) {
+    return airportFacade.find(icao);
+  }
+
 }

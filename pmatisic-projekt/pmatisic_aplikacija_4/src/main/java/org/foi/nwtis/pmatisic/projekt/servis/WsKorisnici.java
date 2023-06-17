@@ -29,27 +29,22 @@ public class WsKorisnici {
   public List<Korisnici> dajKorisnike(@WebParam String korisnik, @WebParam String lozinka,
       @WebParam String traziImeKorisnika, @WebParam String traziPrezimeKorisnika)
       throws PogresnaAutentikacija {
-
     if (!korisniciFacade.autenticiraj(korisnik, lozinka)) {
       throw new PogresnaAutentikacija("Pogrešno korisničko ime ili lozinka.");
     }
-
     if ((traziImeKorisnika == null || traziImeKorisnika.isEmpty())
         && (traziPrezimeKorisnika == null || traziPrezimeKorisnika.isEmpty())) {
       return korisniciFacade.findAll();
     }
-
     return korisniciFacade.findKorisnikeByImeAndPrezime(traziImeKorisnika, traziPrezimeKorisnika);
   }
 
   @WebMethod
   public Korisnici dajKorisnika(@WebParam String korisnik, @WebParam String lozinka,
       @WebParam String traziKorisnika) throws PogresnaAutentikacija {
-
     if (!korisniciFacade.autenticiraj(korisnik, lozinka)) {
       throw new PogresnaAutentikacija("Pogrešno korisničko ime ili lozinka.");
     }
-
     return korisniciFacade.findKorisnikByKorisnickoIme(traziKorisnika);
   }
 
