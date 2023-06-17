@@ -79,7 +79,7 @@ public class KorisniciFacade {
   public boolean autenticiraj(String korisnickoIme, String lozinka) {
     CriteriaQuery<Korisnik> cq = cb.createQuery(Korisnik.class);
     Root<Korisnik> korisnikRoot = cq.from(Korisnik.class);
-    Predicate filterKorisnickoIme = cb.equal(korisnikRoot.get("korisnickoIme"), korisnickoIme);
+    Predicate filterKorisnickoIme = cb.equal(korisnikRoot.get("korime"), korisnickoIme);
     Predicate filterLozinka = cb.equal(korisnikRoot.get("lozinka"), lozinka);
     cq.where(cb.and(filterKorisnickoIme, filterLozinka));
     List<Korisnik> rezultati = em.createQuery(cq).getResultList();
@@ -89,7 +89,7 @@ public class KorisniciFacade {
   public Korisnik findKorisnikByKorisnickoIme(String korisnickoIme) {
     CriteriaQuery<Korisnik> cq = cb.createQuery(Korisnik.class);
     Root<Korisnik> korisnikRoot = cq.from(Korisnik.class);
-    Predicate filterKorisnickoIme = cb.equal(korisnikRoot.get("korisnickoIme"), korisnickoIme);
+    Predicate filterKorisnickoIme = cb.equal(korisnikRoot.get("korime"), korisnickoIme);
     cq.where(filterKorisnickoIme);
     List<Korisnik> rezultati = em.createQuery(cq).getResultList();
     if (!rezultati.isEmpty()) {
