@@ -32,7 +32,6 @@ public class RestDnevnik {
   @Produces(MediaType.APPLICATION_JSON)
   public Response dohvatiZapise(@QueryParam("vrsta") String vrsta,
       @QueryParam("odBroja") Integer odBroja, @QueryParam("broj") Integer broj) {
-
     if (odBroja == null)
       odBroja = 1;
     if (broj == null)
