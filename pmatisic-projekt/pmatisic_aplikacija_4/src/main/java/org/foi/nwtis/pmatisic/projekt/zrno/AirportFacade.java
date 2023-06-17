@@ -22,7 +22,7 @@ public class AirportFacade {
 
   @PostConstruct
   private void init() {
-    System.out.println("AirportFacade- init");
+    System.out.println("AirportFacade - init");
     cb = em.getCriteriaBuilder();
   }
 

@@ -12,6 +12,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 
 @Stateless
@@ -72,38 +73,58 @@ public class AerodromiLetoviFacade {
     return ((Long) q.getSingleResult()).intValue();
   }
 
-  public List<AerodromiLetovi> dohvatiAktivneAerodrome() {
+  public List<Airports> dajAerodromePovezaneSAerodromimaLetova() {
     cb = em.getCriteriaBuilder();
-    CriteriaQuery<AerodromiLetovi> cq = cb.createQuery(AerodromiLetovi.class);
+    CriteriaQuery<Airports> cq = cb.createQuery(Airports.class);
     Root<AerodromiLetovi> root = cq.from(AerodromiLetovi.class);
-    cq.select(root).where(cb.equal(root.get("aktivan"), true));
-    return em.createQuery(cq).getResultList();
+    cq.select(root.join("airports", JoinType.INNER));
+    TypedQuery<Airports> query = em.createQuery(cq);
+    return query.getResultList();
   }
 
-  public List<Airports> dajAerodromeZaLetove() {
-    return airportFacade.findAll();
-  }
-
-  public boolean dodajAerodromZaLetove(Airports aerodrom) {
+  public boolean dodajAerodromZaLetove(String icao) {
     try {
-      airportFacade.create(aerodrom);
-      return true;
+      Airports aerodrom = airportFacade.find(icao);
+      if (aerodrom != null) {
+        AerodromiLetovi noviAerodromLetovi = new AerodromiLetovi();
+        noviAerodromLetovi.setIcao(icao);
+        noviAerodromLetovi.setAktivan(true);
+        noviAerodromLetovi.setAirports(aerodrom);
+        em.persist(noviAerodromLetovi);
+        return true;
+      }
     } catch (Exception e) {
-      return false;
+      e.printStackTrace();
     }
+    return false;
   }
 
-  public boolean urediAerodromZaLetove(Airports aerodrom) {
+  public boolean pauzirajAerodrom(String icao) {
     try {
-      airportFacade.edit(aerodrom);
-      return true;
+      AerodromiLetovi aerodromLetovi = em.find(AerodromiLetovi.class, icao);
+      if (aerodromLetovi != null) {
+        aerodromLetovi.setAktivan(false);
+        em.merge(aerodromLetovi);
+        return true;
+      }
     } catch (Exception e) {
-      return false;
+      e.printStackTrace();
     }
+    return false;
   }
 
-  public Airports dajAerodromPremaIcao(String icao) {
-    return airportFacade.find(icao);
+  public boolean aktivirajAerodrom(String icao) {
+    try {
+      AerodromiLetovi aerodromLetovi = em.find(AerodromiLetovi.class, icao);
+      if (aerodromLetovi != null) {
+        aerodromLetovi.setAktivan(true);
+        em.merge(aerodromLetovi);
+        return true;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 
 }

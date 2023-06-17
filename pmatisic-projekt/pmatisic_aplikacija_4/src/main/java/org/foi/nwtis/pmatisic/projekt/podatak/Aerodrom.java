@@ -21,4 +21,5 @@ public class Aerodrom {
   private Lokacija lokacija;
 
   public Aerodrom() {}
+
 }

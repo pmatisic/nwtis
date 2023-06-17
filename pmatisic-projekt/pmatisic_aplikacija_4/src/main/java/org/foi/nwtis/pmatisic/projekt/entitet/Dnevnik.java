@@ -37,7 +37,7 @@ public class Dnevnik implements Serializable {
 
   @ManyToOne
   @JoinColumn(name = "korisnik", referencedColumnName = "id")
-  private Korisnici korisnik;
+  private Korisnik korisnik;
 
   public Dnevnik() {}
 
@@ -73,11 +73,11 @@ public class Dnevnik implements Serializable {
     this.putanja = putanja;
   }
 
-  public Korisnici getKorisnik() {
+  public Korisnik getKorisnik() {
     return korisnik;
   }
 
-  public void setKorisnik(Korisnici korisnik) {
+  public void setKorisnik(Korisnik korisnik) {
     this.korisnik = korisnik;
   }
 

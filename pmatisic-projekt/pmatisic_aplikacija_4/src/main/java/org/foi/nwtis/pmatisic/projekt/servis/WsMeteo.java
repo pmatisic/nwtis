@@ -1,44 +1,48 @@
 package org.foi.nwtis.pmatisic.projekt.servis;
 
 import org.foi.nwtis.Konfiguracija;
-import org.foi.nwtis.pmatisic.projekt.entitet.Airports;
-import org.foi.nwtis.pmatisic.projekt.zrno.AirportFacade;
-import org.foi.nwtis.rest.klijenti.LIQKlijent;
+import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.rest.klijenti.NwtisRestIznimka;
 import org.foi.nwtis.rest.klijenti.OWMKlijent;
-import org.foi.nwtis.rest.podaci.Lokacija;
 import org.foi.nwtis.rest.podaci.MeteoPodaci;
-import jakarta.annotation.Resource;
+import com.google.gson.Gson;
 import jakarta.inject.Inject;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
 import jakarta.jws.WebService;
 import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @WebService(serviceName = "meteo")
 public class WsMeteo {
 
   @Inject
-  AirportFacade airportFacade;
-
-  @Inject
   private ServletContext konfig;
-
-  @Resource(lookup = "java:app/jdbc/nwtis_bp")
-  javax.sql.DataSource ds;
 
   @WebMethod
   public MeteoPodaci dajMeteo(@WebParam String icao) {
-    Airports airport = airportFacade.find(icao);
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
     OWMKlijent owmKlijent =
         new OWMKlijent(konfiguracija.dajPostavku("OpenWeatherMap.apikey").toString());
+    String url = (konfiguracija.dajPostavku("rest.url")).toString();
 
-    if (airport == null) {
+    Client client = ClientBuilder.newClient();
+    String restUrl = url + icao;
+    Response response = client.target(restUrl).request(MediaType.APPLICATION_JSON).get();
+
+    if (response.getStatus() != 200) {
       return null;
     }
 
-    String gpsCoordinates = airport.getCoordinates();
+    String responseBody = response.readEntity(String.class);
+    Gson gson = new Gson();
+    Aerodrom aerodrom = gson.fromJson(responseBody, Aerodrom.class);
+
+    String gpsCoordinates =
+        aerodrom.getLokacija().getLatitude() + "," + aerodrom.getLokacija().getLongitude();
     String[] latlon = gpsCoordinates.split(",");
     String lat = latlon[0];
     String lon = latlon[1];
@@ -48,34 +52,6 @@ public class WsMeteo {
       meteoPodaci = owmKlijent.getRealTimeWeather(lon, lat);
     } catch (NwtisRestIznimka e) {
       e.printStackTrace();
-    }
-
-    return meteoPodaci;
-  }
-
-  @WebMethod
-  public MeteoPodaci dajMeteoAdresa(@WebParam String adresa) {
-    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
-    OWMKlijent owmKlijent =
-        new OWMKlijent(konfiguracija.dajPostavku("OpenWeatherMap.apikey").toString());
-    LIQKlijent liqKlijent =
-        new LIQKlijent(konfiguracija.dajPostavku("LocationIQ.apikey").toString());
-    Lokacija lokacija = null;
-    MeteoPodaci meteoPodaci = null;
-
-    try {
-      lokacija = liqKlijent.getGeoLocation(adresa);
-    } catch (NwtisRestIznimka e) {
-      e.printStackTrace();
-    }
-
-    if (lokacija != null) {
-      try {
-        meteoPodaci =
-            owmKlijent.getRealTimeWeather(lokacija.getLatitude(), lokacija.getLongitude());
-      } catch (NwtisRestIznimka e) {
-        e.printStackTrace();
-      }
     }
 
     return meteoPodaci;

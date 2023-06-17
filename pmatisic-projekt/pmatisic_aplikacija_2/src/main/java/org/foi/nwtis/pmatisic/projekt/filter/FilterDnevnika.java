@@ -68,4 +68,5 @@ public class FilterDnevnika implements Filter {
 
     chain.doFilter(request, response);
   }
+
 }

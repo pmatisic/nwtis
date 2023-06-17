@@ -7,7 +7,6 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sql.DataSource;
 import org.foi.nwtis.pmatisic.projekt.podatak.Dnevnik;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
@@ -26,7 +25,7 @@ import jakarta.ws.rs.core.Response;
 public class RestDnevnik {
 
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
-  DataSource ds;
+  javax.sql.DataSource ds;
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)

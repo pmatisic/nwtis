@@ -11,8 +11,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "KORISNICI")
-@NamedQuery(name = "Korisnici.findAll", query = "SELECT k FROM Korisnici k")
-public class Korisnici implements Serializable {
+@NamedQuery(name = "Korisnik.findAll", query = "SELECT k FROM Korisnik k")
+public class Korisnik implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
@@ -32,7 +32,7 @@ public class Korisnici implements Serializable {
   @Column(name = "prezime", nullable = false, length = 255)
   private String prezime;
 
-  public Korisnici() {}
+  public Korisnik() {}
 
   public Integer getId() {
     return id;

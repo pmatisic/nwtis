@@ -74,4 +74,5 @@ public class AerodromiLetoviFacade {
     cq.select(root).where(cb.equal(root.get("aktivan"), true));
     return em.createQuery(cq).getResultList();
   }
+
 }

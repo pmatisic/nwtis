@@ -3,10 +3,10 @@ package org.foi.nwtis.pmatisic.projekt.filter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import org.foi.nwtis.pmatisic.projekt.entitet.Dnevnik;
-import org.foi.nwtis.pmatisic.projekt.entitet.Korisnici;
+import org.foi.nwtis.pmatisic.projekt.entitet.Korisnik;
 import org.foi.nwtis.pmatisic.projekt.zrno.DnevnikFacade;
 import org.foi.nwtis.pmatisic.projekt.zrno.KorisniciFacade;
-import jakarta.ejb.EJB;
+import jakarta.inject.Inject;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,10 +18,10 @@ import jakarta.servlet.http.HttpServletRequest;
 @WebFilter
 public class FilterDnevnika implements Filter {
 
-  @EJB
+  @Inject
   private DnevnikFacade dnevnikFacade;
 
-  @EJB
+  @Inject
   private KorisniciFacade korisniciFacade;
 
   @Override
@@ -58,7 +58,7 @@ public class FilterDnevnika implements Filter {
     dnevnik.setPutanja(fullPath);
     dnevnik.setIpAdresa(clientIP);
     if (korisnikId != null) {
-      Korisnici korisnik = korisniciFacade.find(korisnikId);
+      Korisnik korisnik = korisniciFacade.find(korisnikId);
       if (korisnik != null) {
         dnevnik.setKorisnik(korisnik);
       }
@@ -70,4 +70,5 @@ public class FilterDnevnika implements Filter {
 
     chain.doFilter(request, response);
   }
+
 }

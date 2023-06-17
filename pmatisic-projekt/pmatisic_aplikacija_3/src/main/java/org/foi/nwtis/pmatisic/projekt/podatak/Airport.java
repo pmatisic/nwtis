@@ -45,4 +45,5 @@ public class Airport {
   private String coordinates;
 
   public Airport() {}
+
 }

@@ -31,7 +31,7 @@ public class LetoviPolasciFacade {
 
   @PostConstruct
   private void init() {
-    System.out.println("LetoviPolasciFacade- init");
+    System.out.println("LetoviPolasciFacade - init");
     cb = em.getCriteriaBuilder();
   }
 
@@ -46,7 +46,7 @@ public class LetoviPolasciFacade {
       System.out.println("Airport je null. Let nije dodan.");
       return;
     } else {
-      if (!icao24Postoji(let.getIcao24(), let.getFirstSeen())) {
+      if (!icao24FirstSeenPostoje(let.getIcao24(), let.getFirstSeen())) {
         LetoviPolasci noviLet = new LetoviPolasci();
         noviLet.setIcao24(let.getIcao24());
         noviLet.setCallsign(let.getCallsign());
@@ -102,7 +102,7 @@ public class LetoviPolasciFacade {
     }
   }
 
-  public boolean icao24Postoji(String icao24, int firstSeen) {
+  public boolean icao24FirstSeenPostoje(String icao24, int firstSeen) {
     cb = em.getCriteriaBuilder();
     CriteriaQuery<LetoviPolasci> cq = cb.createQuery(LetoviPolasci.class);
     Root<LetoviPolasci> root = cq.from(LetoviPolasci.class);

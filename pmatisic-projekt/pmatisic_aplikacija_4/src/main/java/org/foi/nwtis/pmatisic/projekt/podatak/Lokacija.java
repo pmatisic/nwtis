@@ -20,4 +20,5 @@ public class Lokacija {
     this.latitude = latitude;
     this.longitude = longitude;
   }
+
 }

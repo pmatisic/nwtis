@@ -5,9 +5,8 @@ import java.time.LocalDateTime;
 import java.util.concurrent.CopyOnWriteArraySet;
 import org.foi.nwtis.pmatisic.projekt.zrno.AerodromiLetoviFacade;
 import org.foi.nwtis.pmatisic.projekt.zrno.KorisniciFacade;
-import jakarta.ejb.EJB;
+import jakarta.inject.Inject;
 import jakarta.websocket.OnClose;
-import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
@@ -18,10 +17,10 @@ public class WsInfo {
 
   private static final CopyOnWriteArraySet<Session> sessions = new CopyOnWriteArraySet<>();
 
-  @EJB
+  @Inject
   KorisniciFacade korisniciFacade;
 
-  @EJB
+  @Inject
   AerodromiLetoviFacade alFacade;
 
   @OnOpen
@@ -39,11 +38,6 @@ public class WsInfo {
     if ("dajMeteo".equals(message)) {
       sendInfo();
     }
-  }
-
-  @OnError
-  public void onError(Session session, Throwable throwable) {
-    // Obrada grešaka
   }
 
   public void sendInfo() {
@@ -74,4 +68,17 @@ public class WsInfo {
       }
     }
   }
+
+  public static void sendInfo(AerodromiLetoviFacade alFacade) {
+    int ukupnoAerodroma = alFacade.count();
+    String message = "Ukupan broj aerodroma: " + ukupnoAerodroma;
+    for (Session session : sessions) {
+      try {
+        session.getBasicRemote().sendText(message);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
 }

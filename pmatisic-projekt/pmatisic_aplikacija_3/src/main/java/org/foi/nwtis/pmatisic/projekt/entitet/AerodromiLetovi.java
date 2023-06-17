@@ -51,4 +51,5 @@ public class AerodromiLetovi implements Serializable {
   public void setAirports(Airports airports) {
     this.airports = airports;
   }
+
 }

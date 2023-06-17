@@ -1,7 +1,7 @@
 package org.foi.nwtis.pmatisic.projekt.zrno;
 
 import java.util.List;
-import org.foi.nwtis.pmatisic.projekt.entitet.Korisnici;
+import org.foi.nwtis.pmatisic.projekt.entitet.Korisnik;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -25,39 +25,39 @@ public class KorisniciFacade {
     cb = em.getCriteriaBuilder();
   }
 
-  public void create(Korisnici korisnici) {
-    em.persist(korisnici);
+  public void create(Korisnik korisnik) {
+    em.persist(korisnik);
   }
 
-  public void edit(Korisnici korisnici) {
-    em.merge(korisnici);
+  public void edit(Korisnik korisnik) {
+    em.merge(korisnik);
   }
 
-  public void remove(Korisnici korisnici) {
-    em.remove(em.merge(korisnici));
+  public void remove(Korisnik korisnik) {
+    em.remove(em.merge(korisnik));
   }
 
-  public Korisnici find(Object id) {
-    return em.find(Korisnici.class, id);
+  public Korisnik find(Object id) {
+    return em.find(Korisnik.class, id);
   }
 
-  public List<Korisnici> findAll() {
-    CriteriaQuery<Korisnici> cq = cb.createQuery(Korisnici.class);
-    cq.select(cq.from(Korisnici.class));
+  public List<Korisnik> findAll() {
+    CriteriaQuery<Korisnik> cq = cb.createQuery(Korisnik.class);
+    cq.select(cq.from(Korisnik.class));
     return em.createQuery(cq).getResultList();
   }
 
   public int count() {
     CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-    Root<Korisnici> rt = cq.from(Korisnici.class);
+    Root<Korisnik> rt = cq.from(Korisnik.class);
     cq.select(cb.count(rt));
     Query q = em.createQuery(cq);
     return ((Long) q.getSingleResult()).intValue();
   }
 
-  public List<Korisnici> findKorisnikeByImeAndPrezime(String ime, String prezime) {
-    CriteriaQuery<Korisnici> cq = cb.createQuery(Korisnici.class);
-    Root<Korisnici> korisnikRoot = cq.from(Korisnici.class);
+  public List<Korisnik> findKorisnikeByImeAndPrezime(String ime, String prezime) {
+    CriteriaQuery<Korisnik> cq = cb.createQuery(Korisnik.class);
+    Root<Korisnik> korisnikRoot = cq.from(Korisnik.class);
     Predicate filterIme = null;
     Predicate filterPrezime = null;
     if (ime != null && !ime.isEmpty()) {
@@ -77,21 +77,21 @@ public class KorisniciFacade {
   }
 
   public boolean autenticiraj(String korisnickoIme, String lozinka) {
-    CriteriaQuery<Korisnici> cq = cb.createQuery(Korisnici.class);
-    Root<Korisnici> korisnikRoot = cq.from(Korisnici.class);
+    CriteriaQuery<Korisnik> cq = cb.createQuery(Korisnik.class);
+    Root<Korisnik> korisnikRoot = cq.from(Korisnik.class);
     Predicate filterKorisnickoIme = cb.equal(korisnikRoot.get("korisnickoIme"), korisnickoIme);
     Predicate filterLozinka = cb.equal(korisnikRoot.get("lozinka"), lozinka);
     cq.where(cb.and(filterKorisnickoIme, filterLozinka));
-    List<Korisnici> rezultati = em.createQuery(cq).getResultList();
+    List<Korisnik> rezultati = em.createQuery(cq).getResultList();
     return !rezultati.isEmpty();
   }
 
-  public Korisnici findKorisnikByKorisnickoIme(String korisnickoIme) {
-    CriteriaQuery<Korisnici> cq = cb.createQuery(Korisnici.class);
-    Root<Korisnici> korisnikRoot = cq.from(Korisnici.class);
+  public Korisnik findKorisnikByKorisnickoIme(String korisnickoIme) {
+    CriteriaQuery<Korisnik> cq = cb.createQuery(Korisnik.class);
+    Root<Korisnik> korisnikRoot = cq.from(Korisnik.class);
     Predicate filterKorisnickoIme = cb.equal(korisnikRoot.get("korisnickoIme"), korisnickoIme);
     cq.where(filterKorisnickoIme);
-    List<Korisnici> rezultati = em.createQuery(cq).getResultList();
+    List<Korisnik> rezultati = em.createQuery(cq).getResultList();
     if (!rezultati.isEmpty()) {
       return rezultati.get(0);
     } else {
