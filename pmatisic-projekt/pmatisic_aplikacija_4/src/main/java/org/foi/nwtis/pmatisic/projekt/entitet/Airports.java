@@ -61,6 +61,9 @@ public class Airports implements Serializable {
   @OneToMany(mappedBy = "airport")
   private List<LetoviPolasci> letoviPolascis;
 
+  @OneToMany(mappedBy = "airports")
+  private List<AerodromiLetovi> aerodromiLetovi;
+
   public Airports() {}
 
   public String getIcao() {

@@ -44,8 +44,8 @@ public class WsMeteo {
     String gpsCoordinates =
         aerodrom.getLokacija().getLatitude() + "," + aerodrom.getLokacija().getLongitude();
     String[] latlon = gpsCoordinates.split(",");
-    String lat = latlon[0];
-    String lon = latlon[1];
+    String lat = latlon[1];
+    String lon = latlon[0];
     MeteoPodaci meteoPodaci = null;
 
     try {

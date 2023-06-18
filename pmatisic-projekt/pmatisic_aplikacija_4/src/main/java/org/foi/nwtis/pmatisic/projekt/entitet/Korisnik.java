@@ -20,7 +20,7 @@ public class Korisnik implements Serializable {
   @Column(name = "id", nullable = false)
   private Integer id;
 
-  @Column(name = "korime", nullable = false, length = 255)
+  @Column(name = "korime", nullable = false, length = 255, unique = true)
   private String korime;
 
   @Column(name = "lozinka", nullable = false, length = 255)

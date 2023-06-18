@@ -2,6 +2,7 @@ package org.foi.nwtis.pmatisic.projekt.zrno;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import org.foi.nwtis.pmatisic.projekt.entitet.Airports;
@@ -14,6 +15,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -32,19 +34,28 @@ public class LetoviPolasciFacade {
 
   public List<LetAviona> dohvatiLetovePoIntervalu(String icao, LocalDate datumOd, LocalDate datumDo,
       int odBroja, int broj) {
+    CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<LetoviPolasci> cq = cb.createQuery(LetoviPolasci.class);
     Root<LetoviPolasci> root = cq.from(LetoviPolasci.class);
-    Predicate icaoPred = cb.equal(root.get("airport").get("icao"), icao);
+    Join<LetoviPolasci, Airports> airportJoin = root.join("airport");
+    Predicate icaoPred = cb.equal(airportJoin.get("icao"), icao);
+
+    long epochDatumOd = datumOd.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
+    long epochDatumDo = datumDo.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
+
     Predicate datumOdPred =
-        cb.greaterThanOrEqualTo(root.get("stored"), Timestamp.valueOf(datumOd.atStartOfDay()));
-    Predicate datumDoPred =
-        cb.lessThanOrEqualTo(root.get("stored"), Timestamp.valueOf(datumDo.atStartOfDay()));
+        cb.greaterThanOrEqualTo(root.get("firstSeen").as(Long.class), epochDatumOd);
+    Predicate datumDoPred = cb.lessThan(root.get("lastSeen").as(Long.class), epochDatumDo);
+
     cq.where(cb.and(icaoPred, datumOdPred, datumDoPred));
+
     TypedQuery<LetoviPolasci> query = em.createQuery(cq);
     query.setFirstResult(odBroja);
     query.setMaxResults(broj);
+
     List<LetoviPolasci> rezultati = query.getResultList();
     List<LetAviona> letovi = new ArrayList<>();
+
     for (LetoviPolasci lp : rezultati) {
       LetAviona let = new LetAviona();
       let.setIcao24(lp.getIcao24());
@@ -61,6 +72,7 @@ public class LetoviPolasciFacade {
       let.setArrivalAirportCandidatesCount(lp.getArrivalAirportCandidatesCount());
       letovi.add(let);
     }
+
     return letovi;
   }
 

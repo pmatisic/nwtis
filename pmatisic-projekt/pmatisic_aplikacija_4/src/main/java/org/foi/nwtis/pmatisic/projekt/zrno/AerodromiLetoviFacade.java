@@ -1,18 +1,18 @@
 package org.foi.nwtis.pmatisic.projekt.zrno;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.foi.nwtis.pmatisic.projekt.entitet.AerodromiLetovi;
 import org.foi.nwtis.pmatisic.projekt.entitet.Airports;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 @Stateless
@@ -21,9 +21,6 @@ public class AerodromiLetoviFacade {
   @PersistenceContext(unitName = "nwtis_dz3_pu")
   private EntityManager em;
   private CriteriaBuilder cb;
-
-  @Inject
-  private AirportFacade airportFacade;
 
   @PostConstruct
   private void init() {
@@ -74,17 +71,28 @@ public class AerodromiLetoviFacade {
   }
 
   public List<Airports> dajAerodromePovezaneSAerodromimaLetova() {
-    cb = em.getCriteriaBuilder();
-    CriteriaQuery<Airports> cq = cb.createQuery(Airports.class);
-    Root<AerodromiLetovi> root = cq.from(AerodromiLetovi.class);
-    cq.select(root.join("airports", JoinType.INNER));
-    TypedQuery<Airports> query = em.createQuery(cq);
-    return query.getResultList();
+    try {
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<Airports> cq = cb.createQuery(Airports.class);
+      Root<Airports> airportsRoot = cq.from(Airports.class);
+      Root<AerodromiLetovi> aerodromiLetoviRoot = cq.from(AerodromiLetovi.class);
+      Predicate joinCondition = cb.equal(airportsRoot.get("icao"), aerodromiLetoviRoot.get("icao"));
+      cq.select(airportsRoot).where(joinCondition);
+      TypedQuery<Airports> query = em.createQuery(cq);
+      return query.getResultList();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
   }
 
   public boolean dodajAerodromZaLetove(String icao) {
     try {
-      Airports aerodrom = airportFacade.find(icao);
+      CriteriaBuilder cb = em.getCriteriaBuilder();
+      CriteriaQuery<Airports> cq = cb.createQuery(Airports.class);
+      Root<Airports> airportsRoot = cq.from(Airports.class);
+      cq.select(airportsRoot).where(cb.equal(airportsRoot.get("icao"), icao));
+      Airports aerodrom = em.createQuery(cq).getSingleResult();
       if (aerodrom != null) {
         AerodromiLetovi noviAerodromLetovi = new AerodromiLetovi();
         noviAerodromLetovi.setIcao(icao);

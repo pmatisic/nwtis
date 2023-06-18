@@ -1,5 +1,6 @@
 package org.foi.nwtis.pmatisic.projekt.zrno;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.foi.nwtis.pmatisic.projekt.entitet.Korisnik;
 import jakarta.annotation.PostConstruct;
@@ -55,23 +56,18 @@ public class KorisniciFacade {
     return ((Long) q.getSingleResult()).intValue();
   }
 
-  public List<Korisnik> findKorisnikeByImeAndPrezime(String ime, String prezime) {
+  public List<Korisnik> findKorisnikByImeAndPrezime(String ime, String prezime) {
     CriteriaQuery<Korisnik> cq = cb.createQuery(Korisnik.class);
     Root<Korisnik> korisnikRoot = cq.from(Korisnik.class);
-    Predicate filterIme = null;
-    Predicate filterPrezime = null;
+    List<Predicate> predicates = new ArrayList<>();
     if (ime != null && !ime.isEmpty()) {
-      filterIme = cb.like(korisnikRoot.get("ime"), "%" + ime + "%");
+      predicates.add(cb.like(korisnikRoot.get("ime"), "%" + ime + "%"));
     }
     if (prezime != null && !prezime.isEmpty()) {
-      filterPrezime = cb.like(korisnikRoot.get("prezime"), "%" + prezime + "%");
+      predicates.add(cb.like(korisnikRoot.get("prezime"), "%" + prezime + "%"));
     }
-    if (filterIme != null && filterPrezime != null) {
-      cq.where(cb.and(filterIme, filterPrezime));
-    } else if (filterIme != null) {
-      cq.where(filterIme);
-    } else if (filterPrezime != null) {
-      cq.where(filterPrezime);
+    if (!predicates.isEmpty()) {
+      cq.where(cb.and(predicates.toArray(new Predicate[0])));
     }
     return em.createQuery(cq).getResultList();
   }

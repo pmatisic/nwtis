@@ -27,7 +27,7 @@ public class WsKorisnici {
         && (traziPrezimeKorisnika == null || traziPrezimeKorisnika.isEmpty())) {
       return korisniciFacade.findAll();
     }
-    return korisniciFacade.findKorisnikeByImeAndPrezime(traziImeKorisnika, traziPrezimeKorisnika);
+    return korisniciFacade.findKorisnikByImeAndPrezime(traziImeKorisnika, traziPrezimeKorisnika);
   }
 
   @WebMethod

@@ -17,38 +17,16 @@ CREATE TABLE DNEVNIK (
     vrsta VARCHAR(255),
     vrijeme_pristupa TIMESTAMP,
     putanja VARCHAR(1024),
+    ip_adresa VARCHAR(255),
     korisnik INTEGER,
     FOREIGN KEY (korisnik) REFERENCES KORISNICI(id)
 );
-
-ALTER TABLE DNEVNIK ADD ip_adresa VARCHAR(255);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE KORISNICI TO APLIKACIJA;
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE DNEVNIK TO APLIKACIJA;
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE AERODROMI_LETOVI TO APLIKACIJA;
-
-INSERT INTO PUBLIC.AERODROMI_LETOVI (icao, aktivan) VALUES
-    ('EDDF', true),
-    ('EDDM', true),
-    ('EGGP', true),
-    ('EGLL', true),
-    ('EIDW', true),
-    ('EPWA', true),
-    ('GCLP', true),
-    ('HEGN', true),
-    ('LDZA', true),
-    ('LEBL', true),
-    ('LEPA', true),
-    ('LFPG', true),
-    ('EDDS', true),
-    ('LIPZ', true),
-    ('LOWW', true),
-    ('LTBJ', true),
-    ('LSZH', true),
-    ('LJLJ', true),
-    ('OMDB', true);
    
 TRUNCATE TABLE LETOVI_POLASCI;
 
@@ -59,3 +37,9 @@ SELECT * FROM LETOVI_POLASCI;
 TRUNCATE TABLE DNEVNIK; 
 
 SELECT * FROM DNEVNIK;
+
+SELECT * FROM AERODROMI_LETOVI;
+
+DELETE FROM KORISNICI WHERE ID = '5';
+
+SELECT * FROM KORISNICI;

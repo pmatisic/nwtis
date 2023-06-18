@@ -37,28 +37,31 @@ public class WsLetovi {
   public List<LetAviona> dajPolaskeInterval(@WebParam String korisnik, @WebParam String lozinka,
       @WebParam String icao, @WebParam String danOd, @WebParam String danDo,
       @WebParam Integer odBroja, @WebParam Integer broj) throws Exception {
-    if (korisniciFacade.autenticiraj(korisnik, lozinka)) {
-      if (odBroja < 1 || broj < 1) {
-        odBroja = 1;
-        broj = 20;
-      }
-      int offset = (odBroja - 1) * broj;
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-      LocalDate datumOd = null;
-      LocalDate datumDo = null;
-      try {
-        datumOd = LocalDate.parse(danOd, formatter);
-        datumDo = LocalDate.parse(danDo, formatter);
-      } catch (Exception e) {
-        throw new Exception("Neispravan format datuma. Molimo koristite format dd.MM.yyyy.");
-      }
-      if (datumOd.isAfter(datumDo)) {
-        throw new Exception("Datum 'danOd' ne može biti nakon datuma 'danDo'.");
-      }
-      return lpFacade.dohvatiLetovePoIntervalu(icao, datumOd, datumDo, offset, broj);
-    } else {
+    if (!korisniciFacade.autenticiraj(korisnik, lozinka)) {
       throw new PogresnaAutentikacija("Pogrešno korisničko ime ili lozinka.");
     }
+
+    if (odBroja < 1 || broj < 1) {
+      odBroja = 1;
+      broj = 20;
+    }
+
+    int offset = (odBroja - 1) * broj;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    LocalDate datumOd = null;
+    LocalDate datumDo = null;
+
+    try {
+      datumOd = LocalDate.parse(danOd, formatter);
+      datumDo = LocalDate.parse(danDo, formatter);
+    } catch (Exception e) {
+      throw new Exception("Neispravan format datuma. Molimo koristite format dd.MM.yyyy.");
+    }
+    if (datumOd.isAfter(datumDo)) {
+      throw new Exception("Datum 'danOd' ne može biti nakon datuma 'danDo'.");
+    }
+
+    return lpFacade.dohvatiLetovePoIntervalu(icao, datumOd, datumDo, offset, broj);
   }
 
   @WebMethod
