@@ -1,263 +1,107 @@
-<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page import="java.util.List"%>
+<%@page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="<%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%>">
-	<meta name="subject" content="<%=request.getAttribute("predmet")%>">
-	<meta name="year" content="<%=request.getAttribute("godina")%>">
-	<meta name="version" content="<%=request.getAttribute("verzija")%>">
-    <title>Zadaća 3</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<meta charset="UTF-8">
+<meta name="author"
+	content="<%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%>">
+<meta name="subject" content="<%=request.getAttribute("predmet")%>">
+<meta name="year" content="<%=request.getAttribute("godina")%>">
+<meta name="version" content="<%=request.getAttribute("verzija")%>">
+<title>Pogled 5.4</title>
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+<style>
+body {
+	background-color: #f8f9fa;
+}
+
+.container {
+	max-width: 960px;
+}
+
+h1 {
+	color: #343a40;
+	font-weight: bold;
+	margin-top: 1.5rem;
+}
+
+th {
+	color: #495057;
+}
+
+thead {
+	background-color: #e9ecef;
+}
+
+.btn-primary {
+	background-color: #007bff;
+	border-color: #007bff; &: hover { background-color : #0056b3;
+	border-color: #0056b3;
+}
+
+}
+.btn-secondary {
+	background-color: #6c757d;
+	border-color: #6c757d; &: hover { background-color : #5a6268;
+	border-color: #5a6268;
+}
+
+}
+.author-info {
+	font-size: 0.9rem;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="mt-5 mb-4">Zadaća 3</h1>
+	<div class="container">
+		<h1>Pregled primljenih JMS poruka</h1>
 		<div class="author-info">
-		   <p>
-		       <strong>Autor:</strong>
-		       <%=request.getAttribute("ime")%>
-		       <%=request.getAttribute("prezime")%></p>
-		   <p>
-		       <strong>Predmet:</strong>
-		       <%=request.getAttribute("predmet")%></p>
-		   <p>
-		       <strong>Godina:</strong>
-		       <%=request.getAttribute("godina")%></p>
-		   <p>
-		       <strong>Verzija aplikacije:</strong>
-		       <%=request.getAttribute("verzija")%></p>
+			<p>
+				<strong>Autor:</strong>
+				<%=request.getAttribute("ime")%>
+				<%=request.getAttribute("prezime")%></p>
+			<p>
+				<strong>Predmet:</strong>
+				<%=request.getAttribute("predmet")%></p>
+			<p>
+				<strong>Godina:</strong>
+				<%=request.getAttribute("godina")%></p>
+			<p>
+				<strong>Verzija aplikacije:</strong>
+				<%=request.getAttribute("verzija")%></p>
 		</div>
-        <ul class="list-group">
-            <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/aerodromi">Pregled svih aerodroma</a></li>
-            <li class="list-group-item"><a href="#" onclick="openModalAerodrom()">Pregled jednog aerodroma</a></li>
-            <li class="list-group-item"><a href="#" onclick="openModalUdaljenost()">Pregled udaljenosti po državama između dva aerodroma i ukupne udaljenosti</a></li>
-            <li class="list-group-item"><a href="#" onclick="openModalUdaljenostiSvihAerodroma()">Pregled udaljenosti svih aerodroma od odabranog aerodroma</a></li>
-            <li class="list-group-item"><a href="#" onclick="openModalNajduziPutDrzave()">Pregled najdužeg puta unutar države s pregledom aerodroma od odabranog aerodroma</a></li>
-            <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/letovi/poruke">Pregled primljenih JMS poruka</a></li>
-            <li class="list-group-item"><a href="#" onclick="openModalMeteo()">Pregled meteoroloških podataka za odabrani aerodrom</a></li>
-            <li class="list-group-item"><a href="#" onclick="openModalMeteoAdresa()">Pregled meteoroloških podataka za upisanu adresu</a></li>
-        </ul>
-    </div>
-	<div class="modal" tabindex="-1" role="dialog" id="icaoModalAerodrom">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title">Unesite ICAO oznaku aerodroma</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <div class="form-group">
-	                    <label for="icaoAerodrom">ICAO:</label>
-	                    <input type="text" class="form-control" id="icaoAerodrom" required>
-	                </div>
-	            </div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
-	                <button type="button" class="btn btn-primary" onclick="submitFormAerodrom()">Potvrdi</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<div class="modal" tabindex="-1" role="dialog" id="icaoModalUdaljenost">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title">Unesite ICAO oznaku za oba aerodroma</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <div class="form-group">
-	                    <label for="icaoOd">ICAO Od:</label>
-	                    <input type="text" class="form-control" id="icaoOd" required>
-	                </div>
-	                <div class="form-group">
-	                    <label for="icaoDo">ICAO Do:</label>
-	                    <input type="text" class="form-control" id="icaoDo" required>
-	                </div>
-	            </div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
-	                <button type="button" class="btn btn-primary" onclick="submitFormUdaljenost()">Potvrdi</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<div class="modal" tabindex="-1" role="dialog" id="icaoModalUdaljenostiSvihAerodroma">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title">Unesite ICAO oznaku aerodroma</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <div class="form-group">
-	                    <label for="icaoUdaljenosti">ICAO:</label>
-	                    <input type="text" class="form-control" id="icaoUdaljenosti" required>
-	                </div>
-	            </div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
-	                <button type="button" class="btn btn-primary" onclick="submitFormUdaljenostiSvihAerodroma()">Potvrdi</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<div class="modal" tabindex="-1" role="dialog" id="icaoModalNajduziPutDrzave">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title">Unesite ICAO oznaku aerodroma</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <div class="form-group">
-	                    <label for="icaoNajduziPut">ICAO:</label>
-	                    <input type="text" class="form-control" id="icaoNajduziPut" required>
-	                </div>
-	            </div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
-	                <button type="button" class="btn btn-primary" onclick="submitFormNajduziPutDrzave()">Potvrdi</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<div class="modal" tabindex="-1" role="dialog" id="icaoModalMeteo">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title">Unesite ICAO oznaku aerodroma</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <div class="form-group">
-	                    <label for="icaoMeteo">ICAO:</label>
-	                    <input type="text" class="form-control" id="icaoMeteo" required>
-	                </div>
-	            </div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
-	                <button type="button" class="btn btn-primary" onclick="submitFormMeteo()">Potvrdi</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<div class="modal" tabindex="-1" role="dialog" id="adresaModalMeteo">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title">Unesite adresu</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <div class="form-group">
-	                    <label for="adresaMeteo">Adresa:</label>
-	                    <input type="text" class="form-control" id="adresaMeteo" required>
-	                </div>
-	            </div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
-	                <button type="button" class="btn btn-primary" onclick="submitFormMeteoAdresa()">Potvrdi</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-    <script>
-	    function openModalAerodrom() {
-	        $("#icaoModalAerodrom").modal("show");
-	    }
-	
-	    function submitFormAerodrom() {
-	        var icao = document.getElementById("icaoAerodrom").value;
-	        if (icao) {
-	            var contextPath = '<%=request.getContextPath()%>';
-	            var url = contextPath + "/mvc/aerodromi/" + icao;
-	            window.location.href = url;
-	        }
-	    }
-	    
-	    function openModalUdaljenost() {
-	        $("#icaoModalUdaljenost").modal("show");
-	    }
+		<div class="d-flex justify-content-between mb-3">
+			<a href="<%=request.getContextPath()%>/index.jsp"
+				class="btn btn-secondary">Početna stranica</a>
+		</div>
+		<table id="porukeTable" class="table table-striped">
+			<thead>
+				<tr>
+					<th>Poruka</th>
+				</tr>
+			</thead>
+			<tbody>
+				<%
+				List<String> poruke = (List<String>) request.getAttribute("poruke");
 
-	    function submitFormUdaljenost() {
-	        var icaoOd = document.getElementById("icaoOd").value;
-	        var icaoDo = document.getElementById("icaoDo").value;
-	        if (icaoOd && icaoDo) {
-	            var contextPath = '<%=request.getContextPath()%>';
-	            var url = contextPath + "/mvc/aerodromi/" + icaoOd + "/" + icaoDo;
-	            window.location.href = url;
-	        }
-	    }
-	    
-	    function openModalUdaljenostiSvihAerodroma() {
-	        $("#icaoModalUdaljenostiSvihAerodroma").modal("show");
-	    }
-
-	    function submitFormUdaljenostiSvihAerodroma() {
-	        var icao = document.getElementById("icaoUdaljenosti").value;
-	        if (icao) {
-	            var contextPath = '<%=request.getContextPath()%>';
-	            var url = contextPath + "/mvc/aerodromi/" + icao + "/udaljenosti";
-	            window.location.href = url;
-	        }
-	    }
-	    
-	    function openModalNajduziPutDrzave() {
-	        $("#icaoModalNajduziPutDrzave").modal("show");
-	    }
-
-	    function submitFormNajduziPutDrzave() {
-	        var icao = document.getElementById("icaoNajduziPut").value;
-	        if (icao) {
-	            var contextPath = '<%=request.getContextPath()%>';
-	            var url = contextPath + "/mvc/aerodromi/" + icao + "/najduljiPutDrzave";
-	            window.location.href = url;
-	        }
-	    }
-	    
-	    function openModalMeteo() {
-	        $("#icaoModalMeteo").modal("show");
-	    }
-
-	    function submitFormMeteo() {
-	        var icao = document.getElementById("icaoMeteo").value;
-	        if (icao) {
-	            var contextPath = '<%=request.getContextPath()%>';
-	            var url = contextPath + "/mvc/meteo/" + icao;
-	            window.location.href = url;
-	        }
-	    }
-
-	    function openModalMeteoAdresa() {
-	        $("#adresaModalMeteo").modal("show");
-	    }
-
-	    function submitFormMeteoAdresa() {
-	        var adresa = document.getElementById("adresaMeteo").value;
-	        if (adresa) {
-	            var contextPath = '<%=request.getContextPath()%>';
-	            var url = contextPath + "/mvc/meteo?adresa=" + encodeURIComponent(adresa);
-	            window.location.href = url;
-	        }
-	    }
-    </script>
+				if (poruke != null) {
+				  for (String poruka : poruke) {
+				%>
+				<tr>
+					<td><%=poruka%></td>
+				</tr>
+				<%
+				}
+				}
+				%>
+			</tbody>
+		</table>
+		<br>
+	</div>
 </body>
 </html>

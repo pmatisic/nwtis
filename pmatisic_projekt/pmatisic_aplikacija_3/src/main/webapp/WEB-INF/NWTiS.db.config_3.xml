@@ -2,8 +2,8 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <entry key="ciklus.trajanje">10</entry>
-<entry key="preuzimanje.od">31.12.2015</entry>
-<entry key="preuzimanje.do">30.11.2022</entry>
+<entry key="preuzimanje.od">01.06.2023</entry>
+<entry key="preuzimanje.do">19.06.2023</entry>
 <entry key="OpenSkyNetwork.korisnik">petarmatisic</entry>
 <entry key="OpenSkyNetwork.lozinka">chelsea1003</entry>
 <entry key="aai.ldap">pmatisic@student.foi.hr</entry>

@@ -4,16 +4,24 @@ import java.util.List;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.pmatisic.projekt.servis.WsKorisnici.endpoint.Korisnici;
 import org.foi.nwtis.pmatisic.projekt.servis.WsKorisnici.endpoint.Korisnik;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.mvc.Controller;
 import jakarta.mvc.Models;
 import jakarta.mvc.View;
 import jakarta.servlet.ServletContext;
-import jakarta.ws.rs.FormParam;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.WebServiceRef;
 
 @Controller
@@ -30,32 +38,23 @@ public class KontrolerKorisnika {
   @Context
   private ServletContext konfig;
 
-  @POST
-  @Path("registracija")
-  @View("pogled_5_2_1.jsp")
-  public void registracija(@FormParam("ime") String ime, @FormParam("prezime") String prezime,
-      @FormParam("korime") String korime, @FormParam("lozinka") String lozinka) {
+  @Context
+  private HttpServletRequest request;
+
+  @GET
+  @View("pogled_5_2.jsp")
+  public void pocetak() {
+
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
-    String imeAutora = konfiguracija.dajPostavku("autor.ime");
-    String prezimeAutora = konfiguracija.dajPostavku("autor.prezime");
-    String predmet = konfiguracija.dajPostavku("autor.predmet");
-    String godina = konfiguracija.dajPostavku("aplikacija.godina");
-    String verzija = konfiguracija.dajPostavku("aplikacija.verzija");
-
-    var port = service.getWsKorisniciPort();
-
-    Korisnik noviKorisnik = new Korisnik();
-    noviKorisnik.setIme(ime);
-    noviKorisnik.setPrezime(prezime);
-    noviKorisnik.setKorime(korime);
-    noviKorisnik.setLozinka(lozinka);
-
-    boolean uspjesnoDodan = port.dodajKorisnika(noviKorisnik);
+    String ime = (konfiguracija.dajPostavku("autor.ime")).toString();
+    String prezime = (konfiguracija.dajPostavku("autor.prezime")).toString();
+    String predmet = (konfiguracija.dajPostavku("autor.predmet")).toString();
+    String godina = (konfiguracija.dajPostavku("aplikacija.godina")).toString();
+    String verzija = (konfiguracija.dajPostavku("aplikacija.verzija")).toString();
 
     try {
-      model.put("uspjesnoDodan", uspjesnoDodan);
-      model.put("ime", imeAutora);
-      model.put("prezime", prezimeAutora);
+      model.put("ime", ime);
+      model.put("prezime", prezime);
       model.put("predmet", predmet);
       model.put("godina", godina);
       model.put("verzija", verzija);
@@ -64,69 +63,104 @@ public class KontrolerKorisnika {
     }
   }
 
-  @POST
+  @GET
+  @Path("registracija")
+  @View("pogled_5_2_1.jsp")
+  public void registracija() {
+
+  }
+
+  @GET
   @Path("prijava")
   @View("pogled_5_2_2.jsp")
-  public void prijava(@FormParam("korime") String korime, @FormParam("lozinka") String lozinka) {
-    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
-    String ime = konfiguracija.dajPostavku("autor.ime");
-    String prezime = konfiguracija.dajPostavku("autor.prezime");
-    String predmet = konfiguracija.dajPostavku("autor.predmet");
-    String godina = konfiguracija.dajPostavku("aplikacija.godina");
-    String verzija = konfiguracija.dajPostavku("aplikacija.verzija");
+  public void prijava() {
 
-    var port = service.getWsKorisniciPort();
+  }
 
+  @POST
+  @Path("reg")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response registracija(Korisnik noviKorisnik) {
     try {
-      Korisnik korisnik = port.dajKorisnika(korime, lozinka, korime);
+      var port = service.getWsKorisniciPort();
+      boolean uspjesnoDodan = port.dodajKorisnika(noviKorisnik);
 
-      if (korisnik != null) {
-        model.put("korisnik", korisnik);
-        model.put("uspjesnoPrijavljen", true);
+      if (uspjesnoDodan) {
+        return Response.status(Response.Status.CREATED).build();
       } else {
-        model.put("uspjesnoPrijavljen", false);
+        return Response.status(Response.Status.BAD_REQUEST).build();
       }
-
-      model.put("ime", ime);
-      model.put("prezime", prezime);
-      model.put("predmet", predmet);
-      model.put("godina", godina);
-      model.put("verzija", verzija);
-
     } catch (Exception e) {
-      model.put("greska", "Došlo je do pogreške prilikom prijave: " + e.getMessage());
+      e.printStackTrace();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
 
   @POST
+  @Path("pri")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response prijava(String jsonBody) {
+    try {
+      Gson gson = new Gson();
+      JsonObject jsonObject = gson.fromJson(jsonBody, JsonObject.class);
+      String korime = jsonObject.get("korime").getAsString();
+      String lozinka = jsonObject.get("lozinka").getAsString();
+
+      var port = service.getWsKorisniciPort();
+      Korisnik korisnik = port.dajKorisnika(korime, lozinka, korime);
+
+      if (korisnik != null) {
+        HttpSession session = request.getSession();
+        session.setAttribute("korisnik", korisnik);
+
+        model.put("korisnik", korisnik);
+        model.put("uspjesnoPrijavljen", true);
+        return Response.ok().build();
+      } else {
+        model.put("uspjesnoPrijavljen", false);
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+      }
+    } catch (Exception e) {
+      model.put("greska", "Došlo je do pogreške prilikom prijave: " + e.getMessage());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+
+  @GET
   @Path("pregled")
   @View("pogled_5_2_3.jsp")
-  public void pregled(@FormParam("korime") String korime, @FormParam("lozinka") String lozinka,
-      @FormParam("traziImeKorisnika") String traziImeKorisnika,
-      @FormParam("traziPrezimeKorisnika") String traziPrezimeKorisnika) {
-    Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
-    String ime = konfiguracija.dajPostavku("autor.ime");
-    String prezime = konfiguracija.dajPostavku("autor.prezime");
-    String predmet = konfiguracija.dajPostavku("autor.predmet");
-    String godina = konfiguracija.dajPostavku("aplikacija.godina");
-    String verzija = konfiguracija.dajPostavku("aplikacija.verzija");
-
-    var port = service.getWsKorisniciPort();
-
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response pregled(@QueryParam("traziImeKorisnika") String traziImeKorisnika,
+      @QueryParam("traziPrezimeKorisnika") String traziPrezimeKorisnika) {
     try {
-      List<Korisnik> listaKorisnika =
+      HttpSession session = request.getSession(false);
+      if (session == null) {
+        return Response.status(Response.Status.UNAUTHORIZED)
+            .entity("Morate biti prijavljeni za pristup ovoj stranici.").build();
+      }
+      String korime = (String) session.getAttribute("korime");
+      String lozinka = (String) session.getAttribute("lozinka");
+
+      var port = service.getWsKorisniciPort();
+
+      List<Korisnik> filtriraniKorisnici =
           port.dajKorisnike(korime, lozinka, traziImeKorisnika, traziPrezimeKorisnika);
 
-      model.put("listaKorisnika", listaKorisnika);
-      model.put("ime", ime);
-      model.put("prezime", prezime);
-      model.put("predmet", predmet);
-      model.put("godina", godina);
-      model.put("verzija", verzija);
+      model.put("filtriraniKorisnici", filtriraniKorisnici);
+
+      return Response.ok().build();
 
     } catch (Exception e) {
-      model.put("greska", "Došlo je do pogreške prilikom dohvaćanja korisnika: " + e.getMessage());
+      model.put("greska",
+          "Došlo je do pogreške prilikom dohvaćanja filtriranih korisnika: " + e.getMessage());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
+  }
+
+  public boolean jeKorisnikPrijavljen() {
+    HttpSession session = request.getSession(false);
+    return session != null && session.getAttribute("korisnik") != null;
   }
 
 }

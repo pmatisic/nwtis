@@ -11,7 +11,7 @@ import org.foi.nwtis.pmatisic.projekt.zrno.AerodromiLetoviFacade;
 import org.foi.nwtis.pmatisic.projekt.zrno.AirportFacade;
 import org.foi.nwtis.pmatisic.projekt.zrno.JmsPosiljatelj;
 import org.foi.nwtis.pmatisic.projekt.zrno.LetoviPolasciFacade;
-import org.foi.nwtis.rest.klijenti.OSKlijentBP;
+import org.foi.nwtis.rest.klijenti.OSKlijent;
 import org.foi.nwtis.rest.podaci.LetAviona;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletContext;
@@ -47,8 +47,8 @@ public class SakupljacLetovaAviona extends Thread {
   public void run() {
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
     String korisnik = konfiguracija.dajPostavku("OpenSkyNetwork.korisnik").toString();
-    String ldap = konfiguracija.dajPostavku("aai.ldap").toString();
-    // String lozinka = konfiguracija.dajPostavku("OpenSkyNetwork.lozinka").toString();
+    // String ldap = konfiguracija.dajPostavku("aai.ldap").toString();
+    String lozinka = konfiguracija.dajPostavku("OpenSkyNetwork.lozinka").toString();
     String pocetniDanString = konfiguracija.dajPostavku("preuzimanje.od").toString();
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     this.trenutniDan = LocalDate.parse(pocetniDanString, dtf);
@@ -72,12 +72,11 @@ public class SakupljacLetovaAviona extends Thread {
       // ZoneId zoneId = ZoneId.systemDefault();
       // int odVremena = (int) trenutniDan.atStartOfDay(zoneId).toEpochSecond();
       int odVremena = (int) trenutniDan.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
-      // int doVremena = (int) trenutniDan.plusDays(1).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
-      int doVremena = (int) trenutniDan.plusDays(1).atStartOfDay().minusSeconds(1)
-          .toEpochSecond(ZoneOffset.UTC);
+      int doVremena = (int) trenutniDan.plusDays(1).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+      // int doVremena = (int) trenutniDan.plusDays(1).atStartOfDay().minusSeconds(1).toEpochSecond(ZoneOffset.UTC);
       List<AerodromiLetovi> aktivniAerodromi = alFacade.dohvatiAktivneAerodrome();
-      // OSKlijent osKlijent = new OSKlijent(korisnik, lozinka);
-      OSKlijentBP osKlijent = new OSKlijentBP(ldap, korisnik);
+      OSKlijent osKlijent = new OSKlijent(korisnik, lozinka);
+      // OSKlijentBP osKlijent = new OSKlijentBP(ldap, korisnik);
       int brojLetova = 0;
       try {
         for (AerodromiLetovi aerodromLet : aktivniAerodromi) {

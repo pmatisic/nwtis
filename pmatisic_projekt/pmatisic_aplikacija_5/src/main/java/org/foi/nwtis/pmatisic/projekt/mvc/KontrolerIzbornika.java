@@ -42,7 +42,6 @@ public class KontrolerIzbornika {
     } catch (Exception e) {
       e.printStackTrace();
     }
-
   }
 
 }
