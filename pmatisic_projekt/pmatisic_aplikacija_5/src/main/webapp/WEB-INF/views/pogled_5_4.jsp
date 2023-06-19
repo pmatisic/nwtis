@@ -77,7 +77,7 @@ thead {
 		</div>
 		<div class="d-flex justify-content-between mb-3">
 			<a href="<%=request.getContextPath()%>/index.jsp"
-				class="btn btn-secondary">Početna stranica</a>
+				class="btn btn-secondary">Povratak na početnu stranicu</a>
 		</div>
 		<table id="porukeTable" class="table table-striped">
 			<thead>
@@ -88,6 +88,8 @@ thead {
 			<tbody>
 				<%
 				List<String> poruke = (List<String>) request.getAttribute("poruke");
+				Integer odBroja = (Integer) request.getAttribute("odBroja");
+				Integer broj = (Integer) request.getAttribute("broj");
 
 				if (poruke != null) {
 				  for (String poruka : poruke) {
@@ -101,6 +103,16 @@ thead {
 				%>
 			</tbody>
 		</table>
+		<div class="pagination-container">
+			<div class="pagination-btns">
+				<a href="<%=request.getContextPath()%>/mvc/letovi/poruke"
+					class="btn btn-primary">Početak</a> 
+				<a href="<%=request.getContextPath()%>/mvc/letovi/poruke?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
+					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna stranica</a>
+				<a href="<%=request.getContextPath()%>/mvc/letovi/poruke?odBroja=<%=odBroja + 1%>"
+					class="btn btn-primary">Sljedeća stranica</a>
+			</div>
+		</div>
 		<br>
 	</div>
 </body>

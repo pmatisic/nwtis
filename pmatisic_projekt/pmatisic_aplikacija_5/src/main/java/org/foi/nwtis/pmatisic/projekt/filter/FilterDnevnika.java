@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import org.foi.nwtis.pmatisic.projekt.podatak.Dnevnik;
+import org.foi.nwtis.pmatisic.projekt.servis.WsKorisnici.endpoint.Korisnik;
 import com.google.gson.Gson;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -19,6 +20,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @WebFilter
 public class FilterDnevnika implements Filter {
@@ -45,19 +47,31 @@ public class FilterDnevnika implements Filter {
       vrsta = "AP5";
     }
 
-    String korisnikStr = httpRequest.getHeader("X-User-ID");
+    HttpSession session = httpRequest.getSession(false);
     Integer korisnikId = null;
-    if (korisnikStr != null) {
-      try {
-        korisnikId = Integer.parseInt(korisnikStr);
-      } catch (NumberFormatException ex) {
-        korisnikId = null;
+
+    if (session != null) {
+      Korisnik korisnik = (Korisnik) session.getAttribute("korisnik");
+      if (korisnik != null) {
+        korisnikId = korisnik.getId();
+      }
+    }
+
+    if (korisnikId == null) {
+      String korisnikStr = httpRequest.getHeader("X-User-ID");
+      if (korisnikStr != null) {
+        try {
+          korisnikId = Integer.parseInt(korisnikStr);
+        } catch (NumberFormatException ex) {
+          korisnikId = null;
+        }
       }
     }
 
     Timestamp vrijemePristupaTimestamp = new Timestamp(System.currentTimeMillis());
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
     String vrijemePristupa = formatter.format(vrijemePristupaTimestamp.toInstant());
+
     Dnevnik dnevnik = new Dnevnik(vrsta, vrijemePristupa, fullPath, clientIP, korisnikId);
     sendPostRequest(dnevnik);
 
