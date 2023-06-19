@@ -31,12 +31,12 @@
 		       <%=request.getAttribute("verzija")%></p>
 		</div>
         <ul class="list-group">
-            <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/izbornik/korisnici">Aktivnosti vezane uz korisnike</a></li>
-			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/izbornik/posluzitelj">Upravljanje poslužiteljem</a></li>
-			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/izbornik/poruke">Pregled svih primljenih JMS poruka</a></li>
-			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/izbornik/aerodromi">Aktivnosti vezane uz aerodrome</a></li>
-            <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/izbornik/letovi">Aktivnosti vezane uz letove</a></li>
-			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/izbornik/dnevnik">Pregled zapisa dnevnika</a></li>
+            <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/korisnici">Aktivnosti vezane uz korisnike</a></li>
+			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/posluzitelj">Upravljanje poslužiteljem</a></li>
+			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/poruke">Pregled svih primljenih JMS poruka</a></li>
+			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/aerodromi">Aktivnosti vezane uz aerodrome</a></li>
+            <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/letovi">Aktivnosti vezane uz letove</a></li>
+			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/dnevnik">Pregled zapisa dnevnika</a></li>
         </ul>
     </div>
 </body>

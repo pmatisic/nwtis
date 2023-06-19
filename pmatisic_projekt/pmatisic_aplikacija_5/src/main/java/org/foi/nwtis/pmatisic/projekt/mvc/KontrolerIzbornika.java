@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Context;
 @Controller
 @Path("izbornik")
 @RequestScoped
-public class KontrolerIzbornik {
+public class KontrolerIzbornika {
 
   @Context
   private ServletContext konfig;
