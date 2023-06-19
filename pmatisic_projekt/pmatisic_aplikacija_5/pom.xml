@@ -77,7 +77,7 @@
 							<wsdlLocation>
 								http://localhost:8080/pmatisic_aplikacija_4/aerodromi?wsdl</wsdlLocation>
 							<packageName>
-								org.foi.nwtis.pmatisic.projekt.ws.WsAerodromi.endpoint</packageName>
+								org.foi.nwtis.pmatisic.projekt.servis.WsAerodromi.endpoint</packageName>
 						</configuration>
 					</execution>
 					<execution>
@@ -95,7 +95,7 @@
 							<wsdlLocation>
 								http://localhost:8080/pmatisic_aplikacija_4/meteo?wsdl</wsdlLocation>
 							<packageName>
-								org.foi.nwtis.pmatisic.projekt.ws.WsMeteo.endpoint</packageName>
+								org.foi.nwtis.pmatisic.projekt.servis.WsMeteo.endpoint</packageName>
 						</configuration>
 					</execution>
 					<execution>
@@ -113,7 +113,7 @@
 							<wsdlLocation>
 								http://localhost:8080/pmatisic_aplikacija_4/korisnici?wsdl</wsdlLocation>
 							<packageName>
-								org.foi.nwtis.pmatisic.projekt.ws.WsKorisnici.endpoint</packageName>
+								org.foi.nwtis.pmatisic.projekt.servis.WsKorisnici.endpoint</packageName>
 						</configuration>
 					</execution>
 					<execution>
@@ -131,7 +131,7 @@
 							<wsdlLocation>
 								http://localhost:8080/pmatisic_aplikacija_4/letovi?wsdl</wsdlLocation>
 							<packageName>
-								org.foi.nwtis.pmatisic.projekt.ws.WsLetovi.endpoint</packageName>
+								org.foi.nwtis.pmatisic.projekt.servis.WsLetovi.endpoint</packageName>
 						</configuration>
 					</execution>
 				</executions>
