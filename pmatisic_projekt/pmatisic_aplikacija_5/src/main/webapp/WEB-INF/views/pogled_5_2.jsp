@@ -28,6 +28,11 @@
 			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/korisnici/prijava">Prijava</a></li>
 			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/korisnici/pregled">Pregled</a></li>
         </ul>
+        <br>
+		<div class="d-flex justify-content-between mb-3">
+			<a href="<%=request.getContextPath()%>/index.jsp"
+				class="btn btn-secondary">Povratak na početnu stranicu</a>
+		</div>
     </div>
 </body>
 </html>

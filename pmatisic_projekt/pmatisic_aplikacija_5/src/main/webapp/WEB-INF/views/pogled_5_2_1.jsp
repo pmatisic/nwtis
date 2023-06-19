@@ -27,7 +27,10 @@
             <label for="lozinka" class="form-label">Lozinka:</label>
             <input type="password" class="form-control" id="lozinka" required>
         </div>
-        <button type="button" class="btn btn-primary" onclick="submitForm()">Registriraj se</button>
+        <div class="d-flex justify-content-between mb-3">
+            <button type="button" class="btn btn-primary" onclick="submitForm()">Registriraj se</button>
+            <a href="<%=request.getContextPath()%>/mvc/korisnici" class="btn btn-secondary">Povratak</a>
+        </div>
     </form>
 </div>
 <script>

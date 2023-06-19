@@ -126,7 +126,6 @@ public class KontrolerKorisnika {
     }
   }
 
-
   @GET
   @Path("pregled")
   @View("pogled_5_2_3.jsp")
@@ -139,28 +138,20 @@ public class KontrolerKorisnika {
         return Response.status(Response.Status.UNAUTHORIZED)
             .entity("Morate biti prijavljeni za pristup ovoj stranici.").build();
       }
-      String korime = (String) session.getAttribute("korime");
-      String lozinka = (String) session.getAttribute("lozinka");
+      Korisnik korisnik = (Korisnik) session.getAttribute("korisnik");
+      String korime = korisnik.getKorime();
+      String lozinka = korisnik.getLozinka();
 
       var port = service.getWsKorisniciPort();
-
       List<Korisnik> filtriraniKorisnici =
           port.dajKorisnike(korime, lozinka, traziImeKorisnika, traziPrezimeKorisnika);
-
       model.put("filtriraniKorisnici", filtriraniKorisnici);
-
       return Response.ok().build();
-
     } catch (Exception e) {
       model.put("greska",
           "Došlo je do pogreške prilikom dohvaćanja filtriranih korisnika: " + e.getMessage());
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
-  }
-
-  public boolean jeKorisnikPrijavljen() {
-    HttpSession session = request.getSession(false);
-    return session != null && session.getAttribute("korisnik") != null;
   }
 
 }

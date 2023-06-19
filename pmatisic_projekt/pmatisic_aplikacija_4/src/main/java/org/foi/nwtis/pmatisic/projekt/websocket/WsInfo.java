@@ -2,7 +2,9 @@ package org.foi.nwtis.pmatisic.projekt.websocket;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CopyOnWriteArraySet;
+import org.foi.nwtis.pmatisic.projekt.dretva.PosiljateljInformacija;
 import org.foi.nwtis.pmatisic.projekt.zrno.AerodromiLetoviFacade;
 import org.foi.nwtis.pmatisic.projekt.zrno.KorisniciFacade;
 import jakarta.inject.Inject;
@@ -23,9 +25,15 @@ public class WsInfo {
   @Inject
   AerodromiLetoviFacade alFacade;
 
+  private PosiljateljInformacija senderThread;
+
   @OnOpen
   public void onOpen(Session session) {
     sessions.add(session);
+    if (senderThread == null || !senderThread.isAlive()) {
+      senderThread = new PosiljateljInformacija(this, 1);
+      senderThread.start();
+    }
   }
 
   @OnClose
@@ -44,10 +52,12 @@ public class WsInfo {
     int ukupnoKorisnika = korisniciFacade.count();
     int ukupnoAerodroma = alFacade.count();
     LocalDateTime trenutnoVrijeme = LocalDateTime.now();
+    String formatiranoVrijeme =
+        trenutnoVrijeme.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
 
     String message =
-        String.format("Trenutno vrijeme: %s, Ukupan broj korisnika: %d, Ukupan broj aerodroma: %d",
-            trenutnoVrijeme, ukupnoKorisnika, ukupnoAerodroma);
+        String.format("{\"vrijeme\": \"%s\", \"ukupnoKorisnika\": %d, \"ukupnoAerodroma\": %d}",
+            formatiranoVrijeme, ukupnoKorisnika, ukupnoAerodroma);
 
     for (Session session : sessions) {
       try {

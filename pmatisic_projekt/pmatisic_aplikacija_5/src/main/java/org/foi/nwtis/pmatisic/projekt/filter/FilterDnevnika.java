@@ -81,7 +81,6 @@ public class FilterDnevnika implements Filter {
     int responseCode = connection.getResponseCode();
     if (responseCode == HttpURLConnection.HTTP_OK
         || responseCode == HttpURLConnection.HTTP_CREATED) {
-      System.out.println("Dnevnik poslan uspješno.");
     } else {
       InputStream errorStream = connection.getErrorStream();
       if (errorStream != null) {
