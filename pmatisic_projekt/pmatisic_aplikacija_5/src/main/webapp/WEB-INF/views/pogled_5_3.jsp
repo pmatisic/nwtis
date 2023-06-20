@@ -126,28 +126,29 @@ thead {
 	</div>
 	<script>
 	function posaljiKomandu(komanda) {
-	    var podatak = JSON.stringify({ komanda: komanda });
+	    const podatak = JSON.stringify({ komanda });
 
-	    var xhr = new XMLHttpRequest();
-	    xhr.open("POST", "http://localhost:8080/pmatisic_aplikacija_5/mvc/nadzor", true);
-	    xhr.setRequestHeader("Content-Type", "application/json");
-
-	    xhr.onreadystatechange = function() {
-	        if (xhr.readyState === XMLHttpRequest.DONE) {
-	            if (xhr.status === 200) {
-	                try {
-	                    var responseJson = JSON.parse(xhr.responseText);
-	                    document.querySelector('#odgovorContainer .card-text').innerHTML = 'Status: ' + responseJson.status + ', Opis: ' + responseJson.opis;
-	                } catch (e) {
-	                    document.querySelector('#odgovorContainer .card-text').innerHTML = 'Odgovor: ' + xhr.responseText;
-	                }
-	            } else {
-	                alert("Došlo je do greške. Molimo pokušajte ponovno.");
-	            }
+	    fetch("http://localhost:8080/pmatisic_aplikacija_5/mvc/nadzor", {
+	        method: "POST",
+	        headers: {
+	            "Content-Type": "application/json"
+	        },
+	        body: podatak
+	    })
+	    .then(response => {
+	        if (response.status === 200) {
+	            document.querySelector('#odgovorContainer .card-text').innerHTML = 'Komanda uspjela';
+	        } else if (response.status === 400) {
+	            document.querySelector('#odgovorContainer .card-text').innerHTML = 'Komanda nije uspjela';
+	        } else {
+	            throw new Error('Mrežna greška');
 	        }
-	    };
-
-	    xhr.send(podatak);
+	    })
+	    .catch(error => {
+	        console.error('Pojavila se greška:', error);
+	        document.querySelector('#odgovorContainer .card-text').innerHTML = `Odgovor: ${error.message}`;
+	        alert("Došlo je do greške. Molimo pokušajte ponovno.");
+	    });
 	}
 	</script>
 </body>

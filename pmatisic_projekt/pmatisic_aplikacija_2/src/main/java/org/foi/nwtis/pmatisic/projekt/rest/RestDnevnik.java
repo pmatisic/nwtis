@@ -33,14 +33,18 @@ public class RestDnevnik {
   @Produces(MediaType.APPLICATION_JSON)
   public Response dohvatiZapise(@QueryParam("vrsta") String vrsta,
       @QueryParam("odBroja") Integer odBroja, @QueryParam("broj") Integer broj) {
+
     if (odBroja == null)
       odBroja = 1;
     if (broj == null)
       broj = 20;
 
     int offset = (odBroja - 1) * broj;
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+    List<Dnevnik> zapisi = new ArrayList<>();
 
     try (Connection con = ds.getConnection()) {
+
       String query = "SELECT * FROM DNEVNIK WHERE (? IS NULL OR vrsta = ?) LIMIT ? OFFSET ?";
       PreparedStatement stmt = con.prepareStatement(query);
       stmt.setObject(1, vrsta);
@@ -48,13 +52,6 @@ public class RestDnevnik {
       stmt.setInt(3, broj);
       stmt.setInt(4, offset);
       ResultSet rs = stmt.executeQuery();
-
-      if (!rs.next()) {
-        return Response.status(404).entity("Zapisi nisu pronađeni.").build();
-      }
-
-      DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
-      List<Dnevnik> zapisi = new ArrayList<>();
 
       while (rs.next()) {
         String vrstaZapisa = rs.getString("vrsta");
@@ -68,7 +65,7 @@ public class RestDnevnik {
       }
 
       if (zapisi.isEmpty()) {
-        return Response.status(404).build();
+        return null;
       }
 
       Gson gson = new Gson();
@@ -78,6 +75,7 @@ public class RestDnevnik {
     } catch (Exception ex) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
     }
+
   }
 
   @POST

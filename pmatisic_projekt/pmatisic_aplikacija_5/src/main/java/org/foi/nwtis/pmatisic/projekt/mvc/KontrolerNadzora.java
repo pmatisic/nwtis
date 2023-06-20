@@ -18,6 +18,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @Controller
 @Path("nadzor")
@@ -57,14 +58,12 @@ public class KontrolerNadzora {
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response posaljiKomandu(String podatak) {
+  public Response posaljiKomanduIDohvatiOdgovor(String podatak) {
     try {
-      Gson gson = new Gson();
-      JsonObject jsonObject = gson.fromJson(podatak, JsonObject.class);
-      String komanda = jsonObject.get("komanda").getAsString();
       Response response = null;
+      String komanda = new Gson().fromJson(podatak, JsonObject.class).get("komanda").getAsString();
 
-      System.out.println("Sending command: " + komanda);
+      System.out.println("Šaljem komandu: " + komanda);
 
       if ("STATUS".equalsIgnoreCase(komanda)) {
         response = ClientBuilder.newClient().target(REST_SERVICE_URL).request().get();
@@ -83,16 +82,12 @@ public class KontrolerNadzora {
         return Response.status(Response.Status.BAD_REQUEST).entity("Neispravna komanda").build();
       }
 
-      System.out.println("Response status: " + response.getStatus());
-
-      if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-        String rezultat = response.readEntity(String.class);
-
+      if (response.getStatus() == 200) {
+        String rezultat = response.readEntity(String.class).toString();
         System.out.println("Response body: " + rezultat);
-
-        return Response.ok(rezultat, MediaType.APPLICATION_JSON).build();
+        return Response.ok().build();
       } else {
-        return Response.status(response.getStatus()).build();
+        return Response.status(Status.BAD_REQUEST).build();
       }
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

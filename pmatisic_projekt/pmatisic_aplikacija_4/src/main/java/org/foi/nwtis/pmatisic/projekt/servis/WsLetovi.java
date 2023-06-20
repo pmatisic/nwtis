@@ -10,7 +10,7 @@ import org.foi.nwtis.pmatisic.projekt.zrno.AirportFacade;
 import org.foi.nwtis.pmatisic.projekt.zrno.KorisniciFacade;
 import org.foi.nwtis.pmatisic.projekt.zrno.LetoviPolasciFacade;
 import org.foi.nwtis.rest.klijenti.NwtisRestIznimka;
-import org.foi.nwtis.rest.klijenti.OSKlijentBP;
+import org.foi.nwtis.rest.klijenti.OSKlijent;
 import org.foi.nwtis.rest.podaci.LetAviona;
 import jakarta.inject.Inject;
 import jakarta.jws.WebMethod;
@@ -108,10 +108,10 @@ public class WsLetovi {
     long doVremena = parsedDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toEpochSecond();
     Konfiguracija konfiguracija = (Konfiguracija) konfig.getAttribute("konfiguracija");
     String korisnikOSN = konfiguracija.dajPostavku("OpenSkyNetwork.korisnik").toString();
-    String ldap = konfiguracija.dajPostavku("aai.ldap").toString();
-    // String lozinka = konfiguracija.dajPostavku("OpenSkyNetwork.lozinka").toString();
-    // OSKlijent osKlijent = new OSKlijent(korisnik, lozinka);
-    OSKlijentBP osKlijent = new OSKlijentBP(ldap, korisnikOSN);
+    // String ldap = konfiguracija.dajPostavku("aai.ldap").toString();
+    String lozinkaOSN = konfiguracija.dajPostavku("OpenSkyNetwork.lozinka").toString();
+    OSKlijent osKlijent = new OSKlijent(korisnikOSN, lozinkaOSN);
+    // OSKlijentBP osKlijent = new OSKlijentBP(ldap, korisnikOSN);
 
     try {
       return osKlijent.getDepartures(icao, odVremena, doVremena);

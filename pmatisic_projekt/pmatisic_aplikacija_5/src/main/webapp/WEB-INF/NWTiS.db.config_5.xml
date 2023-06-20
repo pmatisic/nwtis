@@ -9,4 +9,5 @@
 <entry key="autor.predmet">NWTiS</entry>
 <entry key="aplikacija.godina">2023.</entry>
 <entry key="aplikacija.verzija">1.0</entry>
+<entry key="rest.url">http://200.20.0.4:8080/pmatisic_aplikacija_2/api/</entry>
 </properties>
