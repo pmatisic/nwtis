@@ -84,7 +84,6 @@ public class KontrolerKorisnika {
     try {
       var port = service.getWsKorisniciPort();
       boolean uspjesnoDodan = port.dodajKorisnika(noviKorisnik);
-
       if (uspjesnoDodan) {
         return Response.status(Response.Status.CREATED).build();
       } else {
@@ -105,14 +104,11 @@ public class KontrolerKorisnika {
       JsonObject jsonObject = gson.fromJson(jsonBody, JsonObject.class);
       String korime = jsonObject.get("korime").getAsString();
       String lozinka = jsonObject.get("lozinka").getAsString();
-
       var port = service.getWsKorisniciPort();
       Korisnik korisnik = port.dajKorisnika(korime, lozinka, korime);
-
       if (korisnik != null) {
         HttpSession session = request.getSession();
         session.setAttribute("korisnik", korisnik);
-
         model.put("korisnik", korisnik);
         model.put("uspjesnoPrijavljen", true);
         return Response.ok().build();
@@ -141,7 +137,6 @@ public class KontrolerKorisnika {
       Korisnik korisnik = (Korisnik) session.getAttribute("korisnik");
       String korime = korisnik.getKorime();
       String lozinka = korisnik.getLozinka();
-
       var port = service.getWsKorisniciPort();
       List<Korisnik> filtriraniKorisnici =
           port.dajKorisnike(korime, lozinka, traziImeKorisnika, traziPrezimeKorisnika);
