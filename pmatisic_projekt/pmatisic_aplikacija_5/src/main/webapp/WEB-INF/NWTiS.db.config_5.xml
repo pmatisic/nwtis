@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<entry key="rest.url">http://200.20.0.4:8080/pmatisic_aplikacija_2/api/</entry>
-<entry key="soap.url">http://localhost:8080/pmatisic_aplikacija_4/api/</entry>
 <entry key="adresa.posluzitelja">localhost</entry>
 <entry key="mreznaVrata.posluzitelja">8000</entry>
 <entry key="stranica.brojRedova">15</entry>

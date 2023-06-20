@@ -9,10 +9,12 @@ import jakarta.mvc.Controller;
 import jakarta.mvc.Models;
 import jakarta.mvc.View;
 import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
 
 @Controller
 @Path("letovi")
@@ -41,7 +43,7 @@ public class KontrolerLetova {
     String godina = (konfiguracija.dajPostavku("aplikacija.godina")).toString();
     String verzija = (konfiguracija.dajPostavku("aplikacija.verzija")).toString();
 
-    if (odBroja < 1) {
+    if (odBroja == null) {
       odBroja = 1;
     }
 
@@ -58,6 +60,18 @@ public class KontrolerLetova {
       model.put("verzija", verzija);
     } catch (Exception e) {
       e.printStackTrace();
+    }
+  }
+
+  @DELETE
+  @Path("por")
+  public Response obrisiPoruke() {
+    try {
+      sakupljacJmsPoruka.obrisiSvePoruke();
+      return Response.status(Response.Status.NO_CONTENT).build();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
 

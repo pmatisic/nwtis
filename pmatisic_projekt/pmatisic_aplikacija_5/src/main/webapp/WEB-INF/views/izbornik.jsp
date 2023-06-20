@@ -25,7 +25,7 @@
 		</div>
         <ul class="list-group">
             <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/korisnici">Aktivnosti vezane uz korisnike</a></li>
-			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/posluzitelj">Upravljanje poslužiteljem</a></li>
+			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/nadzor">Upravljanje poslužiteljem</a></li>
 			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/letovi/poruke">Pregled svih primljenih JMS poruka</a></li>
 			<li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/aerodromi">Aktivnosti vezane uz aerodrome</a></li>
             <li class="list-group-item"><a href="${pageContext.servletContext.contextPath}/mvc/letovi">Aktivnosti vezane uz letove</a></li>

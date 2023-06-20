@@ -23,6 +23,10 @@ public class SakupljacJmsPoruka {
     }
   }
 
+  public void obrisiSvePoruke() {
+    this.poruke.clear();
+  }
+
   public void spremiPoruku(String poruka) {
     this.poruke.add(poruka);
   }

@@ -55,6 +55,25 @@ thead {
 	margin-top: 1rem;
 	margin-bottom: 1rem;
 }
+
+.pagination-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 1rem;
+}
+
+.pagination-btns {
+	display: flex;
+	justify-content: center;
+	gap: 0.5rem;
+}
+
+.link-styled {
+	color: #007bff;
+	text-decoration: none; &: hover { color : #0056b3;
+	text-decoration: underline;
+}
+}
 </style>
 </head>
 <body>
@@ -76,8 +95,10 @@ thead {
 				<%=request.getAttribute("verzija")%></p>
 		</div>
 		<div class="d-flex justify-content-between mb-3">
-			<a href="<%=request.getContextPath()%>/index.jsp"
-				class="btn btn-secondary">Povratak na početnu stranicu</a>
+		    <div>
+		        <a href="<%=request.getContextPath()%>/index.jsp" class="btn btn-secondary">Povratak na početnu stranicu</a>
+		        <button onclick="obrisiPoruke()" class="btn btn-danger">Obriši</button>
+		    </div>
 		</div>
 		<table id="porukeTable" class="table table-striped">
 			<thead>
@@ -108,12 +129,25 @@ thead {
 				<a href="<%=request.getContextPath()%>/mvc/letovi/poruke"
 					class="btn btn-primary">Početak</a> 
 				<a href="<%=request.getContextPath()%>/mvc/letovi/poruke?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
-					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna stranica</a>
+				    class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna stranica</a>
 				<a href="<%=request.getContextPath()%>/mvc/letovi/poruke?odBroja=<%=odBroja + 1%>"
-					class="btn btn-primary">Sljedeća stranica</a>
+				    class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>
 		<br>
 	</div>
+	<script>
+	    function obrisiPoruke() {
+	        var xhr = new XMLHttpRequest();
+	        xhr.open("DELETE", "<%=request.getContextPath()%>/mvc/letovi/por", true);
+	        xhr.onreadystatechange = function () {
+	            if (xhr.readyState === 4 && xhr.status === 204) {
+	                alert("Poruke su uspješno obrisane!");
+	                window.location.reload();
+	            }
+	        };
+	        xhr.send();
+	    }
+	</script>
 </body>
 </html>
