@@ -90,6 +90,11 @@ public class KontrolerLetova {
       List<LetAviona> letovi =
           port.dajPolaskeInterval(korime, lozinka, icao, datumOd, datumDo, odBroja, broj);
 
+      model.put("icao", icao);
+      model.put("datumOd", datumOd);
+      model.put("datumDo", datumDo);
+      model.put("odBroja", odBroja);
+      model.put("broj", broj);
       model.put("letovi", letovi);
       return Response.ok().build();
 
@@ -102,7 +107,7 @@ public class KontrolerLetova {
   }
 
   @GET
-  @Path("spremljeni")
+  @Path("dan")
   @View("pogled_5_6_2.jsp")
   public Response dohvatiSpremljeneLetoveNaDatum(@QueryParam("icao") String icao,
       @QueryParam("datum") String datum, @QueryParam("odBroja") Integer odBroja) {
@@ -125,6 +130,10 @@ public class KontrolerLetova {
       var port = service.getWsLetoviPort();
       List<LetAviona> letovi = port.dajPolaskeNaDan(korime, lozinka, icao, datum, odBroja, broj);
 
+      model.put("icao", icao);
+      model.put("datum", datum);
+      model.put("odBroja", odBroja);
+      model.put("broj", broj);
       model.put("letovi", letovi);
       return Response.ok().build();
 
@@ -137,7 +146,7 @@ public class KontrolerLetova {
   }
 
   @GET
-  @Path("datum")
+  @Path("os")
   @View("pogled_5_6_3.jsp")
   public Response dohvatiLetoveNaDatum(@QueryParam("icao") String icao,
       @QueryParam("datum") String datum) {

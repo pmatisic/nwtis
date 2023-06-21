@@ -1,7 +1,9 @@
 package org.foi.nwtis.pmatisic.projekt.zrno;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.foi.nwtis.pmatisic.projekt.entitet.AerodromiLetovi;
 import org.foi.nwtis.pmatisic.projekt.entitet.Airports;
 import jakarta.annotation.PostConstruct;
@@ -133,6 +135,20 @@ public class AerodromiLetoviFacade {
       e.printStackTrace();
     }
     return false;
+  }
+
+  public Map<String, Boolean> dohvatiStatusePreuzimanja() {
+    try {
+      List<AerodromiLetovi> aerodromiLetovi = findAll();
+      Map<String, Boolean> statusiPreuzimanja = new HashMap<>();
+      for (AerodromiLetovi aerodromLet : aerodromiLetovi) {
+        statusiPreuzimanja.put(aerodromLet.getIcao(), aerodromLet.isAktivan());
+      }
+      return statusiPreuzimanja;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new HashMap<>();
+    }
   }
 
 }

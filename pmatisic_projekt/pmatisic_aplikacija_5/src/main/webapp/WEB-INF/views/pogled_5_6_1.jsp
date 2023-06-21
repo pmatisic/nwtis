@@ -1,4 +1,5 @@
 <%@page import="java.util.List"%>
+<%@page import="org.foi.nwtis.pmatisic.projekt.servis.WsLetovi.endpoint.Letovi"%>
 <%@page import="org.foi.nwtis.pmatisic.projekt.servis.WsLetovi.endpoint.LetAviona"%>
 <%@page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -18,7 +19,7 @@ body {
 }
 
 .container {
-	max-width: 960px;
+	max-width: 1500px;
 }
 
 h1 {
@@ -77,35 +78,26 @@ thead {
 </head>
 <body>
 	<div class="container">
-		<h1>Pregled spremljenih letova</h1>
-		<div class="author-info">
-			<p>
-				<strong>Autor:</strong>
-				<%=request.getAttribute("ime")%>
-				<%=request.getAttribute("prezime")%></p>
-			<p>
-				<strong>Predmet:</strong>
-				<%=request.getAttribute("predmet")%></p>
-			<p>
-				<strong>Godina:</strong>
-				<%=request.getAttribute("godina")%></p>
-			<p>
-				<strong>Verzija aplikacije:</strong>
-				<%=request.getAttribute("verzija")%></p>
-		</div>
+		<h1>Pregled spremljenih letova s određenog aerodroma u zadanom intervalu</h1>
 		<div class="d-flex justify-content-between mb-3">
-			<a href="<%=request.getContextPath()%>/mvc/korisnici"
+			<a href="<%=request.getContextPath()%>/mvc/letovi"
 				class="btn btn-secondary">Povratak</a>
 		</div>
-		<table class="table table-striped">
+		<table id="letoviTable" class="table table-striped">
 			<thead>
 				<tr>
-					<th>Callsign</th>
-					<th>Est. Arrival Airport</th>
-					<th>Est. Departure Airport</th>
-					<th>First Seen</th>
-					<th>Last Seen</th>
 					<th>ICAO24</th>
+					<th>Prvi put viđen</th>
+					<th>Aerodrom polaska</th>
+					<th>Zadnji put viđen</th>
+					<th>Aerodrom dolaska</th>
+					<th>Pozivni znak</th>
+					<th>Horizontalna udaljenost aerodroma polaska</th>
+					<th>Vertikalna udaljenost aerodroma polaska</th>
+					<th>Horizontalna udaljenost aerodroma dolaska</th>
+					<th>Vertikalna udaljenost aerodroma dolaska</th>
+					<th>Broj kandidata za aerodrom polaska</th>
+					<th>Broj kandidata za aerodrom dolaska</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -116,29 +108,41 @@ thead {
 
 				if (letovi != null) {
 					for (LetAviona let : letovi) {
+					%>
+					<tr>
+						<td><%=let.getIcao24()%></td>
+						<td><%=let.getFirstSeen()%></td>
+						<td><%=let.getEstDepartureAirport()%></td>
+						<td><%=let.getLastSeen()%></td>
+						<td><%=let.getEstArrivalAirport()%></td>
+						<td><%=let.getCallsign()%></td>
+						<td><%=let.getEstDepartureAirportHorizDistance()%></td>
+						<td><%=let.getEstDepartureAirportVertDistance()%></td>
+						<td><%=let.getEstArrivalAirportHorizDistance()%></td>
+						<td><%=let.getEstArrivalAirportVertDistance()%></td>
+						<td><%=let.getDepartureAirportCandidatesCount()%></td>
+						<td><%=let.getArrivalAirportCandidatesCount()%></td>
+					</tr>
+					<%
+					}
+				} else {
 				%>
 				<tr>
-					<td><%=let.getCallsign()%></td>
-					<td><%=let.getEstArrivalAirport()%></td>
-					<td><%=let.getEstDepartureAirport()%></td>
-					<td><%=let.getFirstSeen()%></td>
-					<td><%=let.getLastSeen()%></td>
-					<td><%=let.getIcao24()%></td>
+					<td colspan="13" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
-					}
 				}
 				%>
 			</tbody>
 		</table>
 		<div class="pagination-container">
 			<div class="pagination-btns">
-				<a href="<%=request.getContextPath()%>/mvc/letovi/interval"
+				<a href="<%=request.getContextPath()%>/mvc/letovi/interval?icao=<%=request.getAttribute("icao")%>&datumOd=<%=request.getAttribute("datumOd")%>&datumDo=<%=request.getAttribute("datumDo")%>"
 					class="btn btn-primary">Početak</a> 
-				<a href="<%=request.getContextPath()%>/mvc/letovi/interval?odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
-				    class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna stranica</a>
-				<a href="<%=request.getContextPath()%>/mvc/letovi/interval?odBroja=<%=odBroja + 1%>"
-				    class="btn btn-primary">Sljedeća stranica</a>
+				<a href="<%=request.getContextPath()%>/mvc/letovi/interval?icao=<%=request.getAttribute("icao")%>&datumOd=<%=request.getAttribute("datumOd")%>&datumDo=<%=request.getAttribute("datumDo")%>&odBroja=<%=odBroja <= 1 ? 1 : odBroja - 1%>"
+					class="btn btn-primary <%=odBroja <= 1 ? "disabled" : ""%>">Prethodna stranica</a> 
+				<a href="<%=request.getContextPath()%>/mvc/letovi/interval?icao=<%=request.getAttribute("icao")%>&datumOd=<%=request.getAttribute("datumOd")%>&datumDo=<%=request.getAttribute("datumDo")%>&odBroja=<%=odBroja + 1%>"
+					class="btn btn-primary">Sljedeća stranica</a>
 			</div>
 		</div>
 		<br>

@@ -2,9 +2,11 @@ package org.foi.nwtis.pmatisic.projekt.servis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.foi.nwtis.pmatisic.projekt.entitet.Airports;
 import org.foi.nwtis.pmatisic.projekt.iznimka.PogresnaAutentikacija;
 import org.foi.nwtis.pmatisic.projekt.podatak.Aerodrom;
+import org.foi.nwtis.pmatisic.projekt.podatak.AerodromSaStatusom;
 import org.foi.nwtis.pmatisic.projekt.podatak.Lokacija;
 import org.foi.nwtis.pmatisic.projekt.websocket.WsInfo;
 import org.foi.nwtis.pmatisic.projekt.zrno.AerodromiLetoviFacade;
@@ -33,6 +35,26 @@ public class WsAerodromi {
         var koord = a.getCoordinates().split(",");
         var lokacija = new Lokacija(koord[1], koord[0]);
         aerodromi.add(new Aerodrom(a.getIcao(), a.getName(), a.getIsoCountry(), lokacija));
+      }
+      return aerodromi;
+    } else {
+      throw new PogresnaAutentikacija("Pogrešno korisničko ime ili lozinka.");
+    }
+  }
+
+  @WebMethod
+  public List<AerodromSaStatusom> dajAerodromeZaLetoveSaStatusom(@WebParam String korisnik,
+      @WebParam String lozinka) throws PogresnaAutentikacija {
+    if (korisniciFacade.autenticiraj(korisnik, lozinka)) {
+      List<Airports> airports = alFacade.dajAerodromePovezaneSAerodromimaLetova();
+      Map<String, Boolean> statusiPreuzimanja = alFacade.dohvatiStatusePreuzimanja();
+      List<AerodromSaStatusom> aerodromi = new ArrayList<>();
+      for (Airports a : airports) {
+        var koord = a.getCoordinates().split(",");
+        var lokacija = new Lokacija(koord[1], koord[0]);
+        boolean preuzimanjeAktivno = statusiPreuzimanja.getOrDefault(a.getIcao(), false);
+        aerodromi.add(new AerodromSaStatusom(a.getIcao(), a.getName(), a.getIsoCountry(), lokacija,
+            preuzimanjeAktivno));
       }
       return aerodromi;
     } else {

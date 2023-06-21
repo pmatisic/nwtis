@@ -87,7 +87,7 @@ public class RestAerodromi {
         aerodrom.setNaziv(rs.getString("NAME"));
         aerodrom.setDrzava(rs.getString("ISO_COUNTRY"));
         String koordinate[] = rs.getString("COORDINATES").split(",");
-        Lokacija lokacija = new Lokacija(koordinate[0], koordinate[1].trim());
+        Lokacija lokacija = new Lokacija(koordinate[1], koordinate[0].trim());
         aerodrom.setLokacija(lokacija);
         aerodromi.add(aerodrom);
       }
@@ -104,7 +104,7 @@ public class RestAerodromi {
     }
 
     if (aerodromi.isEmpty()) {
-      return Response.status(404).build();
+      return null;
     }
 
     Gson gson = new Gson();
@@ -154,7 +154,7 @@ public class RestAerodromi {
     }
 
     if (aerodrom == null) {
-      return Response.status(404).build();
+      return null;
     }
 
     Gson gson = new Gson();
@@ -204,7 +204,7 @@ public class RestAerodromi {
     }
 
     if (udaljenosti.isEmpty()) {
-      return Response.status(404).build();
+      return null;
     }
 
     Gson gson = new Gson();
@@ -270,7 +270,7 @@ public class RestAerodromi {
     }
 
     if (udaljenosti.isEmpty()) {
-      return Response.status(404).build();
+      return null;
     }
 
     Gson gson = new Gson();
@@ -512,7 +512,7 @@ public class RestAerodromi {
     }
 
     if (najduziPut == null) {
-      return Response.status(404).build();
+      return null;
     }
 
     Gson gson = new Gson();

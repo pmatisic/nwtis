@@ -41,6 +41,14 @@ public class WsLetovi {
       throw new PogresnaAutentikacija("Pogrešno korisničko ime ili lozinka.");
     }
 
+    if (odBroja == null) {
+      odBroja = 1;
+    }
+
+    if (broj == null) {
+      broj = 20;
+    }
+
     if (odBroja < 1 || broj < 1) {
       odBroja = 1;
       broj = 20;
@@ -70,6 +78,14 @@ public class WsLetovi {
       @WebParam Integer broj) throws Exception {
     if (!korisniciFacade.autenticiraj(korisnik, lozinka)) {
       throw new PogresnaAutentikacija("Pogrešno korisničko ime ili lozinka.");
+    }
+
+    if (odBroja == null) {
+      odBroja = 1;
+    }
+
+    if (broj == null) {
+      broj = 20;
     }
 
     if (odBroja < 1 || broj < 1) {

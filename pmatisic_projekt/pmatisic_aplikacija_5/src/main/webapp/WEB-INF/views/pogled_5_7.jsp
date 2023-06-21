@@ -81,19 +81,10 @@ thead {
 	<div class="container">
 		<h1>Pregled zapisa dnevnika</h1>
 		<div class="author-info">
-			<p>
-				<strong>Autor:</strong>
-				<%=request.getAttribute("ime")%>
-				<%=request.getAttribute("prezime")%></p>
-			<p>
-				<strong>Predmet:</strong>
-				<%=request.getAttribute("predmet")%></p>
-			<p>
-				<strong>Godina:</strong>
-				<%=request.getAttribute("godina")%></p>
-			<p>
-				<strong>Verzija aplikacije:</strong>
-				<%=request.getAttribute("verzija")%></p>
+		   <p><strong>Autor: </strong><%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%></p>
+		   <p><strong>Predmet: </strong><%=request.getAttribute("predmet")%></p>
+		   <p><strong>Godina: </strong><%=request.getAttribute("godina")%></p>
+		   <p><strong>Verzija aplikacije: </strong><%=request.getAttribute("verzija")%></p>
 		</div>
 		<div class="row mb-3">
 			<div class="col-md-4">
@@ -127,16 +118,22 @@ thead {
 
 				if (zapisi != null) {
 					for (Dnevnik zapis : zapisi) {
+					%>
+					<tr>
+						<td><%=zapis.vrsta()%></td>
+						<td><%=zapis.vrijemePristupa()%></td>
+						<td><%=zapis.putanja()%></td>
+						<td><%=zapis.ipAdresa()%></td>
+						<td><%=zapis.korisnik()%></td>
+					</tr>
+					<%
+					}
+				} else {
 				%>
 				<tr>
-					<td><%=zapis.vrsta()%></td>
-					<td><%=zapis.vrijemePristupa()%></td>
-					<td><%=zapis.putanja()%></td>
-					<td><%=zapis.ipAdresa()%></td>
-					<td><%=zapis.korisnik()%></td>
+					<td colspan="5" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
-				}
 				}
 				%>
 			</tbody>

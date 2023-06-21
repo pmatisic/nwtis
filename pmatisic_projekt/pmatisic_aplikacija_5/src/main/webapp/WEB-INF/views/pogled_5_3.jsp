@@ -91,19 +91,10 @@ thead {
 	<div class="container">
 		<h1>Upravljanje poslužiteljem</h1>
 		<div class="author-info">
-			<p>
-				<strong>Autor:</strong>
-				<%=request.getAttribute("ime")%>
-				<%=request.getAttribute("prezime")%></p>
-			<p>
-				<strong>Predmet:</strong>
-				<%=request.getAttribute("predmet")%></p>
-			<p>
-				<strong>Godina:</strong>
-				<%=request.getAttribute("godina")%></p>
-			<p>
-				<strong>Verzija aplikacije:</strong>
-				<%=request.getAttribute("verzija")%></p>
+		   <p><strong>Autor: </strong><%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%></p>
+		   <p><strong>Predmet: </strong><%=request.getAttribute("predmet")%></p>
+		   <p><strong>Godina: </strong><%=request.getAttribute("godina")%></p>
+		   <p><strong>Verzija aplikacije: </strong><%=request.getAttribute("verzija")%></p>
 		</div>
 		<div class="buttons-container">
 			<button onclick="posaljiKomandu('STATUS')" class="btn btn-primary">STATUS</button>
@@ -125,31 +116,31 @@ thead {
 		</div>
 	</div>
 	<script>
-	function posaljiKomandu(komanda) {
-	    const podatak = JSON.stringify({ komanda });
-
-	    fetch("http://localhost:8080/pmatisic_aplikacija_5/mvc/nadzor", {
-	        method: "POST",
-	        headers: {
-	            "Content-Type": "application/json"
-	        },
-	        body: podatak
-	    })
-	    .then(response => {
-	        if (response.status === 200) {
-	            document.querySelector('#odgovorContainer .card-text').innerHTML = 'Komanda uspjela';
-	        } else if (response.status === 400) {
-	            document.querySelector('#odgovorContainer .card-text').innerHTML = 'Komanda nije uspjela';
-	        } else {
-	            throw new Error('Mrežna greška');
-	        }
-	    })
-	    .catch(error => {
-	        console.error('Pojavila se greška:', error);
-	        document.querySelector('#odgovorContainer .card-text').innerHTML = `Odgovor: ${error.message}`;
-	        alert("Došlo je do greške. Molimo pokušajte ponovno.");
-	    });
-	}
+		function posaljiKomandu(komanda) {
+		    const podatak = JSON.stringify({ komanda });
+	
+		    fetch("http://localhost:8080/pmatisic_aplikacija_5/mvc/nadzor", {
+		        method: "POST",
+		        headers: {
+		            "Content-Type": "application/json"
+		        },
+		        body: podatak
+		    })
+		    .then(response => {
+		        if (response.status === 200) {
+		            document.querySelector('#odgovorContainer .card-text').innerHTML = 'Komanda uspjela';
+		        } else if (response.status === 400) {
+		            document.querySelector('#odgovorContainer .card-text').innerHTML = 'Komanda nije uspjela';
+		        } else {
+		            throw new Error('Mrežna greška');
+		        }
+		    })
+		    .catch(error => {
+		        console.error('Pojavila se greška:', error);
+		        document.querySelector('#odgovorContainer .card-text').innerHTML = `Odgovor: ${error.message}`;
+		        alert("Došlo je do greške. Molimo pokušajte ponovno.");
+		    });
+		}
 	</script>
 </body>
 </html>

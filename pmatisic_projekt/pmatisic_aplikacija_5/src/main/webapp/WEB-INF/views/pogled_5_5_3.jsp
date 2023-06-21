@@ -1,18 +1,15 @@
 <%@page import="java.util.List"%>
-<%@page
-	import="org.foi.nwtis.pmatisic.projekt.servis.WsKorisnici.endpoint.Korisnik"%>
-<%@page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@page import="org.foi.nwtis.pmatisic.projekt.servis.WsAerodromi.endpoint.AerodromSaStatusom"%>
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="author"
-	content="<%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%>">
+<meta name="author" content="<%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%>">
 <meta name="subject" content="<%=request.getAttribute("predmet")%>">
 <meta name="year" content="<%=request.getAttribute("godina")%>">
 <meta name="version" content="<%=request.getAttribute("verzija")%>">
-<title>Pogled 5.2.3</title>
+<title>Pogled 5.5.3</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
 <style>
@@ -61,63 +58,67 @@ thead {
 </head>
 <body>
 	<div class="container">
-		<h1>Pregled korisnika</h1>
+		<h1>Pregled aerodroma za koje se preuzimaju podaci o polascima</h1>
 		<h3>Informacije s WebSocket-a</h3>
 		<div id="websocketInfo">
 		    <p id="vrijeme"></p>
 		    <p id="ukupnoKorisnika"></p>
 		    <p id="ukupnoAerodroma"></p>
 		</div>
-		<table id="korisniciTable" class="table table-striped">
+		<table id="aerodromiTable" class="table table-striped">
 			<thead>
 				<tr>
-					<th>Korisničko ime</th>
-					<th>Ime</th>
-					<th>Prezime</th>
+					<th>ICAO</th>
+					<th>Naziv</th>
+					<th>Država</th>
+					<th>Koordinate</th>
+					<th>Status</th>
+					<th>Promjena statusa</th>
 				</tr>
 			</thead>
 			<tbody>
 				<%
-				List<Korisnik> filtriraniKorisnici = (List<Korisnik>) request.getAttribute("filtriraniKorisnici");
-				if (filtriraniKorisnici != null && !filtriraniKorisnici.isEmpty()) {
-					for (Korisnik korisnik : filtriraniKorisnici) {
+				List<AerodromSaStatusom> aerodromi = (List<AerodromSaStatusom>) request.getAttribute("podatci");
+
+				if (aerodromi != null || !aerodromi.isEmpty()) {
+					for (AerodromSaStatusom aerodrom : aerodromi) {
 					%>
 					<tr>
-						<td><%=korisnik.getKorime()%></td>
-						<td><%=korisnik.getIme()%></td>
-						<td><%=korisnik.getPrezime()%></td>
+						<td><a
+							href="<%=request.getContextPath()%>/mvc/aerodromi/<%=aerodrom.getIcao()%>"
+							class="link-styled"> <%=aerodrom.getIcao()%>
+						</a></td>
+						<td><%=aerodrom.getNaziv()%></td>
+						<td><%=aerodrom.getDrzava()%></td>
+						<td><%=aerodrom.getLokacija().getLatitude() + ", " + aerodrom.getLokacija().getLongitude()%></td>
+						<td><%=aerodrom.isPreuzimanjeAktivno()%></td>
+						<td>
+						    <% if(aerodrom.isPreuzimanjeAktivno()) { %>
+						        <a href="<%=request.getContextPath()%>/mvc/aerodromi/polasci?icao=<%=aerodrom.getIcao()%>&action=deactivate" class="link-styled">Deaktiviraj</a>
+						    <% } else { %>
+						        <a href="<%=request.getContextPath()%>/mvc/aerodromi/polasci?icao=<%=aerodrom.getIcao()%>&action=activate" class="link-styled">Aktiviraj</a>
+						    <% } %>
+						</td>
 					</tr>
-					<%
+					<% 
 					}
 				} else {
 				%>
 				<tr>
-					<td colspan="3" class="text-center">Nema podataka za prikaz</td>
+					<td colspan="6" class="text-center">Nema podataka za prikaz</td>
 				</tr>
 				<%
 				}
 				%>
 			</tbody>
 		</table>
-		<br>
-		<div class="mb-3">
-			<h3>Filtriraj korisnike</h3>
-			<div class="input-group">
-				<input type="text" class="form-control" id="traziImeKorisnika"
-					placeholder="Unesite ime korisnika"> <input type="text"
-					class="form-control" id="traziPrezimeKorisnika"
-					placeholder="Unesite prezime korisnika">
-				<button type="button" class="btn btn-primary"
-					onclick="filtrirajKorisnike()">Filtriraj</button>
-			</div>
-		</div>
-		<div class="d-flex justify-content-between mb-3">
-			<a href="<%=request.getContextPath()%>/mvc/korisnici"
-				class="btn btn-secondary">Povratak</a>
+		<div class="d-flex align-items-center mb-3">
+			<a href="<%=request.getContextPath()%>/mvc/aerodromi"
+				class="btn btn-secondary me-3">Povratak</a>
 		</div>
 		<br>
 	</div>
-	<script>
+    <script>    
 		var socket = new WebSocket('ws://localhost:8080/pmatisic_aplikacija_4/info');
 		socket.onopen = function() {
 		    console.log('WebSocket veza uspostavljena.');
@@ -140,15 +141,6 @@ thead {
 		socket.onclose = function() {
 		    console.log('WebSocket veza zatvorena.');
 		};
-
-		function filtrirajKorisnike() {
-		    var traziImeKorisnika = document.getElementById("traziImeKorisnika").value;
-		    var traziPrezimeKorisnika = document.getElementById("traziPrezimeKorisnika").value;
-		    var contextPath = '<%=request.getContextPath()%>';
-		    var url = contextPath + "/mvc/korisnici/pregled?traziImeKorisnika=" + traziImeKorisnika + "&traziPrezimeKorisnika=" + traziPrezimeKorisnika;
-		    
-		    window.location.href = url;
-		}
-	</script>
+    </script>
 </body>
 </html>

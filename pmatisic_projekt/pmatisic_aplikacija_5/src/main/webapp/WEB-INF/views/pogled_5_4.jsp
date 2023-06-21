@@ -80,19 +80,10 @@ thead {
 	<div class="container">
 		<h1>Pregled primljenih JMS poruka</h1>
 		<div class="author-info">
-			<p>
-				<strong>Autor:</strong>
-				<%=request.getAttribute("ime")%>
-				<%=request.getAttribute("prezime")%></p>
-			<p>
-				<strong>Predmet:</strong>
-				<%=request.getAttribute("predmet")%></p>
-			<p>
-				<strong>Godina:</strong>
-				<%=request.getAttribute("godina")%></p>
-			<p>
-				<strong>Verzija aplikacije:</strong>
-				<%=request.getAttribute("verzija")%></p>
+		   <p><strong>Autor: </strong><%=request.getAttribute("ime")%> <%=request.getAttribute("prezime")%></p>
+		   <p><strong>Predmet: </strong><%=request.getAttribute("predmet")%></p>
+		   <p><strong>Godina: </strong><%=request.getAttribute("godina")%></p>
+		   <p><strong>Verzija aplikacije: </strong><%=request.getAttribute("verzija")%></p>
 		</div>
 		<div class="d-flex justify-content-between mb-3">
 		    <div>
@@ -113,13 +104,13 @@ thead {
 				Integer broj = (Integer) request.getAttribute("broj");
 
 				if (poruke != null) {
-				  for (String poruka : poruke) {
-				%>
-				<tr>
-					<td><%=poruka%></td>
-				</tr>
-				<%
-				}
+					for (String poruka : poruke) {
+					%>
+					<tr>
+						<td><%=poruka%></td>
+					</tr>
+					<%
+					}
 				}
 				%>
 			</tbody>
