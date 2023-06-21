@@ -1,0 +1,333 @@
+{
+	"info": {
+		"_postman_id": "1cf26cbf-0c9c-47ea-b2cf-15db4a7b0923",
+		"name": "Aplikacija 2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"aerodromi",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LDZA",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LDZA",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LDZA/LOWW",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LDZA/LOWW",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA",
+						"LOWW"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LDZA/udaljenosti",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LDZA/udaljenosti",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA",
+						"udaljenosti"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LDZA/izracunaj/LOWW",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LDZA/izracunaj/LOWW",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA",
+						"izracunaj",
+						"LOWW"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LOWW/udaljenost1/EDDF",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LOWW/udaljenost1/EDDF",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LOWW",
+						"udaljenost1",
+						"EDDF"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LOWW/udaljenost2?drzava=HR&km=200",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/aerodromi/LOWW/udaljenost2?drzava=HR&km=200",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LOWW",
+						"udaljenost2"
+					],
+					"query": [
+						{
+							"key": "drzava",
+							"value": "HR"
+						},
+						{
+							"key": "km",
+							"value": "200"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/nadzor",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/nadzor",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"nadzor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/nadzor/PAUZA",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/nadzor/PAUZA",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"nadzor",
+						"PAUZA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/nadzor/INFO/DA",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/nadzor/INFO/DA",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"nadzor",
+						"INFO",
+						"DA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/dnevnik",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/dnevnik",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"dnevnik"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/dnevnik",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"vrsta\": \"AP4\",\n    \"vrijemePristupa\": \"2023-06-22T03:23:55.193Z\",\n    \"putanja\": \"/pmatisic_aplikacija_2/api/dnevnik?vrsta=AP2\",\n    \"ipAdresa\": \"200.20.0.1\",\n    \"korisnik\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://200.20.0.4:8080/pmatisic_aplikacija_2/api/dnevnik",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"pmatisic_aplikacija_2",
+						"api",
+						"dnevnik"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
