@@ -1,8 +1,0 @@
-#NWTiS pmatisic 2023.
-#Sun May 21 13:01:49 CEST 2023
-aplikacija.godina=2023.
-stranica.brojRedova=15
-aplikacija.verzija=1.0
-autor.prezime=Mati\u0161i\u0107
-autor.ime=Petar
-autor.predmet=NWTiS
